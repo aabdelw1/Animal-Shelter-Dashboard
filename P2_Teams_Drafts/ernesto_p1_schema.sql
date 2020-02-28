@@ -1,4 +1,4 @@
-CREATE TABLE Adopter (
+CREATE TABLE Shelter.Adopter (
   Email_Address VARCHAR(250) NOT NULL,
   Phone_Number INT NOT NULL,
   Street VARCHAR(50) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE Adopter (
   PRIMARY KEY (Email_Address),
 );
 
-CREATE TABLE AdoptionApplication (
+CREATE TABLE Shelter.AdoptionApplication (
   Application_Number INT NOT NULL,
   Email_Address VARCHAR(250) NOT NULL,
   Date_Of_Application DATE NOT NULL,
@@ -23,8 +23,8 @@ CREATE TABLE AdoptionApplication (
 
 -- Constraints   Foreign Keys: FK_ChildTable_childColumn_ParentTable_parentColumn
 
-ALTER TABLE AdoptionApplication
-  ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress FOREIGN KEY (Email_Address) REFERENCES Adopter (Email_Address);
+ALTER TABLE Shelter.AdoptionApplication
+  ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress FOREIGN KEY (Email_Address) REFERENCES Shelter.Adopter (Email_Address);
  
 
 
