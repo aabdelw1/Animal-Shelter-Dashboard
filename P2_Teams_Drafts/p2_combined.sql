@@ -13,7 +13,53 @@ USE cs6400_sp20_team054;
 -- GRANT ALL PRIVILEGES ON `cs6400_sp20_team054`.* TO 'gatechUser'@'localhost';
 -- FLUSH PRIVILEGES;
 
-#-----------------------
+-- Tables 
+
+CREATE TABLE Adopter (
+  Email_Address VARCHAR(250) NOT NULL,
+  Phone_Number INT NOT NULL,
+  Street VARCHAR(50) NOT NULL,
+  City VARCHAR(50) NOT NULL,
+  State VARCHAR(50) NOT NULL,
+  ZIPCode VARCHAR(50) NOT NULL,
+  Applicant_Fist_Name VARCHAR(100) NOT NULL,
+  Applicant_Last_Name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (Email_Address)
+);
+
+CREATE TABLE AdoptionApplication (
+  Application_Number INT NOT NULL,
+  Email_Address VARCHAR(250) NOT NULL,
+  Date_Of_Application DATE NOT NULL,
+  CoApplicant_First_Name VARCHAR(100) NOT NULL,
+  CoApplicant_Last_Name VARCHAR(100) NOT NULL,
+  State ENUM('Pending Approval', 'Approved', 'Rejected') DEFAULT 'Pending Approval',
+  PRIMARY KEY (Application_Number),
+  KEY(Email_Address)
+);
+
+CREATE TABLE Users(
+    Username VARCHAR(10) NOT NULL,
+    Password VARCHAR(50) NOT NULL,
+    UserType VARCHAR(10) NOT NULL,
+    EmailAddress VARCHAR(255) DEFAULT NULL,
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    StartDate DATE NOT NULL,
+    PRIMARY KEY (Username)
+);
+
+CREATE TABLE Volunteer(
+    Username VARCHAR(10) NOT NULL,
+    PhoneNumber VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE VolunteerHours(
+    Username VARCHAR(10) NOT NULL,
+    Date DATE,
+    Hours INT DEFAULT NULL,
+    PRIMARY KEY (Username, Date)
+);
 
 CREATE TABLE Breed (
   Name VARCHAR(50) NOT NULL,
@@ -57,6 +103,18 @@ CREATE TABLE BreedSpecies (
 );
 
 -- Constraints   Foreign Keys: FK_ChildTable_childColumn_ParentTable_parentColumn
+
+ALTER TABLE VolunteerHours
+  ADD CONSTRAINT fk_VolunteerHours_Username_Volunteer_Username
+  FOREIGN KEY (Username) REFERENCES Volunteer(Username);
+
+ALTER TABLE AdoptionApplication
+  ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress 
+  FOREIGN KEY (Email_Address) REFERENCES Adopter (Email_Address);
+
+ALTER TABLE Volunteer
+  ADD CONSTRAINT fk_Volunteer
+  FOREIGN KEY (Username) REFERENCES Volunteer(Username);
 
 ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Breed_Name_Breed_Name
