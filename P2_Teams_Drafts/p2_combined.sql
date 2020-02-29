@@ -1,9 +1,9 @@
-DROP DATABASE IF EXISTS cs6400_sp20_team054; 
+DROP DATABASE IF EXISTS cs6400_sp20_team054;
 SET default_storage_engine=InnoDB;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054 
-    DEFAULT CHARACTER SET utf8mb4 
+CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054
+    DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
 USE cs6400_sp20_team054;
 
@@ -13,7 +13,7 @@ USE cs6400_sp20_team054;
 -- GRANT ALL PRIVILEGES ON `cs6400_sp20_team054`.* TO 'gatechUser'@'localhost';
 -- FLUSH PRIVILEGES;
 
--- Tables 
+-- Tables
 
 CREATE TABLE Adopter (
   Email_Address VARCHAR(250) NOT NULL,
@@ -41,7 +41,6 @@ CREATE TABLE AdoptionApplication (
 CREATE TABLE Users(
     Username VARCHAR(10) NOT NULL,
     Password VARCHAR(50) NOT NULL,
-    UserType VARCHAR(10) NOT NULL,
     EmailAddress VARCHAR(255) DEFAULT NULL,
     FirstName VARCHAR(20) NOT NULL,
     LastName VARCHAR(20) NOT NULL,
@@ -49,9 +48,16 @@ CREATE TABLE Users(
     PRIMARY KEY (Username)
 );
 
+CREATE TABLE Employees(
+    Username VARCHAR(10) NOT NULL,
+    isAdmin BOOLEAN NOT NULL,
+    PRIMARY KEY (Username)
+);
+
 CREATE TABLE Volunteer(
     Username VARCHAR(10) NOT NULL,
-    PhoneNumber VARCHAR(20) NOT NULL
+    PhoneNumber VARCHAR(20) NOT NULL,
+    PRIMARY KEY (Username)
 );
 
 CREATE TABLE VolunteerHours(
@@ -109,7 +115,7 @@ ALTER TABLE VolunteerHours
   FOREIGN KEY (Username) REFERENCES Volunteer(Username);
 
 ALTER TABLE AdoptionApplication
-  ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress 
+  ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress
   FOREIGN KEY (Email_Address) REFERENCES Adopter (Email_Address);
 
 ALTER TABLE Volunteer
@@ -119,7 +125,7 @@ ALTER TABLE Volunteer
 ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Breed_Name_Breed_Name
   FOREIGN KEY (Breed_Name) REFERENCES Breed(Name);
-        
+
 ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Pet_ID_Animal_Pet_ID
   FOREIGN KEY (Pet_ID) REFERENCES Animal(Pet_ID);
@@ -127,7 +133,7 @@ ALTER TABLE AnimalBreeds
 ALTER TABLE BreedSpecies
   ADD CONSTRAINT fk_BreedSpecies_Breed_Name_Breed_Name
   FOREIGN KEY (Breed_Name) REFERENCES Breed(Name);
-        
+
 ALTER TABLE BreedSpecies
   ADD CONSTRAINT fk_BreedSpecies_Species_Name_Species_Name
   FOREIGN KEY (Species_Name) REFERENCES Species(Name);
@@ -140,3 +146,14 @@ ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Species_Species_Name
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
+ALTER TABLE Employees
+  ADD CONSTRAINT fk_Employees_Username_Users_Username
+  FOREIGN KEY (Username) REFERENCES Users(Username);
+
+ALTER TABLE Volunteer
+  ADD CONSTRAINT fk_Volunteer_Username_Users_Username
+  FOREIGN KEY (Username) REFERENCES Users(Username);
+
+ALTER TABLE VolunteerHours
+  ADD CONSTRAINT fk_VolunteerHours_Username_Users_Username
+  FOREIGN KEY (Username) REFERENCES Volunteer(Username);
