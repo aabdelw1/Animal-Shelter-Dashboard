@@ -1,4 +1,4 @@
-CREATE TABLE Shelter.VaccineAdministration (
+CREATE TABLE VaccineAdministration (
     Expiration_Date DATE NOT NULL,
     Vacination_Number INT NOT NULL,
     Date_Administired DATE NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE Shelter.VaccineAdministration (
 
 );
 
-CREATE TABLE Shelter.Vaccines (
+CREATE TABLE Vaccines (
     Vaccine_Type VARCHAR(250) NOT NULL,
     Require_for_Adoption BOOLEAN NOT NULL
     PRIMARY KEY (Vaccine_Type)
@@ -16,9 +16,9 @@ CREATE TABLE Shelter.Vaccines (
 
 ALTER TABLE Vaccines
     ADD CONSTRAINT fk_Vaccine
-    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type)
+    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type);
 
 ALTER TABLE VaccineAdministration
     ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
-    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type)
+    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type);
 
