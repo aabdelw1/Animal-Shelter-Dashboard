@@ -41,30 +41,30 @@ CREATE TABLE AdoptionApplication (
 CREATE TABLE Users(
     Username VARCHAR(10) NOT NULL,
     Password VARCHAR(50) NOT NULL,
-    EmailAddress VARCHAR(255) DEFAULT NULL,
-    FirstName VARCHAR(20) NOT NULL,
-    LastName VARCHAR(20) NOT NULL,
-    StartDate DATE NOT NULL,
+    Email_Address VARCHAR(255) DEFAULT NULL,
+    First_Name VARCHAR(20) NOT NULL,
+    Last_Name VARCHAR(20) NOT NULL,
+    Start_Date DATE NOT NULL,
     PRIMARY KEY (Username)
 );
 
 CREATE TABLE Employees(
-    Username VARCHAR(10) NOT NULL,
-    isAdmin BOOLEAN NOT NULL,
-    PRIMARY KEY (Username)
+  Username VARCHAR(10) NOT NULL,
+  is_Admin BOOLEAN NOT NULL,
+  PRIMARY KEY (Username)
 );
 
 CREATE TABLE Volunteer(
-    Username VARCHAR(10) NOT NULL,
-    PhoneNumber VARCHAR(20) NOT NULL,
-    PRIMARY KEY (Username)
+  Username VARCHAR(10) NOT NULL,
+  Phone_Number VARCHAR(20) NOT NULL,
+  PRIMARY KEY (Username)
 );
 
 CREATE TABLE VolunteerHours(
-    Username VARCHAR(10) NOT NULL,
-    Date DATE,
-    Hours INT DEFAULT NULL,
-    PRIMARY KEY (Username, Date)
+  Username VARCHAR(10) NOT NULL,
+  Date DATE,
+  Hours INT DEFAULT NULL,
+  PRIMARY KEY (Username, Date)
 );
 
 CREATE TABLE Breed (
@@ -116,7 +116,7 @@ ALTER TABLE VolunteerHours
 
 ALTER TABLE AdoptionApplication
   ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress
-  FOREIGN KEY (Email_Address) REFERENCES Adopter (Email_Address);
+  FOREIGN KEY (Email_Address) REFERENCES Adopter(Email_Address);
 
 ALTER TABLE Volunteer
   ADD CONSTRAINT fk_Volunteer
@@ -149,11 +149,3 @@ ALTER TABLE Animal
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
   FOREIGN KEY (Username) REFERENCES Users(Username);
-
-ALTER TABLE Volunteer
-  ADD CONSTRAINT fk_Volunteer_Username_Users_Username
-  FOREIGN KEY (Username) REFERENCES Users(Username);
-
-ALTER TABLE VolunteerHours
-  ADD CONSTRAINT fk_VolunteerHours_Username_Users_Username
-  FOREIGN KEY (Username) REFERENCES Volunteer(Username);
