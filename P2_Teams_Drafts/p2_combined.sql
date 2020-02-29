@@ -1,4 +1,5 @@
-DROP DATABASE IF EXISTS cs6400_sp20_team054;
+DROP DATABASE -- IF EXISTS 
+cs6400_sp20_team054;
 SET default_storage_engine=InnoDB;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -87,6 +88,8 @@ CREATE TABLE Animal (
   Adoption_Fee DECIMAL DEFAULT NULL,
   Adoption_Application_Number INT NOT NULL,
   Species VARCHAR(50),
+  Vaccination_Number INT NOT NULL,
+  Vaccination_Date_Administired DATE NOT NULL,
   PRIMARY KEY (Pet_ID)
 );
 
@@ -109,17 +112,16 @@ CREATE TABLE BreedSpecies (
 );
 
 CREATE TABLE VaccineAdministration (
-    Expiration_Date DATE NOT NULL,
-    Vacination_Number INT NOT NULL,
+    Vaccination_Number INT NOT NULL,
     Date_Administired DATE NOT NULL,
-    Vaccine VARCHAR(50) NOT NULL,
+    Expiration_Date DATE NOT NULL,
+    Vaccine_Type VARCHAR(50) NOT NULL,
     PRIMARY KEY (Vaccination_Number, Date_Administired)
-
 );
 
-CREATE TABLE Vaccines (
+CREATE TABLE Vaccine (
     Vaccine_Type VARCHAR(250) NOT NULL,
-    Require_for_Adoption BOOLEAN NOT NULL
+    Require_for_Adoption BOOLEAN NOT NULL,
     PRIMARY KEY (Vaccine_Type)
 );
 
@@ -134,8 +136,8 @@ ALTER TABLE AdoptionApplication
   FOREIGN KEY (Email_Address) REFERENCES Adopter(Email_Address);
 
 ALTER TABLE Volunteer
-  ADD CONSTRAINT fk_Volunteer
-  FOREIGN KEY (Username) REFERENCES Volunteer(Username);
+  ADD CONSTRAINT fk_Volunteer_Username_User_Username
+  FOREIGN KEY (Username) REFERENCES Users(Username);
 
 ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Breed_Name_Breed_Name
@@ -158,16 +160,16 @@ ALTER TABLE Animal
   FOREIGN KEY (Adoption_Application_Number) REFERENCES AdoptionApplication(Application_Number);
 
 ALTER TABLE Animal
+  ADD CONSTRAINT fk_Animal_Vaccine_Num_Date_VaccineAdministration_Num_Date
+  FOREIGN KEY (Vaccination_Number, Vaccination_Date_Administired) REFERENCES VaccineAdministration(Vaccination_Number, Date_Administired);
+
+ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Species_Species_Name
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
   FOREIGN KEY (Username) REFERENCES Users(Username);
-
-ALTER TABLE Vaccines
-    ADD CONSTRAINT fk_Vaccine
-    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type);
 
 ALTER TABLE VaccineAdministration
     ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
