@@ -1,5 +1,26 @@
 USE cs6400_sp20_team054;
 
+INSERT INTO Vaccine (Species_Name,Vaccine_Type,Require_for_Adoption) VALUES
+('Cat','Bordetella',0),
+('Cat','Feline Calicivirus',1),
+('Cat','Feline Chlamydia',0),
+('Cat','Feline Herpes',1),
+('Cat','Feline Immunodeficiency',0), 
+('Cat','Feline Leukemia',1),
+('Cat','Feline Panleukopenia',1),
+('Cat','Rabies',1),
+('Dog','Bordetella',0),
+('Dog','Canine Adenovirus-2',1),
+('Dog','Canine Influenza',0),
+('Dog','Coronavirus',0),
+('Dog','Distemper',1),
+('Dog','Leptospirosis',1),
+('Dog','Lyme Disease',0),
+('Dog','Parainfluenza',0),
+('Dog','Parvovirus',1),
+('Dog','Rabies',1);
+
+
 INSERT INTO Species(Name,Max_Per_Shelter) VALUES ('Cat',100),('Dog',100);
 
 INSERT INTO Breed(Species_Name,Name) VALUES

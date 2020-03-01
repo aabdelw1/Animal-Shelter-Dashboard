@@ -110,14 +110,16 @@ CREATE TABLE VaccineAdministration (
     Vaccination_Number INT NOT NULL,
     Date_Administired DATE NOT NULL,
     Expiration_Date DATE NOT NULL,
+    Species_Name VARCHAR(50) NOT NULL,
     Vaccine_Type VARCHAR(50) NOT NULL,
     PRIMARY KEY (Vaccination_Number, Date_Administired)
 );
 
 CREATE TABLE Vaccine (
     Vaccine_Type VARCHAR(250) NOT NULL,
+    Species_Name VARCHAR(50) NOT NULL,
     Require_for_Adoption BOOLEAN NOT NULL,
-    PRIMARY KEY (Vaccine_Type)
+    PRIMARY KEY (Species_Name,Vaccine_Type)
 );
 
 -- Constraints   Foreign Keys: FK_ChildTable_childColumn_ParentTable_parentColumn
@@ -164,4 +166,4 @@ ALTER TABLE Employees
 
 ALTER TABLE VaccineAdministration
     ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
-    FOREIGN KEY (Vaccine_Type) REFERENCES Vaccine(Vaccine_Type);
+    FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
