@@ -4,8 +4,8 @@ SET default_storage_engine=InnoDB;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054
-    DEFAULT CHARACTER SET utf8mb4
-    DEFAULT COLLATE utf8mb4_unicode_ci;
+   DEFAULT CHARACTER SET utf8mb4
+   DEFAULT COLLATE utf8mb4_unicode_ci;
 USE cs6400_sp20_team054;
 
 -- CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED BY 'gatech123';
@@ -40,13 +40,13 @@ CREATE TABLE AdoptionApplication (
 );
 
 CREATE TABLE Users(
-    Username VARCHAR(10) NOT NULL,
-    Password VARCHAR(50) NOT NULL,
-    Email_Address VARCHAR(255) DEFAULT NULL,
-    First_Name VARCHAR(20) NOT NULL,
-    Last_Name VARCHAR(20) NOT NULL,
-    Start_Date DATE NOT NULL,
-    PRIMARY KEY (Username)
+   Username VARCHAR(10) NOT NULL,
+   Password VARCHAR(50) NOT NULL,
+   Email_Address VARCHAR(255) DEFAULT NULL,
+   First_Name VARCHAR(20) NOT NULL,
+   Last_Name VARCHAR(20) NOT NULL,
+   Start_Date DATE NOT NULL,
+   PRIMARY KEY (Username)
 );
 
 CREATE TABLE Employees(
@@ -107,19 +107,19 @@ CREATE TABLE Breed (
 );
 
 CREATE TABLE VaccineAdministration (
-    Vaccination_Number INT NOT NULL,
-    Date_Administired DATE NOT NULL,
-    Expiration_Date DATE NOT NULL,
-    Species_Name VARCHAR(50) NOT NULL,
-    Vaccine_Type VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Vaccination_Number, Date_Administired)
+   Vaccination_Number INT NOT NULL,
+   Date_Administired DATE NOT NULL,
+   Expiration_Date DATE NOT NULL,
+   Species_Name VARCHAR(50) NOT NULL,
+   Vaccine_Type VARCHAR(50) NOT NULL,
+   PRIMARY KEY (Vaccination_Number, Date_Administired)
 );
 
 CREATE TABLE Vaccine (
-    Vaccine_Type VARCHAR(250) NOT NULL,
-    Species_Name VARCHAR(50) NOT NULL,
-    Require_for_Adoption BOOLEAN NOT NULL,
-    PRIMARY KEY (Species_Name,Vaccine_Type)
+   Vaccine_Type VARCHAR(250) NOT NULL,
+   Species_Name VARCHAR(50) NOT NULL,
+   Require_for_Adoption BOOLEAN NOT NULL,
+   PRIMARY KEY (Species_Name,Vaccine_Type)
 );
 
 -- Constraints   Foreign Keys: FK_ChildTable_childColumn_ParentTable_parentColumn
@@ -165,5 +165,5 @@ ALTER TABLE Employees
   FOREIGN KEY (Username) REFERENCES Users(Username);
 
 ALTER TABLE VaccineAdministration
-    ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
-    FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
+   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
+   FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
