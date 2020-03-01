@@ -68,11 +68,6 @@ CREATE TABLE VolunteerHours(
   PRIMARY KEY (Username, Date)
 );
 
-CREATE TABLE Breed (
-  Name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (Name)
-);
-
 CREATE TABLE Animal (
   Pet_ID INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(50) NOT NULL,
@@ -105,10 +100,10 @@ CREATE TABLE Species (
   PRIMARY KEY (Name)
 );
 
-CREATE TABLE BreedSpecies (
-  Breed_Name VARCHAR(50) NOT NULL,
+CREATE TABLE Breed (
+  Name VARCHAR(50) NOT NULL,
   Species_Name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (Breed_Name, Species_Name)
+  PRIMARY KEY (Name, Species_Name)
 );
 
 CREATE TABLE VaccineAdministration (
@@ -147,12 +142,8 @@ ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Pet_ID_Animal_Pet_ID
   FOREIGN KEY (Pet_ID) REFERENCES Animal(Pet_ID);
 
-ALTER TABLE BreedSpecies
-  ADD CONSTRAINT fk_BreedSpecies_Breed_Name_Breed_Name
-  FOREIGN KEY (Breed_Name) REFERENCES Breed(Name);
-
-ALTER TABLE BreedSpecies
-  ADD CONSTRAINT fk_BreedSpecies_Species_Name_Species_Name
+ALTER TABLE Breed
+  ADD CONSTRAINT fk_Breed_Species_Name_Species_Name
   FOREIGN KEY (Species_Name) REFERENCES Species(Name);
 
 ALTER TABLE Animal
