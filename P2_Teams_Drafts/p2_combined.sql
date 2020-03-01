@@ -81,10 +81,8 @@ CREATE TABLE Animal (
   Surrender_Date DATE NOT NULL,
   Adoption_Date DATE DEFAULT NULL,
   Adoption_Fee DECIMAL DEFAULT NULL,
-  Adoption_Application_Number INT NOT NULL,
+  Adoption_Application_Number INT NULL,
   Species VARCHAR(50),
-  Vaccination_Number INT NOT NULL,
-  Vaccination_Date_Administired DATE NOT NULL,
   PRIMARY KEY (Pet_ID)
 );
 
@@ -107,12 +105,13 @@ CREATE TABLE Breed (
 );
 
 CREATE TABLE VaccineAdministration (
+   Pet_ID INT NOT NULL,
+   Species_Name VARCHAR(50) NOT NULL,
+   Vaccine_Type VARCHAR(50) NOT NULL,
    Vaccination_Number INT NOT NULL,
    Date_Administired DATE NOT NULL,
    Expiration_Date DATE NOT NULL,
-   Species_Name VARCHAR(50) NOT NULL,
-   Vaccine_Type VARCHAR(50) NOT NULL,
-   PRIMARY KEY (Vaccination_Number, Date_Administired)
+   PRIMARY KEY (Pet_ID, Species_Name, Vaccine_Type)
 );
 
 CREATE TABLE Vaccine (
@@ -153,17 +152,17 @@ ALTER TABLE Animal
   FOREIGN KEY (Adoption_Application_Number) REFERENCES AdoptionApplication(Application_Number);
 
 ALTER TABLE Animal
-  ADD CONSTRAINT fk_Animal_Vaccine_Num_Date_VaccineAdministration_Num_Date
-  FOREIGN KEY (Vaccination_Number, Vaccination_Date_Administired) REFERENCES VaccineAdministration(Vaccination_Number, Date_Administired);
-
-ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Species_Species_Name
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
   FOREIGN KEY (Username) REFERENCES Users(Username);
-
+  
+ALTER TABLE VaccineAdministration
+   ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
+   FOREIGN KEY (Pet_ID) REFERENCES Animal(Pet_ID);
+   
 ALTER TABLE VaccineAdministration
    ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
    FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);

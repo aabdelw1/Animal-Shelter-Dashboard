@@ -1,5 +1,7 @@
 USE cs6400_sp20_team054;
 
+-- STATIC DATA --
+
 INSERT INTO Vaccine (Species_Name,Vaccine_Type,Require_for_Adoption) VALUES
 ('Cat','Bordetella',0),
 ('Cat','Feline Calicivirus',1),
@@ -76,7 +78,6 @@ INSERT INTO Breed(Species_Name,Name) VALUES
 ('Cat','Turkish Van'),
 ('Cat','Mixed'),
 ('Cat','Unknown');
-
 
 INSERT INTO Breed(Species_Name,Name) VALUES
 ('Dog','Affenpinscher'),
@@ -323,4 +324,44 @@ INSERT INTO Breed(Species_Name,Name) VALUES
 ('Dog','Yorkshire Terrier'),
 ('Dog','Mixed'),
 ('Dog','Unknown');
+
+-- TEST DATA --
+
+INSERT INTO Users (Username, Password, Email_Address, First_Name, Last_Name, Start_Date) VALUES 
+('bsmith','xxx','bsmith@gmail.com','Bob','Smith','2020/1/1'),
+('dsanders','xxx','ds2000@gmail.com','Donna','Sanders','2020/1/1');
+
+INSERT INTO Volunteer (Username, Phone_Number) VALUES 
+('bsmith','904-867-5309'),
+('dsanders','904-867-5309');
+
+INSERT INTO VolunteerHours (Username, Date, Hours) VALUES
+('bsmith','2020/1/2',5),
+('bsmith','2020/1/6',2),
+('bsmith','2020/1/9',4),
+('bsmith','2020/1/21',3),
+('dsanders','2020/1/4',3),
+('dsanders','2020/1/5',2),
+('dsanders','2020/1/8',4),
+('dsanders','2020/1/12',2),
+('dsanders','2020/1/15',3),
+('dsanders','2020/1/18',4),
+('dsanders','2020/1/19',2),
+('dsanders','2020/1/21',2);
+
+INSERT INTO Animal
+(Name,Description,Age,Sex,Alteration_Status,Surrender_Reason,Surrender_By_Animal_Control,Surrender_Date,Adoption_Date,Species)
+VALUES
+('Grace','Brown cat',1,'Female',0,'Lost',1,'2020/1/14','2020/2/4','Cat'),
+('Cinder','Medium black dog',1,'Male',0,'Lost',1,'2020/2/12',NULL,'Dog'),
+('Fido','Small brown dog',2,'Male',0,NULL,0,'2020/2/1',NULL,'Dog');
+
+INSERT INTO AnimalBreeds
+(Pet_ID,Breed_Name)
+VALUES
+(1,'Birman'),
+(2,'Bloodhound'),
+(2,'Yorkshire Terrier'),
+(3,'Maltipoo')
+;
 
