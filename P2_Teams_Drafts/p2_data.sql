@@ -328,12 +328,18 @@ INSERT INTO Breed(Species_Name,Name) VALUES
 -- TEST DATA --
 
 INSERT INTO Users (Username, Password, Email_Address, First_Name, Last_Name, Start_Date) VALUES 
-('bsmith','xxx','bsmith@gmail.com','Bob','Smith','2020/1/1'),
-('dsanders','xxx','ds2000@gmail.com','Donna','Sanders','2020/1/1');
+('ijones','xxx','ijones@shelter.com','Inge','Jones','2020/1/1'),
+('fedwards','xxx','fedwards@shelter.com','Frank','Edwards','2020/1/1'),
+('bsmith','xxx','bsmith@gmail.com','Bob','Smith','2020/1/7'),
+('dsanders','xxx','ds2000@gmail.com','Donna','Sanders','2020/1/3');
 
 INSERT INTO Volunteer (Username, Phone_Number) VALUES 
 ('bsmith','904-867-5309'),
 ('dsanders','904-867-5309');
+
+INSERT INTO Employees (Username,Is_Admin) VALUES
+('ijones',1),
+('fedwards',0);
 
 INSERT INTO VolunteerHours (Username, Date, Hours) VALUES
 ('bsmith','2020/1/2',5),
@@ -350,11 +356,11 @@ INSERT INTO VolunteerHours (Username, Date, Hours) VALUES
 ('dsanders','2020/1/21',2);
 
 INSERT INTO Animal
-(Name,Description,Age,Sex,Alteration_Status,Surrender_Reason,Surrender_By_Animal_Control,Surrender_Date,Adoption_Date,Species)
+(Name,Description,Age,Sex,Alteration_Status,Surrender_Reason,Surrender_By_Animal_Control,Surrender_Date,Surrender_Submitter,Adoption_Date,Species)
 VALUES
-('Grace','Brown cat',1,'Female',0,'Lost',1,'2020/1/14','2020/2/4','Cat'),
-('Cinder','Medium black dog',1,'Male',0,'Lost',1,'2020/2/12',NULL,'Dog'),
-('Fido','Small brown dog',2,'Male',0,NULL,0,'2020/2/1',NULL,'Dog');
+('Grace','Brown cat',1,'Female',0,'Lost',1,'2020/1/14','ijones','2020/2/4','Cat'),
+('Cinder','Medium black dog',1,'Male',0,'Lost',1,'2020/2/12','ijones',NULL,'Dog'),
+('Fido','Small brown dog',2,'Male',0,NULL,0,'2020/2/1','fedwards',NULL,'Dog');
 
 INSERT INTO AnimalBreeds
 (Pet_ID,Breed_Name)

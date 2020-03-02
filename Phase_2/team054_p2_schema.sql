@@ -8,12 +8,6 @@ CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054
    DEFAULT COLLATE utf8mb4_unicode_ci;
 USE cs6400_sp20_team054;
 
--- CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED BY 'gatech123';
--- GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO 'gatechUser'@'localhost';
--- GRANT ALL PRIVILEGES ON `gatechuser`.* TO 'gatechUser'@'localhost';
--- GRANT ALL PRIVILEGES ON `cs6400_sp20_team054`.* TO 'gatechUser'@'localhost';
--- FLUSH PRIVILEGES;
-
 -- Tables
 
 CREATE TABLE Adopter (
@@ -79,6 +73,7 @@ CREATE TABLE Animal (
   Surrender_Reason VARCHAR(45) DEFAULT NULL,
   Surrender_By_Animal_Control BOOLEAN DEFAULT (0),
   Surrender_Date DATE NOT NULL,
+  Surrender_Submitter VARCHAR(250) NOT NULL,
   Adoption_Date DATE DEFAULT NULL,
   Adoption_Fee DECIMAL DEFAULT NULL,
   Adoption_Application_Number INT NULL,
@@ -155,6 +150,10 @@ ALTER TABLE Animal
 ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Species_Species_Name
   FOREIGN KEY (Species) REFERENCES Species(Name);
+
+ALTER TABLE Animal
+  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Email_Address
+  FOREIGN KEY (Surrender_Submitter) REFERENCES Employees(Username);
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
