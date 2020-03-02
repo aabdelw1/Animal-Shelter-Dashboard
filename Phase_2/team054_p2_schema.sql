@@ -126,10 +126,6 @@ ALTER TABLE VolunteerHours
 ALTER TABLE AdoptionApplication
   ADD CONSTRAINT fk_AdoptionApplication_EmailAddress_Adopter_EmailAddress
   FOREIGN KEY (Email_Address) REFERENCES Adopter(Email_Address);
-  
-ALTER TABLE Users
-  ADD CONSTRAINT fk_Users_Username_Vaccine_Submitter_Username
-  FOREIGN KEY (Username) REFERENCES VaccineAdministration(Vaccine_Submitter);
 
 ALTER TABLE Volunteer
   ADD CONSTRAINT fk_Volunteer_Username_User_Username
@@ -156,12 +152,16 @@ ALTER TABLE Animal
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
 ALTER TABLE Animal
-  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Email_Address
+  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Username
   FOREIGN KEY (Surrender_Submitter) REFERENCES Employees(Username);
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
   FOREIGN KEY (Username) REFERENCES Users(Username);
+  
+ALTER TABLE VaccineAdministration
+   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Submitter_Users_Username
+   FOREIGNT KEY (Vaccine_Submitter) REFERENCES Users(Username)
   
 ALTER TABLE VaccineAdministration
    ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
