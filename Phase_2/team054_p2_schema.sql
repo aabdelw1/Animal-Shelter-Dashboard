@@ -160,13 +160,13 @@ ALTER TABLE Employees
   FOREIGN KEY (Username) REFERENCES Users(Username);
   
 ALTER TABLE VaccineAdministration
-   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Submitter_Users_Username
-   FOREIGNT KEY (Vaccine_Submitter) REFERENCES Users(Username)
+  ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Submitter_Users_Username
+  FOREIGN KEY (Vaccine_Submitter) REFERENCES Users(Username)
   
 ALTER TABLE VaccineAdministration
-   ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
-   FOREIGN KEY (Pet_ID) REFERENCES Animal(Pet_ID);
+  ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
+  FOREIGN KEY (Pet_ID) REFERENCES Animal(Pet_ID);
    
 ALTER TABLE VaccineAdministration
-   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
-   FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
+  ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
+  FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
