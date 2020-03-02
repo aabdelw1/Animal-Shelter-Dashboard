@@ -111,7 +111,7 @@ CREATE TABLE VaccineAdministration (
    Vaccination_Number INT NOT NULL,
    Date_Administired DATE NOT NULL,
    Expiration_Date DATE NOT NULL,
-   Vaccine_Recorder VARCHAR(50) NOT NULL,
+   Vaccine_Submitter VARCHAR(50) NOT NULL,
    PRIMARY KEY (Pet_ID, Species_Name, Vaccine_Type)
 );
 
