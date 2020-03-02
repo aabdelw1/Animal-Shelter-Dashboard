@@ -152,7 +152,7 @@ ALTER TABLE Animal
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
 ALTER TABLE Animal
-  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Email_Address
+  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Username
   FOREIGN KEY (Surrender_Submitter) REFERENCES Employees(Username);
 
 ALTER TABLE Employees
