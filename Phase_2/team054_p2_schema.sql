@@ -106,7 +106,7 @@ CREATE TABLE VaccineAdministration (
    Vaccination_Number INT NOT NULL,
    Date_Administired DATE NOT NULL,
    Expiration_Date DATE NOT NULL,
-   Vaccine_Recorder VARCHAR(50) NOT NULL,
+   Vaccine_Submitter VARCHAR(10) NOT NULL,
    PRIMARY KEY (Pet_ID, Species_Name, Vaccine_Type)
 );
 
@@ -129,7 +129,7 @@ ALTER TABLE AdoptionApplication
 
 ALTER TABLE Volunteer
   ADD CONSTRAINT fk_Volunteer_Username_User_Username
-  FOREIGN KEY (Username) REFERENCES Users(Username);
+  FOREIGN KEY (Username, Vaccine_Submitter) REFERENCES Users(Username);
 
 ALTER TABLE AnimalBreeds
   ADD CONSTRAINT fk_AnimalBreeds_Breed_Name_Breed_Name
@@ -157,7 +157,7 @@ ALTER TABLE Animal
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
-  FOREIGN KEY (Username) REFERENCES Users(Username);
+  FOREIGN KEY (Username, Vaccine_Submitter) REFERENCES Users(Username);
   
 ALTER TABLE VaccineAdministration
    ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
