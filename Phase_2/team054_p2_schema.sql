@@ -161,7 +161,7 @@ ALTER TABLE Employees
   
 ALTER TABLE VaccineAdministration
   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Submitter_Users_Username
-  FOREIGN KEY (Vaccine_Submitter) REFERENCES Users(Username)
+  FOREIGN KEY (Vaccine_Submitter) REFERENCES Users(Username);
   
 ALTER TABLE VaccineAdministration
   ADD CONSTRAINT fk_VaccineAdministration_Pet_ID_Animal_Pet_ID
