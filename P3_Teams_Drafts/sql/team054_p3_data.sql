@@ -371,3 +371,8 @@ VALUES
 (3,'Maltipoo')
 ;
 
+INSERT INTO VaccineAdministration                  
+(Pet_ID, Species_Name, Vaccine_Type, Vaccination_Number, 
+ Date_Administired, Expiration_Date, Vaccine_Submitter)
+VALUES
+(1,'Dog','Parvovirus','12345','2020-3-20','2021-3-21','fedwards');
