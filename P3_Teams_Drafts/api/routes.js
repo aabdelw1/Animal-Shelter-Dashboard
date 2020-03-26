@@ -4,17 +4,13 @@ module.exports = function(app) {
   var userController = require('./controllers/userController');
   var adopterController = require('./controllers/adopterController');
 
-  app.route('/animals')
-    .get(animalController.list_all_animals);
+  app.get('/animals',animalController.list_all_animals);
+  app.post('/animal/add', animalController.add_animal);
+  app.get('/animal/:animalId', animalController.get_animal);
+  app.get('/animal/:animalId/breeds', animalController.get_breeds);
+  app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
 
-  app.route('/animal/:animalId/breeds')
-    .get(animalController.get_breeds);
-
-  app.route('/animal/:animalId/vaccines')
-    .get(animalController.get_vaccines);
-
-  app.route('/user')
-    .get(userController.get_user);
+  app.get('/user/:username', userController.get_user);
 
   app.route('/login')
     .get(userController.get_password);
