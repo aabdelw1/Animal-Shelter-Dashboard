@@ -9,7 +9,7 @@ exports.get_user = function(req, res) {
             LEFT JOIN Employees e on u.Username = e.Username
             WHERE u.Username = ? `
 
-  params.push(req.query.username);
+  params.push(req.params.username);
 
   db.query(q, params, (err, result) => {
     var users=[];

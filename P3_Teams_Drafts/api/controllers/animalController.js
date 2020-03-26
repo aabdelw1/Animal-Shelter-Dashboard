@@ -116,3 +116,122 @@ exports.get_vaccines = function(req, res) {
     return res.json(vaccines);
   });
 };
+
+exports.get_animal = function(req, res) {
+
+  var params = [];
+  var q = `SELECT
+              Animal.Pet_ID, 
+              Animal.Name, 
+              Animal.Species, 
+              GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
+              Animal.Sex, 
+              Animal.Alteration_Status, 
+              Animal.Age,
+              AdoptionApplication.State as Adoptability_Status
+            FROM Animal 
+            INNER JOIN AnimalBreeds ON Animal.Pet_ID = AnimalBreeds.Pet_ID
+            LEFT JOIN AdoptionApplication ON Animal.Adoption_Application_Number = AdoptionApplication.Application_Number
+            WHERE Animal.Pet_ID = ? `
+            params.push(req.params.animalId);
+
+  db.query(q, params, (err, result) => {
+
+
+    if (result!=null) {
+      var animals=[];
+      result.forEach(a => {
+        animals.push({
+          petId: a.Pet_ID,
+          name: a.Name,
+          description: a.Description,
+          species: a.Species,
+          breeds: a.Breed_Name,
+          sex: a.Sex,
+          alterationStatus: a.Alteration_Status,
+          age: a.Age,
+          adoptability: a.Adoptability_Status
+          //surrenderDate: a.Surrender_Date,
+          //surrenderReason: a.Surrender_Reason,
+          //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
+          //adoptionDate: a.Adoption_Date,
+          //adoptionFee: a.Adoption_Fee,
+          //adoptionApplicationNumber: a.Adoption_Application_Number
+        });
+      });
+      return res.json(animals[0]);
+
+    }
+    return null;
+    
+  });
+};
+
+exports.add_animal = function(req, res) {
+  console.log("add_animal:");
+  console.log(req.body);
+  res.setHeader('Content-Type', 'application/json');
+
+  var params = [];
+  var q = `INSERT INTO Animal
+              (Name,
+              Description,
+              Age,
+              Microchip_ID,
+              Sex,
+              Surrender_Date,
+              Surrender_Submitter,
+              Surrender_Reason,
+              Surrender_By_Animal_Control,
+              Alteration_Status,
+              Species)
+            VALUES
+            (?,?,?,?,?,?,?,?,?,?,?);`;
+
+  params.push(req.body.name);
+  params.push(req.body.description);
+  params.push(req.body.age);
+  params.push(req.body.microchipId);
+  params.push(req.body.sex);
+  params.push(req.body.surrenderDate);
+  params.push(req.body.surrenderSubmitter);
+  params.push(req.body.surrenderReason);
+  params.push(req.body.surrenderByAnimalControl);
+  params.push(req.body.alterationStatus);
+  params.push(req.body.species);
+
+  db.query(q, params, (err, result) => {
+    if (err==null)
+    {
+      db.query('SELECT LAST_INSERT_ID() as id;', null, (err, result) => {
+        var response = { petId:result[0].id };
+        console.log("petId: "+response.petId);
+        if (req.body.breeds!=null) {
+          var breeds = req.body.breeds.split(',');
+          addBreeds(response.petId, breeds);
+          res.status(200);
+          res.end(JSON.stringify(response));
+        } else {
+          res.status(200);
+          res.end(JSON.stringify(response));
+        }
+      });
+    } else {
+      res.status(500);
+      console.log(err);
+      res.end(JSON.stringify(err, null, 2));
+    }
+  });  
+}
+
+async function addBreeds(petId,breeds)
+{
+  for (let i=0; i<breeds.length; i++)
+  {
+    var breed=breeds[i];
+    var params=[];
+    params.push(petId);
+    params.push(breed);
+    await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+  }
+}

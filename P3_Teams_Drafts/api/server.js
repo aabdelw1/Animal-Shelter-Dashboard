@@ -21,9 +21,10 @@ db.connect((err) => {
 global.db = db;
 
 var routes = require('./routes'); //importing route
-routes(app); //register the routes
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+routes(app); //register the routes
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
