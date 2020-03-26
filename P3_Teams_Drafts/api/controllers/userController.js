@@ -32,3 +32,37 @@ exports.get_user = function(req, res) {
     return res.json({});
   });
 };
+
+
+exports.get_password = function(req, res) {
+
+  var params = [];
+  var q = "SELECT password FROM Users WHERE UserName = ?";
+
+  params.push(req.query.username);
+
+  db.query(q, params, (err, result) => {
+    var password=[];
+
+    if (result!=null) {
+
+      result.forEach(u => {
+        password.push({
+          password: p.password
+         });
+      });
+
+      if (users.length!=0) {
+        return res.json(users[0]);
+      }
+
+    }
+    return res.json({});
+  });
+};
+
+
+
+
+//app.route('/login/:username')
+//.get(userController.get_password);
