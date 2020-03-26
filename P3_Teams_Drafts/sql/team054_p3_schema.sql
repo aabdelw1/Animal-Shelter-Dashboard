@@ -33,8 +33,8 @@ CREATE TABLE AdoptionApplication (
   Application_Number INT NOT NULL AUTO_INCREMENT,
   Email_Address VARCHAR(250) NOT NULL,
   Date_Of_Application DATE NOT NULL,
-  CoApplicant_First_Name VARCHAR(100) NOT NULL,
-  CoApplicant_Last_Name VARCHAR(100) NOT NULL,
+  CoApplicant_First_Name VARCHAR(100) NULL,
+  CoApplicant_Last_Name VARCHAR(100) NULL,
   State ENUM('Pending Approval', 'Approved', 'Rejected') DEFAULT 'Pending Approval',
   PRIMARY KEY (Application_Number),
   KEY(Email_Address)

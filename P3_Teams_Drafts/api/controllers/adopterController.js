@@ -40,15 +40,15 @@ exports.get_approved_applications = function(req, res) {
 exports.get_applications_pending_approval = function(req, res) {
 
     var params = [];
-    var q = "SELECT Application_Number, Applicant_First_Name, Applicant_Last_Name, Street, City, Adopter.`State`, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name"+ 
-    "FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address"+
-    "WHERE AdoptionApplication.`State`= 'Pending Approval'";
+    var q = `SELECT Application_Number, Applicant_First_Name, Applicant_Last_Name, Street, City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name 
+    FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address
+    WHERE AdoptionApplication.State= 'Pending Approval'`
     
     db.query(q, params, (err, results) => {
         var pendingApplications=[];
 
         if(results!=null) {
-            result.forEach(p => {
+            results.forEach(p => {
                 pendingApplications.push({
                     applicationNumber: p.Application_Number,
                     applicantFirstName: p.Applicant_First_Name,
@@ -80,7 +80,7 @@ exports.get_applications_number = function(req, res) {
     params.push(req.params.EmailAddress);
     params.push(req.params.DateOfApplication);
     params.push(req.params.CoApplicantFirstName);
-    params.push(req.params.CoAppplicantLastName);
+    params.push(req.params.CoApplicantLastName);
 
     db.query(q, params, (err, results) => {
         var applicationNumber=[];
@@ -96,10 +96,28 @@ exports.get_applications_number = function(req, res) {
     });
 };
 
+exports.post_new_adoption_application = function(req, res) {
+    var params = [];
+    var q = `INSERT INTO AdoptionApplication (Email_Address, Date_Of_Application, CoApplicant_First_Name, CoApplicant_Last_Name, State)
+    VALUES (?, ?, ?, ?, 'Pending Approval')`
+    //
+    params.push(req.body.emailAddress);
+    params.push(req.body.dateOfApplication);
+    params.push(req.body.coApplicantFirstName);
+    params.push(req.body.coApplicantLastName);
+
+    db.query(q, params, (err, results) => {
+       if(err) throw err;
+      //console.log("1 record inserted"); 
+       res.send('done :)');
+    });
+
+};
+
 exports.post_new_adopter = function(req, res) {
 
     var params = [];
-    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
+    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_Fist_Name, Applicant_Last_Name)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     
     params.push(req.body.emailAddress);
@@ -113,7 +131,7 @@ exports.post_new_adopter = function(req, res) {
 
     db.query(q, params, (err, results) => {
        if(err) throw err;
-      // console.log("1 record inserted"); 
+      //console.log("1 record inserted"); 
        res.send('done');
     });
 };
@@ -133,13 +151,15 @@ exports.get_adopter = function(req, res) {
         if(result!=null) {
             result.forEach(a => {
                 adopter.push({
-                    emailAddress: a.Username
+                    emailAddress: a.Email_Address
                 });
             });
         }
         return res.json(adopter);
     });
 };
+
+
 
 exports.get_volunteer_hours = function(req, res) {
 
