@@ -33,6 +33,67 @@ exports.get_user = function(req, res) {
   });
 };
 
+exports.get_volunteer_hours = function(req, res) {
+
+  var params = [];
+  var q = "SELECT Date, Hours FROM VolunteerHours WHERE Username = ? "
+
+  params.push(req.params.username);
+
+  db.query(q, params, (err, result) => {
+    var volunteerhours=[];
+
+    if (result!=null) {
+
+      result.forEach(u => {
+        volunteerhours.push({
+          date: u.Date,
+          hours: u.Hours,
+         });
+      });
+      }
+    return res.json(volunteerhours);
+  });
+};
+
+exports.get_volunteers = function(req, res) {
+
+  var params = [];
+  var q = `SELECT u.First_Name, u.Last_Name, u.Email_Address, v.Phone_Number
+  FROM Volunteer AS v
+  INNER JOIN Users AS u on v.Username = u.Username
+  WHERE (1=1) `;
+  
+  if (req.query.lastName != null) {
+    q = q + ' AND u.Last_Name like ? ';
+    params.push(req.query.lastName+'%');
+  }
+  if (req.query.firstName != null) {
+    q = q + ' AND u.First_Name like ? ';
+    params.push(req.query.firstName+'%');
+  }
+    
+  q = q+" ORDER BY u.Last_Name, u.First_Name;";
+
+  db.query(q, params, (err, result) => {
+    var volunteers=[];
+
+    if (result!=null) {
+
+      result.forEach(v => {
+        volunteers.push({
+          firstName: v.First_Name,
+          lastName: v.Last_Name,
+          emailAddress: v.Email_Address,
+          phoneNumber: v.Phone_Number
+         });
+      });
+      }
+    return res.json(volunteers);
+  });
+};
+
+
 
 exports.get_password = function(req, res) {
 

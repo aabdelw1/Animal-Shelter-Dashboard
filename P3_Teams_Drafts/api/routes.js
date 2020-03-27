@@ -5,6 +5,7 @@ module.exports = function(app) {
   var adopterController = require('./controllers/adopterController');
   var speciesController = require('./controllers/speciesController');
   var breedController = require('./controllers/breedController');
+  var adoptionReportController = require('./controllers/adoptionReportController');
 
   app.get('/animals',animalController.list_all_animals);
   app.post('/animal/add', animalController.add_animal);
@@ -17,14 +18,14 @@ module.exports = function(app) {
   app.get('/species',speciesController.list_species);
   app.get('/species/:species/vaccines', speciesController.list_species_vaccines);
 
+  app.get('/users/volunteers', userController.get_volunteers);
   app.get('/user/:username', userController.get_user);
+  app.get('/user/:username/volunteerHours', userController.get_volunteer_hours);
+
+  app.get('/adoption/report', adoptionReportController.get_adoption_report)
 
   app.route('/login')
     .get(userController.get_password);
-
-  app.route('/volunteerHours/:username')//
-    .get(adopterController.get_volunteer_hours);
-    //http://localhost:3000/volunteerHours?username=bsmith
 
   //12  
   app.route('/AdoptionApplications')
