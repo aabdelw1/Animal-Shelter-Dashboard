@@ -4,7 +4,8 @@ exports.list_breeds = function(req, res) {
     var q = `SELECT
                 Name
               FROM Breed
-              WHERE Species_Name = ? `
+              WHERE Species_Name = ? 
+              ORDER BY Name `
 
     params.push(req.params.species);
   

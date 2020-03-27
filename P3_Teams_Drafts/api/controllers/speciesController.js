@@ -4,7 +4,8 @@ exports.list_species = function(req, res) {
     var q = `SELECT
                 Name,
                 Max_Per_Shelter
-              FROM Species`
+              FROM Species
+              ORDER BY Name`
   
     db.query(q, params, (err, result) => {
       var species=[];
