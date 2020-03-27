@@ -12,6 +12,11 @@ module.exports = function(app) {
   app.get('/animal/:animalId/breeds', animalController.get_breeds);
   app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
 
+  app.get('/breeds/:species',breedController.list_breeds);
+
+  app.get('/species',speciesController.list_species);
+  app.get('/species/:species/vaccines', speciesController.list_species_vaccines);
+
   app.get('/user/:username', userController.get_user);
 
   app.route('/login')
@@ -20,10 +25,6 @@ module.exports = function(app) {
   app.route('/volunteerHours/:username')//
     .get(adopterController.get_volunteer_hours);
     //http://localhost:3000/volunteerHours?username=bsmith
-
-  app.get('/breeds/:species',breedController.list_breeds);
-
-  app.get('/species',speciesController.list_species);
 
   //12  
   app.route('/AdoptionApplications')
