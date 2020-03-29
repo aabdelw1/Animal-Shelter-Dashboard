@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="144px" height="40px" viewBox="0 0 144 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="carbon-logo" transform="translate(2.000000, -7.000000)">
+            <g id="Group">
+                <polyline id="Rectangle" stroke="#425A70" stroke-width="4" points="0 28.9252727 0 9 36 9 36 45 5.64779813 45"></polyline>
+                <text id="c-arbon" font-family="AvenirNext-DemiBold, Avenir Next" font-size="38" font-weight="500" fill="#425A70">
+                    <tspan x="12" y="38">c arbon</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>
