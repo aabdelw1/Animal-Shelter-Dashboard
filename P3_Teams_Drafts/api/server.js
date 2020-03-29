@@ -1,7 +1,8 @@
 var express = require('express'),
   app = express(),
-  mysql = require('mysql')
-  bodyParser = require('body-parser');
+  mysql = require('mysql'),
+  bodyParser = require('body-parser'),
+  cors = require('cors');
 
 // create connection to database
 const db = mysql.createConnection ({
@@ -20,10 +21,11 @@ db.connect((err) => {
 });
 global.db = db;
 
-var routes = require('./routes'); //importing route
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors())
 
+var routes = require('./routes'); //importing route
 routes(app); //register the routes
 
 app.listen(3000, () => {
