@@ -235,3 +235,21 @@ async function addBreeds(petId,breeds)
     await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
   }
 }
+
+exports.put_animal_adoption_information = function(req, res) {
+  var params = [];
+  var q = `UPDATE Animal
+  SET   Adoption_Application_Number = ?, Adoption_Date = ?, Adoption_Fee = ?
+  WHERE Pet_ID = ?`
+  
+  params.push(req.body.applicationNumber);
+  params.push(req.body.adoptionDate);
+  params.push(req.body.adoptionFee);
+  params.push(req.params.petID);
+
+  db.query(q, params, (err, results) => {
+     if(err) throw err;
+    //console.log("1 record inserted"); 
+     res.send('Animal Adoption Information Updated');
+  });
+};
