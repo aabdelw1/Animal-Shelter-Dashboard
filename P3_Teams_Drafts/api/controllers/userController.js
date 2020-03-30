@@ -98,7 +98,7 @@ exports.get_volunteers = function(req, res) {
 exports.get_password = function(req, res) {
 
   var params = [];
-  var q = "SELECT password FROM Users WHERE UserName = ?";
+  var q = `SELECT Password FROM Users WHERE Username = ?`
 
   params.push(req.query.username);
 
@@ -106,24 +106,16 @@ exports.get_password = function(req, res) {
     var password=[];
 
     if (result!=null) {
-
-      result.forEach(u => {
+      result.forEach(p => {
         password.push({
-          password: p.password
+          password: p.Password
          });
       });
 
-      if (users.length!=0) {
-        return res.json(users[0]);
+      if (password.length!=0) {
+        return res.json(password[0]);
       }
-
     }
     return res.json({});
   });
 };
-
-
-
-
-//app.route('/login/:username')
-//.get(userController.get_password);
