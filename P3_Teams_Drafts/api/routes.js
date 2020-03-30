@@ -6,6 +6,7 @@ module.exports = function(app) {
   var speciesController = require('./controllers/speciesController');
   var breedController = require('./controllers/breedController');
   var adoptionReportController = require('./controllers/adoptionReportController');
+  var vaccineController = require('./controllers/vaccineController');
 
   app.get('/animals',animalController.list_all_animals);
   app.post('/animal/add', animalController.add_animal);
@@ -24,31 +25,38 @@ module.exports = function(app) {
 
   app.get('/adoption/report', adoptionReportController.get_adoption_report)
 
-  app.route('/login')
-    .get(userController.get_password);
+  //1 Works
+  app.route('/login').get(userController.get_password);
 
-  //12  
-  app.route('/AdoptionApplications')
-    .get(adopterController.get_approved_applications);
+  ///11
+  app.route('/vaccineReminderReport').get(vaccineController.get_vaccine_reminder_report);
+
+  //12 Works
+  app.route('/adoptionApplications').get(adopterController.get_approved_applications);
+
+  //13 Works
+  app.route('/updateAnimalAdoptionInformation/:PetID').put(animalController.put_animal_adoption_information);
 
   //14 Works    
-  app.route('/newadoptionapplication')
-    .post(adopterController.post_new_adoption_application);
+  app.route('/newAdoptionApplication').post(adopterController.post_new_adoption_application);
 
   //15 Works    
-  app.route('/newadopter')
-    .post(adopterController.post_new_adopter);
+  app.route('/newAdopter').post(adopterController.post_new_adopter);
 
   //16 Works
-  app.route('/adopter/:EmailAddress')//http://localhost:3000/adopter/test2@test ///:EmailAddress
-    .get(adopterController.get_adopter);
-  //17 
-  app.route('/AdoptionApplicationsNumber')
-    .get(adopterController.get_applications_number);
+  app.route('/adopter').get(adopterController.get_adopter);
 
-  //18  
-  app.route('/AdoptionApplicationsPendingApproval')
-  .get(adopterController.get_applications_pending_approval);
+  //17 Works
+  app.route('/adoptionApplicationsNumber').get(adopterController.get_applications_number);
+
+  //18 Works
+  app.route('/adoptionApplicationsPendingApproval').get(adopterController.get_applications_pending_approval);
+
+  //19 Works
+  app.route('/adoptionApplicationApprove/:applicationNumber').put(adopterController.put_application_status_approve);
+
+  //20 Works
+  app.route('/adoptionApplicationReject/:applicationNumber').put(adopterController.put_application_status_reject);
 
 //   app.route('/animal/:animalId')
 //     .get(animalController.read_a_task)
@@ -58,3 +66,4 @@ module.exports = function(app) {
 
 
 };
+
