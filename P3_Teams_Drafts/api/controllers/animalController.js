@@ -105,7 +105,7 @@ exports.get_vaccines = function(req, res) {
 
       result.forEach(v => {
         vaccines.push({
-          type: v.Vaccinne_Type,
+          type: v.Vaccine_Type,
           number: v.Vaccination_Number,
           dateAdministered: v.Date_Administired,
           expDate: v.Expiration_Date,
@@ -114,6 +114,34 @@ exports.get_vaccines = function(req, res) {
       });
     }
     return res.json(vaccines);
+  });
+};
+
+exports.get_vaccine = function(req, res) {
+
+  var params = [];
+  var q = `SELECT 
+              Vaccine_Type, Vaccination_Number, Date_Administired, 
+              Expiration_Date, Vaccine_Submitter
+            FROM VaccineAdministration 
+            WHERE Pet_ID = ? and Vaccine_Type = ? `;
+
+  params.push(req.params.animalId);
+  params.push(req.params.vaccineType);
+
+  db.query(q, params, (err, result) => {
+    if (result!=null && result.length>0) {
+      var v = result[0];
+      return res.json({
+          type: v.Vaccine_Type,
+          number: v.Vaccination_Number,
+          dateAdministered: v.Date_Administired,
+          expDate: v.Expiration_Date,
+          submitter: v.Vaccine_Submitter
+        });
+    }
+    res.status(404)        // HTTP status 404: NotFound
+        .send(res.json({status:'not found'}));
   });
 };
 
@@ -133,15 +161,12 @@ exports.get_animal = function(req, res) {
             INNER JOIN AnimalBreeds ON Animal.Pet_ID = AnimalBreeds.Pet_ID
             LEFT JOIN AdoptionApplication ON Animal.Adoption_Application_Number = AdoptionApplication.Application_Number
             WHERE Animal.Pet_ID = ? `
-            params.push(req.params.animalId);
+  params.push(req.params.animalId);
 
   db.query(q, params, (err, result) => {
-
-
-    if (result!=null) {
-      var animals=[];
-      result.forEach(a => {
-        animals.push({
+    if (result!=null && result.length>0) {
+      var a = result[0];
+      return res.json({
           petId: a.Pet_ID,
           name: a.Name,
           description: a.Description,
@@ -158,11 +183,10 @@ exports.get_animal = function(req, res) {
           //adoptionFee: a.Adoption_Fee,
           //adoptionApplicationNumber: a.Adoption_Application_Number
         });
-      });
-      return res.json(animals[0]);
-
     }
-    return null;
+    
+    return res.status(404)        // HTTP status 404: NotFound
+        .send(res.json({status:'not found'}));;
     
   });
 };
