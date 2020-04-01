@@ -13,6 +13,8 @@ module.exports = function(app) {
   app.get('/animal/:animalId', animalController.get_animal);
   app.get('/animal/:animalId/breeds', animalController.get_breeds);
   app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
+  app.get('/animal/:animalId/vaccines/:vaccineType', animalController.get_vaccine)
+  app.get('/breeds/:species',breedController.list_breeds);
 
   app.get('/breeds/:species',breedController.list_breeds);
 
@@ -82,3 +84,4 @@ module.exports = function(app) {
 
 
 };
+
