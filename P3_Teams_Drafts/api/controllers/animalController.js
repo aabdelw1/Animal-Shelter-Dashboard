@@ -235,3 +235,188 @@ async function addBreeds(petId,breeds)
     await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
   }
 }
+
+exports.put_animal_adoption_information = function(req, res) {
+  var params = [];
+  var q = `UPDATE Animal
+  SET   Adoption_Application_Number = ?, Adoption_Date = ?, Adoption_Fee = ?
+  WHERE Pet_ID = ?`
+  
+  params.push(req.body.applicationNumber);
+  params.push(req.body.adoptionDate);
+  params.push(req.body.adoptionFee);
+  params.push(req.params.petID);
+
+  db.query(q, params, (err, results) => {
+     if(err) throw err;
+    //console.log("1 record inserted"); 
+     res.send('Animal Adoption Information Updated');
+  });
+};
+
+/*
+
+
+SELECT 
+    dates.Yr_Month,
+    SUM(CASE 
+                 WHEN Surrender_By_Animal_Control=1 AND 
+                     EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
+                 ELSE 0 END) as Surrender_By_Animal_Control_Count,
+    SUM(CASE 
+                 WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
+                 ELSE 0 END) as Rescue_Over_60_Count       
+FROM 
+(
+	-- Based on concepts from:
+	-- https://stevestedman.com/2013/06/recursive-cte-for-dates-in-a-year/
+	WITH RECURSIVE dates as (
+		SELECT date_add(CURDATE(), interval -6 month) as dt -- start
+		UNION ALL
+		SELECT date_add(dt, interval 1 month) as dt
+		FROM dates
+		WHERE dt < CURDATE() -- end
+	) 
+	SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
+	FROM dates
+	WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
+) dates
+inner join Animal a on 
+    (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
+           a.Surrender_By_Animal_Control=1) 
+       OR
+    (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
+    DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
+group by dates.Yr_Month;
+
+*/
+
+exports.get_animal_control_report = function(req, res) {
+
+  var params = [];
+  var q = ` SELECT 
+            dates.Yr_Month,
+            SUM(CASE 
+                        WHEN Surrender_By_Animal_Control=1 AND 
+                            EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
+                        ELSE 0 END) as Surrender_By_Animal_Control_Count,
+            SUM(CASE 
+                        WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
+                        ELSE 0 END) as Rescue_Over_60_Count       
+          FROM 
+          (
+            WITH RECURSIVE dates as (
+              SELECT date_add(CURDATE(), interval -6 month) as dt
+              UNION ALL
+              SELECT date_add(dt, interval 1 month) as dt
+              FROM dates
+              WHERE dt < CURDATE() 
+          ) 
+          SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
+          FROM dates
+          WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
+          ) dates
+          inner join Animal a on 
+            (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
+                  a.Surrender_By_Animal_Control=1) 
+              OR
+            (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
+            DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
+          group by dates.Yr_Month;`
+  
+  //params.push(req.params.YearMonth);            
+
+  db.query(q, params, (err, results) => {
+      var yearMonth=[];
+
+      if(results!=null) {
+          results.forEach(a => {
+            yearMonth.push({
+                  yearMonth: a.yr_month,
+              });
+          });
+      }
+      return res.json(yearMonth);
+  });
+};
+
+
+  //24
+exports.get_report_animal_control_surrenders = function(req, res) {
+
+  var params = [];
+  var q = ` SELECT 
+              a.Pet_ID, Species, 
+              GROUP_CONCAT(Breed_Name ORDER BY Breed_Name SEPARATOR '/') as Breed_Name,
+              Alteration_Status, Microchip_ID, Sex, Surrender_Date
+            FROM Animal AS a
+            INNER JOIN AnimalBreeds AS breeds on a.Pet_ID=breeds.Pet_ID
+            WHERE 
+            Surrender_By_Animal_Control=1 AND 
+            EXTRACT(YEAR_MONTH FROM a.Surrender_Date)= ?
+            group by a.Pet_ID, Species, Alteration_Status, Microchip_ID, Sex, Surrender_Date
+            order by a.Pet_ID;`
+  
+  params.push(req.params.YearMonth);            
+
+  db.query(q, params, (err, results) => {
+      var controlSurrenders=[];
+
+      if(results!=null) {
+          results.forEach(a => {
+            controlSurrenders.push({
+              petID: a.Pet_ID,
+              species: a.Species,
+              breedName: a.Breed_Name,
+              alterationStatus: a.Alteration_Status,
+              microchipID: a.Microchip_ID,
+              sex: a.Sex,
+              surrenderDate: a.Surrender_Date
+              });
+          });
+      }
+      return res.json(controlSurrenders);
+  });
+};
+
+//25
+exports.get_report_animal_adopted_over_60_days = function(req, res) {
+  var params = [];
+  var q = ` SELECT 
+              a.Pet_ID, Species, 
+              GROUP_CONCAT(Breed_Name ORDER BY Breed_Name SEPARATOR '/') as Breed_Name,
+              Alteration_Status, Microchip_ID, Sex, Surrender_Date, Adoption_Date,
+              DATEDIFF(a.Adoption_Date,a.Surrender_Date) as Days_To_Rescue
+            FROM Animal AS a
+            INNER JOIN AnimalBreeds AS breeds on a.Pet_ID=breeds.Pet_ID
+            WHERE 
+              DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60 AND
+              EXTRACT(YEAR_MONTH FROM a.Adoption_Date)= ?
+            GROUP BY 
+              a.Pet_ID, Species, Alteration_Status, Microchip_ID, Sex, 
+              Surrender_Date, Adoption_Date
+            ORDER BY DATEDIFF(a.Adoption_Date,a.Surrender_Date) DESC;`
+  
+  params.push(req.params.YearMonth);            
+
+  db.query(q, params, (err, results) => {
+      var animalsList=[];
+
+      if(results!=null) {
+          results.forEach(a => {
+            animalsList.push({
+              petID: a.Pet_ID,
+              species: a.Species,
+              breedName: a.Breed_Name,
+              alterationStatus: a.Alteration_Status,
+              microchipID: a.Microchip_ID,
+              sex: a.Sex,
+              surrenderDate: a.Surrender_Date,
+              adoptionDate: a.Adoption_Date,
+              daysToRescue: a.Days_To_Rescue
+              });
+          });
+      }
+      return res.json(animalsList);
+  });
+};
