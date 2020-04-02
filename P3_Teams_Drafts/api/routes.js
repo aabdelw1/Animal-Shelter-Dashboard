@@ -30,7 +30,7 @@ module.exports = function(app) {
   //1 Works
   app.route('/login').get(userController.get_password);
 
-  ///11
+  ///11 Works
   app.route('/vaccineReminderReport').get(vaccineController.get_vaccine_reminder_report);
 
   //12 Works
