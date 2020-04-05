@@ -40,12 +40,9 @@ const AnimalDashboardColumn = (props) => {
   } else if (stage === 'Vaccines') {
     targetUrl = ''
   }
+  //data2 = fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
 
-  data2 = fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
-
-  console.log("this is data2,", data2)
-
-
+  //console.log("this is data2,", data2)
 
   return (
     <ColumnContainer>
