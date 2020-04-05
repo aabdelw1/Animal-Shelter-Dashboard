@@ -10,9 +10,9 @@ const AnimalDashboardFilters = (props) => {
   const [,,,,,, date, setDate, specialty, setSpecialty, acceptance, setAcceptance, duration, setDuration, , setReset, candidate, setCandidate, position, setPosition] = useContext(Context)
   // const debouncedCandidate = useDebounce(candidate, 0.0001)
 
-  useEffect(() => {
-    setReset(true)
-  }, [date, specialty, acceptance, duration])
+  // useEffect(() => {
+  //   setReset(true)
+  // }, [date, specialty, acceptance, duration])
 
   return (
     <Pane display="flex" marginY='2rem'>

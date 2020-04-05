@@ -24,7 +24,7 @@ const AnimalDashboard = (props) => {
   const [,,, setSmes] = useContext(Context)
 
   var targetUrl = 'http://localhost:4000/animals'
-  //fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
+  fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
 
   const { loading, error, data } = useQuery(Queries.ALL_ANIMALS)
 
@@ -49,7 +49,7 @@ const AnimalDashboard = (props) => {
   //   .catch(e => {
   //     console.log(e)
   //     return e
-  //   })
+    // })
 
     
     return (

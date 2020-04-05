@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { Heading, Pane, Text, TextInput, Button, toaster } from 'evergreen-ui'
+import { Context } from './Context'
 
 const Home = () => {
       const router = useRouter()
       const [username, setUsername] = useState(null)
       const [password, setPassword] = useState(null)
+      const [, setIsOwner,, setIsVolunteer,, setIsEmployee] = useContext(Context)
+
+
 
       function login(event) {
           const data = username
