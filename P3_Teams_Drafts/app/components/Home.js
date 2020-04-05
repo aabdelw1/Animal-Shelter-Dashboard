@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { Heading, Pane, Text, TextInput, Button, toaster } from 'evergreen-ui'
 import { Context } from './Context'
@@ -7,7 +7,7 @@ const Home = () => {
       const router = useRouter()
       const [username, setUsername] = useState(null)
       const [password, setPassword] = useState(null)
-      const [, setIsOwner,, setIsVolunteer,, setIsEmployee] = useContext(Context)
+      const [, setIsOwner, isVolunteer, setIsVolunteer,, setIsEmployee] = useContext(Context)
 
 
 
@@ -20,13 +20,24 @@ const Home = () => {
                   if (result.password != password){
                       toaster.warning('Seems like you entered wrong username/password, please enter again')
                   }else{
-                      localStorage.setItem('UserName', username);
-                      localStorage.setItem('isLoggedin', true);
-                      toaster.success('Successfully signed in')
-                      router.push('/animalDashboard');
-                  }
-            })
-      }
+                    fetch(`http://localhost:4000/user/${data}`, {
+                      method: 'get'
+                      }).then((Response) => Response.json())
+                        .then((result) => {
+                          if(result.isAdmin){
+                            setIsOwner(true);
+                            setIsEmployee(true);
+                          }else{
+                            setIsVolunteer(true);
+                          }
+                          localStorage.setItem('UserName', username);
+                          localStorage.setItem('isLoggedin', true);
+                          toaster.success('Successfully signed in')
+                          router.push('/animalDashboard');
+                      })
+                    }
+                  })
+        }
 
     return <>
       <Pane

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Home from '../components/Home'
 import { useRouter } from 'next/router'
+import { ContextProvider } from '../components/Context'
 
 const home = () => {
   const [loggedin, setLoggedin] = useState(null);
@@ -18,7 +19,8 @@ const home = () => {
   if(loggedin){
     router.push('/animalDashboard');
   }else{
-    return (  
+    return ( 
+      <ContextProvider>
       <div>
         <Head>
           <title>Ingie's Animal Shelter</title>
@@ -26,6 +28,7 @@ const home = () => {
         </Head>
         <Home />
       </div>
+      </ContextProvider> 
   ) 
   }
 }

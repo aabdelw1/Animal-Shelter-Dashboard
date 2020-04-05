@@ -1,1 +1,0 @@
-{"ast":null,"code":"import gql from 'graphql-tag';\nconst Queries = {\n  ALL_ANIMALS: gql`\n    query {\n      allAnimals{\n        _id\n        animalName\n        species\n        sex\n        age\n        role\n        breed\n        alterationStatus\n        adoptability\n      }\n    }\n  `\n};\nexport default Queries;","map":null,"metadata":{},"sourceType":"module"}

@@ -15,8 +15,8 @@ const ContextProvider = (props) => {
   // const [candidate, setCandidate] = useState('')
   // const [position, setPosition] = useState('Full Time')
   const [isOwner, setIsOwner] = useState(false)
-  const [isVolunteer, setIsVolunteer] = useState(true)
-  const [isEmployee, setIsEmployee] = useState(true)
+  const [isVolunteer, setIsVolunteer] = useState(false)
+  const [isEmployee, setIsEmployee] = useState(false)
 
   return (
     <Context.Provider value={[isOwner, setIsOwner, isVolunteer, setIsVolunteer, isEmployee, setIsEmployee]}>
