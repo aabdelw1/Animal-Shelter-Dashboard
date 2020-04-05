@@ -76,6 +76,7 @@ const Home = () => {
             label=""
             width={250}
             marginRight="2rem"
+            type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="Enter Password"
