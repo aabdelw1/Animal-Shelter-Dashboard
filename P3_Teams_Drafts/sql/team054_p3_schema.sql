@@ -8,12 +8,14 @@ CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054
    DEFAULT COLLATE utf8mb4_unicode_ci;
 USE cs6400_sp20_team054;
 
+/*
 DROP USER gatechUser@localhost;
 CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED WITH mysql_native_password BY 'gatech123';
 GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO 'gatechUser'@'localhost';
 GRANT ALL PRIVILEGES ON `gatechuser`.* TO 'gatechUser'@'localhost';
 GRANT ALL PRIVILEGES ON `cs6400_fa17_team001`.* TO 'gatechUser'@'localhost';
 FLUSH PRIVILEGES;
+*/
 
 -- Tables
 
@@ -24,7 +26,7 @@ CREATE TABLE Adopter (
   City VARCHAR(50) NOT NULL,
   State VARCHAR(50) NOT NULL,
   ZIPCode VARCHAR(50) NOT NULL,
-  Applicant_Fist_Name VARCHAR(100) NOT NULL,
+  Applicant_First_Name VARCHAR(100) NOT NULL,
   Applicant_Last_Name VARCHAR(100) NOT NULL,
   PRIMARY KEY (Email_Address)
 );
@@ -33,8 +35,8 @@ CREATE TABLE AdoptionApplication (
   Application_Number INT NOT NULL AUTO_INCREMENT,
   Email_Address VARCHAR(250) NOT NULL,
   Date_Of_Application DATE NOT NULL,
-  CoApplicant_First_Name VARCHAR(100) NULL,
-  CoApplicant_Last_Name VARCHAR(100) NULL,
+  CoApplicant_First_Name VARCHAR(100) DEFAULT NULL,
+  CoApplicant_Last_Name VARCHAR(100) DEFAULT NULL,
   State ENUM('Pending Approval', 'Approved', 'Rejected') DEFAULT 'Pending Approval',
   PRIMARY KEY (Application_Number),
   KEY(Email_Address)
@@ -50,9 +52,13 @@ CREATE TABLE Users(
    PRIMARY KEY (Username)
 );
 
+CREATE TABLE Admin(
+  Username VARCHAR(10) NOT NULL,
+  PRIMARY KEY (Username)
+);
+
 CREATE TABLE Employees(
   Username VARCHAR(10) NOT NULL,
-  is_Admin BOOLEAN NOT NULL,
   PRIMARY KEY (Username)
 );
 
@@ -64,9 +70,9 @@ CREATE TABLE Volunteer(
 
 CREATE TABLE VolunteerHours(
   Username VARCHAR(10) NOT NULL,
-  Date DATE,
-  Hours INT DEFAULT NULL,
-  PRIMARY KEY (Username, Date)
+  Date DATE NOT NULL,
+  Hours INT NOT NULL,
+  PRIMARY KEY (Username, Date, Hours)
 );
 
 CREATE TABLE Animal (
@@ -75,16 +81,16 @@ CREATE TABLE Animal (
   Description VARCHAR(200) NOT NULL,
   Age DECIMAL NOT NULL CONSTRAINT Age_Range CHECK (Age>0),
   Microchip_ID VARCHAR(15) DEFAULT NULL,
-  Sex ENUM ('Male','Female','Unknown') DEFAULT NULL,
-  Alteration_Status BOOLEAN DEFAULT NULL,
-  Surrender_Reason VARCHAR(45) DEFAULT NULL,
+  Sex ENUM ('Male','Female','Unknown') NOT NULL,
+  Alteration_Status BOOLEAN NOT NULL,
+  Surrender_Reason VARCHAR(45) NOT NULL,
   Surrender_By_Animal_Control BOOLEAN DEFAULT (0),
   Surrender_Date DATE NOT NULL,
   Surrender_Submitter VARCHAR(250) NOT NULL,
   Adoption_Date DATE DEFAULT NULL,
   Adoption_Fee DECIMAL DEFAULT NULL,
   Adoption_Application_Number INT NULL,
-  Species VARCHAR(50),
+  Species VARCHAR(50) NOT NULL,
   PRIMARY KEY (Pet_ID)
 );
 
@@ -110,11 +116,11 @@ CREATE TABLE VaccineAdministration (
    Pet_ID INT NOT NULL,
    Species_Name VARCHAR(50) NOT NULL,
    Vaccine_Type VARCHAR(50) NOT NULL,
-   Vaccination_Number INT NOT NULL,
+   Vaccination_Number INT DEFAULT NULL,
    Date_Administired DATE NOT NULL,
    Expiration_Date DATE NOT NULL,
    Vaccine_Submitter VARCHAR(10) NOT NULL,
-   PRIMARY KEY (Pet_ID, Species_Name, Vaccine_Type)
+   PRIMARY KEY (Pet_ID, Date_Administired, Vaccine_Type)
 );
 
 CREATE TABLE Vaccine (
@@ -159,8 +165,12 @@ ALTER TABLE Animal
   FOREIGN KEY (Species) REFERENCES Species(Name);
 
 ALTER TABLE Animal
-  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Employee_Username
-  FOREIGN KEY (Surrender_Submitter) REFERENCES Employees(Username);
+  ADD CONSTRAINT fk_Animal_Surrender_Submitter_Users_Username
+  FOREIGN KEY (Surrender_Submitter) REFERENCES Users(Username);
+
+ALTER TABLE Admin
+  ADD CONSTRAINT fk_Admin_Username_Users_Username
+  FOREIGN KEY (Username) REFERENCES Users(Username);
 
 ALTER TABLE Employees
   ADD CONSTRAINT fk_Employees_Username_Users_Username
@@ -177,3 +187,7 @@ ALTER TABLE VaccineAdministration
 ALTER TABLE VaccineAdministration
   ADD CONSTRAINT fk_VaccineAdministration_Vaccine_Type_Vaccines_Vaccine_Type
   FOREIGN KEY (Species_Name,Vaccine_Type) REFERENCES Vaccine(Species_Name,Vaccine_Type);
+
+ALTER TABLE Vaccine
+  ADD CONSTRAINT fk_Vaccine_Species_Name_Species_Name
+  FOREIGN KEY (Species_Name) REFERENCES Species(Name);

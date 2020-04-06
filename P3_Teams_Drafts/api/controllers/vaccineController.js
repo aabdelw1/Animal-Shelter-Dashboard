@@ -1,37 +1,54 @@
 exports.get_vaccine_reminder_report = function(req, res) {
     var params = [];
-    var q = `SELECT Application_Number, Applicant_Fist_Name, Applicant_Last_Name, Street,
-    City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name
-    FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address
-    WHERE AdoptionApplication.State= 'Approved' AND (Applicant_Last_Name LIKE  ?) AND (CoApplicant_Last_Name LIKE ?) AND Application_Number NOT IN
-              (SELECT Adoption_Application_Number
-              FROM Animal
-              WHERE Adoption_Application_Number IS NOT NULL)`
+
+    /*
+    SELECT va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Adminisistired, va.Expiration_Date, va.Vaccine_Submitter, 
+     GROUP_CONCAT(va.Breed_Name SEPARATOR '/') as Breed_Name, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason. a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+FROM VaccineAdministration AS va
+INNER JOIN Animal AS a on va.Pet_ID = a.Pet_ID
+WHERE va.Expiration_Date >= DATEADD(month, -3, getdate())
+GROUP BY va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Adminisistired, va.Expiration_Date, va.Vaccine_Submitter, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason. a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+ORDER BY va.Expiration_Date, va.Pet_ID
+*/
+
+    var q = `SELECT va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, va.Vaccine_Submitter, 
+                GROUP_CONCAT(ab.Breed_Name ORDER BY ab.Breed_Name SEPARATOR '/') as Breed_Name, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+            FROM VaccineAdministration AS va
+            INNER JOIN Animal AS a on va.Pet_ID = a.Pet_ID
+            INNER JOIN AnimalBreeds AS ab ON a.Pet_ID=ab.Pet_ID
+            WHERE  (EXTRACT(YEAR_MONTH FROM va.Expiration_Date) <= ((EXTRACT(YEAR_MONTH FROM DATE_ADD(NOW(), INTERVAL 3 MONTH))))) AND (EXTRACT(YEAR_MONTH FROM va.Expiration_Date) >= EXTRACT(YEAR_MONTH FROM NOW())) 
+            GROUP BY va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, va.Vaccine_Submitter, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+            ORDER BY va.Expiration_Date ASC, va.Pet_ID ASC;`
     
-    params.push('%' + req.query.applicantLastName + '%');
-    params.push('%' + req.query.coApplicantLastName + '%');
- 
     db.query(q, params, (err, results) => {
-        var approvedApplications=[];
+        var report=[];
 
         if(results!=null) {
             results.forEach(a => {
-                approvedApplications.push({
-                    applicationNumber: a.Application_Number,
-                    applicantFirstName: a.Applicant_Fist_Name,
-                    applicantLastName: a.Applicant_Last_Name,
-                    street: a.Street,
-                    city: a.City,
-                    state: a.State,
-                    zipCode: a.ZIPCode,
-                    phoneNumber: a.Phone_Number,
-                    emailAddress: a.Email_Address,
-                    coApplicantFirstName: a.CoApplicant_First_Name,
-                    coApplicantLastName: a.CoApplicant_Last_Name
+                report.push({
+                    petID: a.Pet_ID,
+                    speciesName: a.Species_Name,
+                    vaccineType: a.Vaccine_Type,
+                    vaccinationNumber: a.Vaccination_Number,
+                    dateAdministired: a.Date_Administired,
+                    vaccineSubmitter: a.Vaccine_Submitter,
+                    breedName: a.Breed_Name,
+                    name: a.Name,
+                    description: a.Description,
+                    age: a.Age,
+                    microchipID: a.Microchip_ID,
+                    sex: a.Sex,
+                    alterationStatus: a.Alteration_Status,
+                    surrenderReason: a.Surrender_Reason, 
+                    surrenderByAnimalControl: a.Surrender_By_Animal_Control, 
+                    surrenderDate: a.Surrender_Date, 
+                    adoptionDate: a.Adoption_Date, 
+                    adoptionFee: a.Adoption_Fee, 
+                    adoptionApplicationNumber: a.Adoption_Application_Number, 
+                    species: a.Species
                 });
-
             });
         }
-        return res.json(approvedApplications);
+        return res.json(report);
     });
 }

@@ -4,9 +4,7 @@ exports.get_user = function(req, res) {
   var q = `SELECT 
               u.First_Name,
               u.Last_Name,
-              IfNULL(e.Is_Admin,0) as Is_Admin
             FROM Users u
-            LEFT JOIN Employees e on u.Username = e.Username
             WHERE u.Username = ? `
 
   params.push(req.params.username);
@@ -19,8 +17,7 @@ exports.get_user = function(req, res) {
       result.forEach(u => {
         users.push({
           firstName: u.First_Name,
-          lastName: u.Last_Name,
-          isAdmin: u.Is_Admin==1
+          lastName: u.Last_Name
         });
       });
 
@@ -97,25 +94,87 @@ exports.get_volunteers = function(req, res) {
 
 exports.get_password = function(req, res) {
 
-  var params = [];
-  var q = `SELECT Password FROM Users WHERE Username = ?`
+  var query = [];
+  var q = ` SELECT Password, (CASE WHEN E.Username = U.Username THEN "Employee"
+              WHEN A.Username = U.Username THEN "Admin"
+              WHEN V.Username = U.Username THEN "Volunteer"
+            END) AS UserType
+            FROM Users AS U JOIN Employees AS E JOIN Admin AS A JOIN Volunteer AS V
+                WHERE U.Username=? AND (E.Username=U.Username OR A.Username=U.Username OR V.Username=U.Username)
+                LIMIT 1`
 
-  params.push(req.query.username);
+  query.push(req.query.username);
 
-  db.query(q, params, (err, result) => {
+  db.query(q, query, (err, result) => {
     var password=[];
 
     if (result!=null) {
       result.forEach(p => {
         password.push({
-          password: p.Password
+          password: p.Password,
+          userType: p.UserType
          });
-      });
-
+      }); 
       if (password.length!=0) {
-        return res.json(password[0]);
+        return res.json(password);
       }
     }
     return res.json({});
   });
 };
+
+//24
+exports.get_months_with_volunteer_hours = function(req, res) {
+  var params = [];
+  var q = ` SELECT DISTINCT EXTRACT(YEAR_MONTH FROM hours.Date) AS YM
+            FROM Volunteer AS v
+            INNER JOIN VolunteerHours AS hours on hours.Username=v.Username `
+  
+  db.query(q, params, (err, results) => {
+      var yearmonth=[];
+
+      if(results!=null) {
+          results.forEach(a => {
+            yearmonth.push({
+                  yearMonth: a.YM
+              });
+          });
+      }
+      return res.json(yearmonth);
+  });
+};
+
+exports.get_volunteer_of_the_month = function(req, res) {
+  var params = [];
+  var q = ` SELECT u.First_Name, u.Last_Name, u.Email_Address, sum(Hours) as Hours
+            FROM Volunteer AS v
+            INNER JOIN Users AS u on v.Username = u.Username
+            INNER JOIN VolunteerHours AS hours on hours.Username=v.Username
+            WHERE EXTRACT(YEAR_MONTH FROM hours.Date) = ?
+            GROUP BY 
+              u.First_Name, u.Last_Name, u.Email_Address
+            ORDER BY 
+              Hours DESC, u.Last_Name ASC
+            LIMIT 5`
+  
+  params.push(req.params.YearMonth);            
+
+  db.query(q, params, (err, results) => {
+      var volunteers=[];
+
+      if(results!=null) {
+          results.forEach(a => {
+            volunteers.push({
+                  firstName: a.First_Name,
+                  lastName: a.Last_Name,
+                  emailAddress: a.Email_Address,
+                  hours: a.Hours
+              });
+          });
+      }
+      return res.json(volunteers);
+  });
+
+};
+
+
