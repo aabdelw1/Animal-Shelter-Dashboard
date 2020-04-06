@@ -8,19 +8,21 @@ exports.list_all_animals = function(req, res) {
               GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
               Animal.Sex, 
               Animal.Alteration_Status, 
-              Animal.Age,
-              AdoptionApplication.State as Adoptability_Status
-            FROM Animal 
-            INNER JOIN AnimalBreeds ON Animal.Pet_ID = AnimalBreeds.Pet_ID
-            LEFT JOIN AdoptionApplication ON Animal.Adoption_Application_Number = AdoptionApplication.Application_Number
-            WHERE (1=1) `
+              Animal.Age
+            FROM Animal NATURAL JOIN AnimalBreeds 
+            WHERE Adoption_Date IS NULL`
+
   if (req.query.species != null) {
     q = q + ' AND Animal.Species = ? ';
     params.push(req.query.species);
   }
   if (req.query.adoptability != null) {
-    q = q + ' AND AdoptionApplication.State = ? ';
-    params.push(req.query.adoptability);
+    if(req.query.adoptability == 'Ready'){
+      q = q + ' AND Alteration_Status = 1 ';
+    }
+    else if(req.query.adoptability == 'Pending'){
+      q = q + ' AND Alteration_Status = 0 ';
+    }
   }
   q = q + ` GROUP BY   
               Animal.Pet_ID, 

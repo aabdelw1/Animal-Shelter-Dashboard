@@ -1,7 +1,7 @@
 exports.get_approved_applications = function(req, res) {
 
     var params = [];
-    var q = `SELECT Application_Number, Applicant_Fist_Name, Applicant_Last_Name, Street,
+    var q = `SELECT Application_Number, Applicant_First_Name, Applicant_Last_Name, Street,
     City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name
     FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address
     WHERE AdoptionApplication.State= 'Approved' AND (Applicant_Last_Name LIKE  ?) AND (CoApplicant_Last_Name LIKE ?) AND Application_Number NOT IN
@@ -19,7 +19,7 @@ exports.get_approved_applications = function(req, res) {
             results.forEach(a => {
                 approvedApplications.push({
                     applicationNumber: a.Application_Number,
-                    applicantFirstName: a.Applicant_Fist_Name,
+                    applicantFirstName: a.Applicant_First_Name,
                     applicantLastName: a.Applicant_Last_Name,
                     street: a.Street,
                     city: a.City,
@@ -58,7 +58,7 @@ exports.post_new_adoption_application = function(req, res) {
 exports.post_new_adopter = function(req, res) {
 
     var params = [];
-    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_Fist_Name, Applicant_Last_Name)
+    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     
     params.push(req.body.emailAddress);
@@ -131,7 +131,7 @@ exports.get_applications_number = function(req, res) {
 
 exports.get_applications_pending_approval = function(req, res) {
     var params = [];
-    var q = `SELECT Application_Number, Applicant_Fist_Name, Applicant_Last_Name, Street, City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name 
+    var q = `SELECT Application_Number, Applicant_First_Name, Applicant_Last_Name, Street, City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name 
     FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address
     WHERE AdoptionApplication.State= 'Pending Approval'`
     
@@ -142,7 +142,7 @@ exports.get_applications_pending_approval = function(req, res) {
             results.forEach(p => {
                 pendingApplications.push({
                     applicationNumber: p.Application_Number,
-                    applicantFirstName: p.Applicant_Fist_Name,
+                    applicantFirstName: p.Applicant_First_Name,
                     applicantLastName: p.Applicant_Last_Name,
                     street: p.Street,
                     city: p.City,
