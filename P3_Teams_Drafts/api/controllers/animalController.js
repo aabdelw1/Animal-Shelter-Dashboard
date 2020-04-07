@@ -10,7 +10,9 @@ exports.list_all_animals = function(req, res) {
               Animal.Alteration_Status, 
               Animal.Age
             FROM Animal NATURAL JOIN AnimalBreeds 
-            WHERE Adoption_Date IS NULL`
+            LEFT JOIN AdoptionApplication ON 
+              Animal.Adoption_Application_Number=AdoptionApplication.Application_Number
+            WHERE Adoption_Date IS NULL `
 
   if (req.query.species != null) {
     q = q + ' AND Animal.Species = ? ';
