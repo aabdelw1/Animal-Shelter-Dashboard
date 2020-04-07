@@ -1,7 +1,11 @@
 {
   "devFiles": [
-    "static/development/dll/dll_f5e771ca4390fecd21bd.js",
-    "static/development/dll/dll_f5e771ca4390fecd21bd.js.map"
+    "static/development/dll/dll_091c2efb637060286c6a.js",
+    "static/development/dll/dll_091c2efb637060286c6a.js.map"
+  ],
+  "lowPriorityFiles": [
+    "static/development/_buildManifest.js",
+    "static/development/_ssgManifest.js"
   ],
   "pages": {
     "/": [
@@ -15,6 +19,10 @@
     "/_error": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
+    ],
+    "/_polyfills": [
+      "static/runtime/polyfills.js",
+      "static/runtime/polyfills.js.map"
     ],
     "/animalDashboard": [
       "static/runtime/webpack.js",

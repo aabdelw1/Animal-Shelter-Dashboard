@@ -1,4 +1,4 @@
-DROP DATABASE -- IF EXISTS 
+DROP DATABASE IF EXISTS 
 cs6400_sp20_team054;
 SET default_storage_engine=InnoDB;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;

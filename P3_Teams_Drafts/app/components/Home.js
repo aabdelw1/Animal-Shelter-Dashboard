@@ -17,24 +17,14 @@ const Home = () => {
               method: 'get'
           }).then((Response) => Response.json())
             .then((result) => {
-                  if (result.password != password){
+                  if (result[0].password != password){
                       toaster.warning('Seems like you entered wrong username/password, please enter again')
                   }else{
-                    fetch(`http://localhost:4000/user/${data}`, {
-                      method: 'get'
-                      }).then((Response) => Response.json())
-                        .then((result) => {
-                          if(result.isAdmin){
-                            setIsOwner(true);
-                            setIsEmployee(true);
-                          }else{
-                            setIsVolunteer(true);
-                          }
-                          localStorage.setItem('UserName', username);
-                          localStorage.setItem('isLoggedin', true);
-                          toaster.success('Successfully signed in')
-                          router.push('/animalDashboard');
-                      })
+                      localStorage.setItem('UserName', username);
+                      localStorage.setItem('isLoggedin', true);
+                      localStorage.setItem('userType', result[0].userType);
+                      toaster.success('Successfully signed in');
+                      router.push('/animalDashboard');
                     }
                   })
         }
