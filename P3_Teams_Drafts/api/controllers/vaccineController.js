@@ -51,4 +51,34 @@ ORDER BY va.Expiration_Date, va.Pet_ID
         }
         return res.json(report);
     });
-}
+};
+
+
+exports.get_eligible_vaccines_for_Pet = function(req, res) {
+
+    var params = [];
+    var q = `SELECT Vaccine_Type
+            FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
+            WHERE Pet_ID=? AND Vaccine_Type NOT IN
+                (SELECT Vaccine_Type
+                FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
+                WHERE AN.Pet_ID=? AND (Expiration_Date > NOW())
+                )`
+  
+    params.push(req.params.PetID);
+    params.push(req.params.PetID);
+  
+    db.query(q, params, (err, results) => {
+        var vaccines=[];
+
+        if (results!=null) {
+          results.forEach(p => {
+            vaccines.push(p.Vaccine_Type);
+          }); 
+          if (vaccines.length!=0) {
+            return res.json(vaccines);
+          }
+        }
+        return res.json('No Vaccines Available');
+      });
+  };

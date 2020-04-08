@@ -119,7 +119,7 @@ exports.get_password = function(req, res) {
         return res.json(password);
       }
     }
-    return res.json({});
+    return res.json('User not found');
   });
 };
 

@@ -1,31 +1,56 @@
 exports.list_all_animals = function(req, res) {
 
   var params = [];
-  var q = `SELECT
+  var q = ` SELECT
               Animal.Pet_ID, 
               Animal.Name, 
               Animal.Species, 
               GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
               Animal.Sex, 
               Animal.Alteration_Status, 
-              Animal.Age
+              Animal.Age,
+              (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
+                  (SELECT COUNT(Vaccine_Type)
+                FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
+                WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                  (SELECT Vaccine_Type
+                  FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
+                  WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                  ))) 
+                THEN "Ready"
+                ELSE "Pending"
+                  END) AS Adoptability_Status 
             FROM Animal NATURAL JOIN AnimalBreeds 
-            LEFT JOIN AdoptionApplication ON 
-              Animal.Adoption_Application_Number=AdoptionApplication.Application_Number
             WHERE Adoption_Date IS NULL `
 
   if (req.query.species != null) {
     q = q + ' AND Animal.Species = ? ';
     params.push(req.query.species);
   }
+
   if (req.query.adoptability != null) {
     if(req.query.adoptability == 'Ready'){
-      q = q + ' AND Alteration_Status = 1 ';
+      q = q + ` AND (Alteration_Status = 1 AND (1 >
+                  (SELECT COUNT(Vaccine_Type)
+                FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
+                WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                  (SELECT Vaccine_Type
+                  FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
+                  WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                  ))))  `;
     }
     else if(req.query.adoptability == 'Pending'){
-      q = q + ' AND Alteration_Status = 0 ';
+      q = q + `  AND (Alteration_Status = 0 OR (1 <=
+                      (SELECT COUNT(Vaccine_Type)
+                    FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
+                    WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                      (SELECT Vaccine_Type
+                      FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
+                      WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                      )))) `;
     }
   }
+
   q = q + ` GROUP BY   
               Animal.Pet_ID, 
               Animal.Name, 
@@ -33,7 +58,33 @@ exports.list_all_animals = function(req, res) {
               Animal.Sex, 
               Animal.Alteration_Status, 
               Animal.Age,
-              AdoptionApplication.State;`;
+              Adoptability_Status`;
+  
+    /*Sorting Parameters
+    Pet_ID
+    Name
+    Species
+    Breed_Name
+    Sex
+    Alteration_Status
+    Age
+    Adoptability_Status
+    */
+  if(req.query.sortParameter!=null)
+  {
+    q= q + ` ORDER BY ? `;
+    params.push(req.query.sortParameter);
+
+    if(req.query.sortOrder!=null)
+    {
+      q= q + ` ? `;
+      params.push(req.query.sortOrder);
+    }
+  }
+  else
+  {
+    q = q + ";"
+  }
 
   db.query(q, params, (err, result) => {
     var animals=[];
@@ -282,42 +333,6 @@ exports.put_animal_adoption_information = function(req, res) {
   });
 };
 
-/*
-
-
-SELECT 
-    dates.Yr_Month,
-    SUM(CASE 
-                 WHEN Surrender_By_Animal_Control=1 AND 
-                     EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
-                 ELSE 0 END) as Surrender_By_Animal_Control_Count,
-    SUM(CASE 
-                 WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
-                 ELSE 0 END) as Rescue_Over_60_Count       
-FROM 
-(
-	-- Based on concepts from:
-	-- https://stevestedman.com/2013/06/recursive-cte-for-dates-in-a-year/
-	WITH RECURSIVE dates as (
-		SELECT date_add(CURDATE(), interval -6 month) as dt -- start
-		UNION ALL
-		SELECT date_add(dt, interval 1 month) as dt
-		FROM dates
-		WHERE dt < CURDATE() -- end
-	) 
-	SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
-	FROM dates
-	WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
-) dates
-inner join Animal a on 
-    (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
-           a.Surrender_By_Animal_Control=1) 
-       OR
-    (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
-    DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
-group by dates.Yr_Month;
-
-*/
 
 exports.get_animal_control_report = function(req, res) {
 
@@ -448,3 +463,5 @@ exports.get_report_animal_adopted_over_60_days = function(req, res) {
       return res.json(animalsList);
   });
 };
+
+

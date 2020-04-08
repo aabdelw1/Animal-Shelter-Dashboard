@@ -13,7 +13,7 @@ module.exports = function(app) {
   app.get('/animal/:animalId', animalController.get_animal);
   app.get('/animal/:animalId/breeds', animalController.get_breeds);
   app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
-  app.get('/animal/:animalId/vaccines/:vaccineType', animalController.get_vaccine)
+  app.get('/animal/:animalId/vaccines/:vaccineType', animalController.get_vaccine);
   app.get('/breeds/:species',breedController.list_breeds);
 
   app.get('/breeds/:species',breedController.list_breeds);
@@ -25,10 +25,12 @@ module.exports = function(app) {
   app.get('/user/:username', userController.get_user);
   app.get('/user/:username/volunteerHours', userController.get_volunteer_hours);
 
-  app.get('/adoption/report', adoptionReportController.get_adoption_report)
+  app.get('/adoption/report', adoptionReportController.get_adoption_report);
 
   //1 Works
   app.route('/login').get(userController.get_password);
+
+  app.route('/vaccines/:PetID').get(vaccineController.get_eligible_vaccines_for_Pet);
 
   ///11 Works
   app.route('/vaccineReminderReport').get(vaccineController.get_vaccine_reminder_report);
@@ -38,6 +40,8 @@ module.exports = function(app) {
 
   //13 Works
   app.route('/updateAnimalAdoptionInformation/:PetID').put(animalController.put_animal_adoption_information);
+
+  //app.route('/updateAnimalInformation/:PetID').put(animalController.put_update_animal_information);
 
   //14 Works    
   app.route('/newAdoptionApplication').post(adopterController.post_new_adoption_application);
