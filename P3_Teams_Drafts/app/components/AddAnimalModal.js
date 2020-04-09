@@ -11,7 +11,7 @@ const AddAnimalModal = (props) => {
   const [speciesListAdd, getSpeciesAdd] = useState([{ label: "Loading ...", value: ""}]);
   const [breedsAdd, setBreedsAdd] = useState("Dog")
   const [breedsListAdd, getBreedsAdd] = useState([{ label: "Loading ...", value: ""}]);
-  const [sex, setSex] = useState('')
+  const [sex, setSex] = useState('Male')
   const [age, setAge] = useState('')
   const [loading, setLoading] = useState(true);
   const [alterationStatus, setAlterationStatus] = useState('false')
@@ -58,21 +58,22 @@ const AddAnimalModal = (props) => {
       onConfirm={() => {
         const requestOptions = {
           method: 'post',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            Name: `${animalName}`,
-            Description: "cute",
-            Age: `${age}`,
-            Microchip_ID: "123",
-            Sex: `${sex}`,
-            Surrender_Date: "123",
-            Surrender_Submitter: "123",
-            Surrender_Reason: "123",
-            Surrender_By_Animal_Control: "123",
-            Alteration_Status: "123",
-            Species: `${speciesAdd}` 
+            name: `${animalName}`,
+            description: "cute",
+            age: `${age}`,
+            microchipId: "123",
+            sex: `${sex}`,
+            surrenderDate: "2020/4/09",
+            surrenderSubmitter: "123",
+            surrenderReason: "123",
+            surrenderByAnimalControl: "123",
+            alterationStatus: "123",
+            species: `${speciesAdd}` 
           })
         };
-
+        console.log(requestOptions)
         fetch(`http://localhost:4000/animal/add`, requestOptions)
             .then((Response) => Response.json())
             .then((result) => {
@@ -110,7 +111,7 @@ const AddAnimalModal = (props) => {
           <Pane display="flex" flexDirection="column">
             <Heading size={500} marginY="0.7rem">Sex *</Heading>
             <Pane>
-              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(selected)}>
+              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
                 <option value="Male" defaultValue>Male</option>
                 <option value="Female">Female</option>
               </Select>

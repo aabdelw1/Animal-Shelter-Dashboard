@@ -9,7 +9,7 @@ import AnimalDashboardColumn from './AnimalDashboardColumn'
 
 import Queries from '../graphql/queries'
 import { useQuery } from '@apollo/react-hooks'
-const Categories = ['Animals ', 'Breeds', 'Vaccines']
+const Categories = ['Animals ']
 
 const SchedulerContainer = styled.div`
   display: flex;
@@ -22,17 +22,31 @@ const SchedulerContainer = styled.div`
 const AnimalDashboard = (props) => {
   const { setScheduleButton } = props
   const [,,, setSmes] = useContext(Context)
+  const [animals, getAnimals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  var targetUrl = 'http://localhost:4000/animals'
-  fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
+  useEffect(() => {
+    let unmounted = false;
+    async function getAnimalsAPI() {
+      const response = await fetch(`http://localhost:4000/animals`, {method: 'get'});
+      const result = await response.json();
+      if (!unmounted) {
+        //var newList = []
+        //for(var x = 0; x<result.length;x++){
+        //    newList[x] = result[x]
+        //}
+        // let list = newList.map(name => {return {label: name, value: name}});
+        getAnimals(result);
+        setLoading(false);
+      }
+    }
+    getAnimalsAPI();
 
-  const { loading, error, data } = useQuery(Queries.ALL_ANIMALS)
+    return () => {
+      unmounted = true;
+    };
+  });
 
-  if (data) {
-    data.map((animal, index) => {
-      console.log(animal)
-    })
-  }
 
   // var proxyUrl = 'https://cors-anywhere.herokuapp.com/'
   // var targetUrl = 'http://localhost:4000/animals'
@@ -54,25 +68,12 @@ const AnimalDashboard = (props) => {
     
     return (
         <SchedulerContainer>
-          <Query query={Queries.ALL_ANIMALS}>
-            {({ data, error, loading }) => {
-              if (error) {
-                toaster.danger(
-                  'Something went wrong when fetching the Animals', {
-                    id: 'animalDashboard',
-                    description: 'Check your network connection or try again later.'
-                  })
-              }
-              return (
-                Categories.map((role, index) => {
-                  return <AnimalDashboardColumn key={index} columnIndex={index} stage={role}
-                    data={data && data.filter((c) => { return c.role === role })}
-                    error={error} loading={loading}
-                  />
-                })
-              )
-            }}
-          </Query>
+          {
+            Categories.map((role, index) => {
+              return <AnimalDashboardColumn key={index} columnIndex={index} stage={role} data={animals}
+              />
+            })
+          }
         </SchedulerContainer>
       )
 }

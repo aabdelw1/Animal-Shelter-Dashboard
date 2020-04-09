@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Pane, Text, Icon, Spinner } from 'evergreen-ui'
+import { Pane, Text, Icon, Spinner, Table } from 'evergreen-ui'
 import { Context } from './Context'
 
 const _ = require('lodash')
@@ -31,6 +31,7 @@ const AnimalDashboardColumn = (props) => {
   let targetUrl = ''
 
   const [adActiveIndex, setAdActiveIndex] = useState(null)
+  const [searchQuery, setSearchQuery] = useState(null)
   const [, setAD,,,,,,, specialty] = useContext(Context)
 
   if (stage === 'Animals') {
@@ -48,19 +49,33 @@ const AnimalDashboardColumn = (props) => {
     <ColumnContainer>
       <Pane display="flex" flexDirection="row" marginTop="1rem">
         <Text marginLeft="1rem" size={500} color="muted">{stage}</Text>
-        <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.length}</Text>
       </Pane>
-      { loading &&
-        <Pane>
-          <Spinner margin="auto" marginTop="2rem"/>
-        </Pane>
-      }
-      { error &&
-        <Pane display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-          <Pane><Icon size="20" marginX="auto" marginTop="2rem" icon="warning-sign" color="muted"/></Pane>
-          <Pane><Text color="muted">Error</Text></Pane>
-        </Pane>
-      }
+
+      <Table>
+        <Table.Head>
+              <Table.TextHeaderCell>Name</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Species</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Breeds</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Sex</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Alteration Status</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Age</Table.TextHeaderCell>
+              <Table.TextHeaderCell>Adoptability</Table.TextHeaderCell>
+        </Table.Head>
+        <Table.Body>
+          {data.map(animal => (
+            <Table.Row key={animal.petId} isSelectable onSelect={() => alert("This will lead to animal detail: ")}>
+              <Table.TextCell>{animal.name}</Table.TextCell>
+              <Table.TextCell>{animal.species}</Table.TextCell>
+              <Table.TextCell>{animal.breeds}</Table.TextCell>
+              <Table.TextCell>{animal.sex}</Table.TextCell>
+              <Table.TextCell>{animal.alterationStatus}</Table.TextCell>
+              <Table.TextCell isNumber>{animal.age}</Table.TextCell>
+              <Table.TextCell>{animal.adoptability}</Table.TextCell>
+            </Table.Row>
+            ))}
+        </Table.Body>
+      </Table>
+ 
     </ColumnContainer>
   )
 }
