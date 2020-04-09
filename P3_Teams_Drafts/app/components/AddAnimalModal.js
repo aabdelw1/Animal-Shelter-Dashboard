@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select } from 'evergreen-ui'
 import { useMutation } from 'react-apollo'
@@ -7,27 +7,84 @@ import Mutations from '../graphql/mutations'
 const AddAnimalModal = (props) => {
   const { showModal, setShowModal } = props
   const [animalName, setAnimalName] = useState('')
-  const [species, setSpecies] = useState('')
-  const [breed, setBreed] = useState('')
+  const [speciesAdd, setSpeciesAdd] = useState("Dog")
+  const [speciesListAdd, getSpeciesAdd] = useState([{ label: "Loading ...", value: ""}]);
+  const [breedsAdd, setBreedsAdd] = useState("Dog")
+  const [breedsListAdd, getBreedsAdd] = useState([{ label: "Loading ...", value: ""}]);
   const [sex, setSex] = useState('')
   const [age, setAge] = useState('')
+  const [loading, setLoading] = useState(true);
   const [alterationStatus, setAlterationStatus] = useState('false')
   const [adoptability, setAdoptability] = useState('true')
 
-  const [addAnimal, { loading: mutationLoading, error: mutationError }] = useMutation(Mutations.ADD_ANIMAL)
+  useEffect(() => {
+    let unmounted = false;
+    async function getSpeciesAddAPI() {
+      const response = await fetch(`http://localhost:4000/species`, {method: 'get'});
+      const result = await response.json();
+      if (!unmounted) {
+        var newList = []
+        for(var x = 0; x<result.length;x++){
+            newList[x] = result[x].name
+        }
+        let list = newList.map(name => {return {label: name, value: name}});
+        getSpeciesAdd(list);
+        setLoading(false);
+      }
+    }
+    getSpeciesAddAPI();
+
+    async function getBreedAddAPI() {
+      const response = await fetch(`http://localhost:4000/breeds/${speciesAdd}`, {method: 'get'});
+      const result = await response.json();
+      if (!unmounted) {
+        let list = result.map(name => {return {label: name, value: name}});
+        getBreedsAdd(list);
+        setLoading(false);
+      }
+    }
+    getBreedAddAPI();
+    return () => {
+      unmounted = true;
+    };
+  });
+
 
   return (
     <Dialog
       isShown={showModal}
       title="🐶 Add New Animal"
       onCloseComplete={() => setShowModal(false)}
-      confirmLabel={mutationLoading ? 'Loading... ' : 'Create'}
-      isConfirmLoading={mutationLoading}
-      isConfirmDisabled={!animalName || !species || !breed}
       onConfirm={() => {
-        // ADD BACKEND STUFF
+        const requestOptions = {
+          method: 'post',
+          body: JSON.stringify({ 
+            Name: `${animalName}`,
+            Description: "cute",
+            Age: `${age}`,
+            Microchip_ID: "123",
+            Sex: `${sex}`,
+            Surrender_Date: "123",
+            Surrender_Submitter: "123",
+            Surrender_Reason: "123",
+            Surrender_By_Animal_Control: "123",
+            Alteration_Status: "123",
+            Species: `${speciesAdd}` 
+          })
+        };
+
+        fetch(`http://localhost:4000/animal/add`, requestOptions)
+            .then((Response) => Response.json())
+            .then((result) => {
+                  console.log(result)
+                  if (result.status != 200){
+                      toaster.warning('Error with adding pet :( ')
+                  }else{
+                      toaster.success('Successfully added pet');
+                      router.push('/animalDashboard');
+                    }
+                  })
         setShowModal(false)
-        mutationError ? toaster.danger('An error has occured when adding a new Animal') : toaster.success('Your Animal was added!')
       }}>
       <Pane>
         <Pane display="flex">
@@ -45,16 +102,15 @@ const AddAnimalModal = (props) => {
           <Pane display="flex" flexDirection="column">
             <Heading size={500} marginY="0.7rem">Species *</Heading>
             <Pane>
-              <Select marginRight="2rem" width={100} value={species} onChange={e => setSpecies(e.target.value)}>
-                <option value="Dog" defaultValue>Dog</option>
-                <option value="Cat">Cat</option>
+              <Select marginRight="2rem" value={speciesAdd} disabled={loading} onChange={e => setSpeciesAdd(e.target.value)}>
+                {speciesListAdd.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
               </Select>
             </Pane>
           </Pane>
           <Pane display="flex" flexDirection="column">
             <Heading size={500} marginY="0.7rem">Sex *</Heading>
             <Pane>
-              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
+              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(selected)}>
                 <option value="Male" defaultValue>Male</option>
                 <option value="Female">Female</option>
               </Select>
@@ -78,17 +134,9 @@ const AddAnimalModal = (props) => {
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">Breed *</Heading>
               {/* change this to a tagInput */}
-              <Combobox
-                width={200}
-                openOnFocus
-                marginRight="2rem"
-                items={species === 'Cat' ? ['CatBreed1', 'CatBreed2'] : ['DogBreed1', 'DogBreed2']}
-                placeholder="Select Breed"
-                autocompleteProps={{ title: 'Breed' }}
-                initialSelectedItem={breed || ''}
-                onChange={selected => setBreed(selected)}
-                value={breed}
-              />
+              <Select marginRight="2rem" value={breedsAdd} disabled={loading} onChange={e => setBreedsAdd(e.target.value)}>
+                {breedsListAdd.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
+              </Select>
             </Pane>
           </Pane>
           <Pane display="flex" marginBottom="3rem">

@@ -7,6 +7,11 @@ import { Context } from './Context'
 const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
   const [showModal, setShowModal] = useState(false)
+  const [species, setSpecies] = useState("Dog")
+  const [speciesList, getSpecies] = useState([{ label: "Loading ...", value: ""}]);
+  const [breeds, setBreeds] = useState("Dog")
+  const [breedsList, getBreeds] = useState([{ label: "Loading ...", value: ""}]);
+  const [loading, setLoading] = useState(true);
   const [,,,,,, date, setDate, specialty, setSpecialty, acceptance, setAcceptance, duration, setDuration, , setReset, candidate, setCandidate, position, setPosition] = useContext(Context)
   // const debouncedCandidate = useDebounce(candidate, 0.0001)
 
@@ -14,21 +19,71 @@ const AnimalDashboardFilters = (props) => {
   //   setReset(true)
   // }, [date, specialty, acceptance, duration])
 
+    
+  
+  useEffect(() => {
+    let unmounted = false;
+    async function getSpeciesAPI() {
+      const response = await fetch(`http://localhost:4000/species`, {method: 'get'});
+      const result = await response.json();
+      if (!unmounted) {
+        var newList = []
+        for(var x = 0; x<result.length;x++){
+            newList[x] = result[x].name
+        }
+        let list = newList.map(name => {return {label: name, value: name}});
+        getSpecies(list);
+        setLoading(false);
+      }
+    }
+    getSpeciesAPI();
+
+    async function getBreedAPI() {
+      const response = await fetch(`http://localhost:4000/breeds/${species}`, {method: 'get'});
+      const result = await response.json();
+      if (!unmounted) {
+        let list = result.map(name => {return {label: name, value: name}});
+        getBreeds(list);
+        setLoading(false);
+      }
+    }
+    getBreedAPI();
+    return () => {
+      unmounted = true;
+    };
+  });
+
+
+  /*
+  useEffect (() => {
+    fetch(`http://localhost:4000/species`, {
+      method: 'get'
+    })
+    .then((Response) => Response.json())
+    .then((result) => {
+      var newList = []
+      for(var x = 0; x<result.length;x++){
+        newList[x] = result[x].name
+      }
+      let list = newList.map(name => {
+        return {value: name, display: name}
+      });
+      getSpecies(newList.map(({ name }) => ({ label: name, value: name })));
+      //getSpecies([{value: '', display: '(Select Species)'}].concat(list));
+      })
+  });
+  */
+
   return (
     <Pane display="flex" marginY='2rem'>
       <Pane>
-        <SearchInput width="20rem" marginRight="2rem" placeholder="Search for an Animal..." />
-      </Pane>
-      <Pane>
-        <Select marginRight="2rem" value={specialty} onChange={e => setSpecialty(e.target.value)}>
-          <option value="Dogs" defaultValue>Dogs</option>
-          <option value="Cats">Cats</option>
+        <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
+          {speciesList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
         </Select>
       </Pane>
       <Pane>
-        <Select marginRight="2rem" value={acceptance} onChange={e => setAcceptance(e.target.value)}>
-          <option value="All Breeds" defaultValue>All Breeds</option>
-          <option value="Some Other Breeds">Some Other Breeds</option>
+        <Select marginRight="2rem" value={breeds} disabled={loading} onChange={e => setBreeds(e.target.value)}>
+          {breedsList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
         </Select>
       </Pane>
       <Pane>

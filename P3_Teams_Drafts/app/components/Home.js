@@ -17,7 +17,7 @@ const Home = () => {
               method: 'get'
           }).then((Response) => Response.json())
             .then((result) => {
-                  if (result[0].password != password){
+                  if (result[0].password != password || result == "User not found"){
                       toaster.warning('Seems like you entered wrong username/password, please enter again')
                   }else{
                       localStorage.setItem('UserName', username);
