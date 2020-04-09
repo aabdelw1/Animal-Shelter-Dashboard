@@ -12,10 +12,10 @@ exports.list_all_animals = function(req, res) {
               (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
                   (SELECT COUNT(Vaccine_Type)
                 FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                WHERE Require_for_Adoption=1 AND A.Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
                   (SELECT Vaccine_Type
                   FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                  WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                  WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
                   ))) 
                 THEN "Ready"
                 ELSE "Pending"
@@ -33,20 +33,20 @@ exports.list_all_animals = function(req, res) {
       q = q + ` AND (Alteration_Status = 1 AND (1 >
                   (SELECT COUNT(Vaccine_Type)
                 FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                WHERE Require_for_Adoption=1 AND Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
                   (SELECT Vaccine_Type
                   FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                  WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                  WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
                   ))))  `;
     }
     else if(req.query.adoptability == 'Pending'){
       q = q + `  AND (Alteration_Status = 0 OR (1 <=
                       (SELECT COUNT(Vaccine_Type)
                     FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                    WHERE Require_for_Adoption=1 AND Pet_ID=2 AND Vaccine_Type NOT IN
+                    WHERE Require_for_Adoption=1 AND Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
                       (SELECT Vaccine_Type
                       FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                      WHERE AN.Pet_ID=2 AND (Expiration_Date > NOW())
+                      WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
                       )))) `;
     }
   }
