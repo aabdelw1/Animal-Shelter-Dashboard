@@ -9,9 +9,10 @@ const db = mysql.createConnection ({
     host: 'localhost',
     user: 'gatechUser',
     password: 'gatech123',
-    database: 'cs6400_sp20_team054'
+    database: 'cs6400_sp20_team054',
+    multipleStatements: true
 });
-
+ 
 // connect to database
 db.connect((err) => {
     if (err) {

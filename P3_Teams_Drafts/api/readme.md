@@ -18,8 +18,12 @@
 * Or in development mode
   * nodemon server.js
 * Browse to an API endpoint
-  * http://localhost:3000/animals
+  * http://localhost:4000/animals
 
 ## Developing new API endpoints
 * Add contoller file to folder ./controllers
 * Add route to ./route.js calling controller
+
+## Initializing the database
+* Create the database using a ../sql/team054_p3_createdb.sql
+* Nativate browser (or use Postman) to GET from http://localhost:4000/initdb
