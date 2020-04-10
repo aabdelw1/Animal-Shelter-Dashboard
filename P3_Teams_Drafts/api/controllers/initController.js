@@ -93,13 +93,14 @@ async function loadAnimals() {
         //console.log(q);
         await db.query(q); 
         var breeds = fields[12].split(',');
-        breeds.forEach(
-            element => async function(){
+        for (var i=0;i<breeds.length;i++) {
+            var breed=breeds[i].replace("'","''");
+            //console.log(" loading breed:"+breed);
             var q2=`INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) values 
-                ('${fields[0]}','${fields[1]}');`;
+            ('${fields[0]}','${breed}');`;
             //console.log(q2);
             await db.query(q2); 
-        });
+        }
       }
     }        
 }
