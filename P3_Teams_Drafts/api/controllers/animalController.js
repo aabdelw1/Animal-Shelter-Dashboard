@@ -60,25 +60,35 @@ exports.list_all_animals = function(req, res) {
               Animal.Age,
               Adoptability_Status`;
   
-    /*Sorting Parameters
-    Pet_ID
-    Name
-    Species
-    Breed_Name
-    Sex
-    Alteration_Status
-    Age
-    Adoptability_Status
-    */
   if(req.query.sortParameter!=null)
   {
-    q= q + ` ORDER BY ? `;
-    params.push(req.query.sortParameter);
+    if(req.query.sortParameter=='name')
+      q= q + ` ORDER BY Name `;
+    else if(req.query.sortParameter=='species')
+      q= q + ` ORDER BY Species `;  
+    else if(req.query.sortParameter=='breeds')
+      q= q + ` ORDER BY Breed_Name `;       
+    else if(req.query.sortParameter=='sex')
+      q= q + ` ORDER BY Sex `;   
+    else if(req.query.sortParameter=='alterationStatus')
+      q= q + ` ORDER BY Alteration_Status `;  
+    else if(req.query.sortParameter=='age')
+      q= q + ` ORDER BY Age `;       
+    else if(req.query.sortParameter=='adoptability')
+      q= q + ` ORDER BY Adoptability_Status `;  
+    else if(req.query.sortParameter=='petId')
+      q= q + ` ORDER BY Pet_ID `;  
 
     if(req.query.sortOrder!=null)
     {
-      q= q + ` ? `;
-      params.push(req.query.sortOrder);
+      if(req.query.sortOrder=='ASC')
+        q= q + ` ASC; `;
+      else if(req.query.sortOrder=='DESC')
+        q= q + ` DESC; `;
+    }
+    else
+    {
+      q = q + `; `;
     }
   }
   else
@@ -95,7 +105,7 @@ exports.list_all_animals = function(req, res) {
         animals.push({
           petId: a.Pet_ID,
           name: a.Name,
-          description: a.Description,
+          //description: a.Description,
           species: a.Species,
           breeds: a.Breed_Name,
           sex: a.Sex,
