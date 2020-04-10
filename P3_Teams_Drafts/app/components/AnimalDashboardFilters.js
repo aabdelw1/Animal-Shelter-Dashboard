@@ -3,13 +3,14 @@ import { Select, Button, Pane, Tooltip, Position, toaster, TextInput, SearchInpu
 import PropTypes from 'prop-types'
 import AddAnimalModal from './AddAnimalModal'
 import { Context } from './Context'
+import { useRouter } from 'next/router'
 
 const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
   const [showModal, setShowModal] = useState(false)
-  const [species, setSpecies] = useState("Dog")
+  const [species, setSpecies] = useState("")
   const [speciesList, getSpecies] = useState([{ label: "Loading ...", value: ""}]);
-  const [breeds, setBreeds] = useState("Dog")
+  const [adopt, setAdopt] = useState("Pending")
   const [breedsList, getBreeds] = useState([{ label: "Loading ...", value: ""}]);
   const [loading, setLoading] = useState(true);
   const [,,,,,, date, setDate, specialty, setSpecialty, acceptance, setAcceptance, duration, setDuration, , setReset, candidate, setCandidate, position, setPosition] = useContext(Context)
@@ -38,6 +39,7 @@ const AnimalDashboardFilters = (props) => {
     }
     getSpeciesAPI();
 
+    /*
     async function getBreedAPI() {
       const response = await fetch(`http://localhost:4000/breeds/${species}`, {method: 'get'});
       const result = await response.json();
@@ -48,31 +50,17 @@ const AnimalDashboardFilters = (props) => {
       }
     }
     getBreedAPI();
+    */
     return () => {
       unmounted = true;
     };
   });
 
+  function filterAnimal(e) {
+    localStorage.setItem('filterSpecies', species);
+    localStorage.setItem('filterAdopt', adopt);
+  }
 
-  /*
-  useEffect (() => {
-    fetch(`http://localhost:4000/species`, {
-      method: 'get'
-    })
-    .then((Response) => Response.json())
-    .then((result) => {
-      var newList = []
-      for(var x = 0; x<result.length;x++){
-        newList[x] = result[x].name
-      }
-      let list = newList.map(name => {
-        return {value: name, display: name}
-      });
-      getSpecies(newList.map(({ name }) => ({ label: name, value: name })));
-      //getSpecies([{value: '', display: '(Select Species)'}].concat(list));
-      })
-  });
-  */
 
   return (
     <Pane display="flex" marginY='2rem'>
@@ -82,14 +70,19 @@ const AnimalDashboardFilters = (props) => {
         </Select>
       </Pane>
       <Pane>
-        <Select marginRight="2rem" value={breeds} disabled={loading} onChange={e => setBreeds(e.target.value)}>
-          {breedsList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
+        <Select marginRight="2rem" value={adopt} onChange={e => setAdopt(e.target.value)}>
+         <option key="pending" value="Pending">Pending</option>
+         <option key="approved" value="Approved">Approved</option>
+         <option key="rejected" value="Rejected">Rejected</option>
         </Select>
+      </Pane>
+      <Pane>
+          <Button marginRight="2rem" appearance="primary" onClick={filterAnimal} type="submit">Filter</Button>
       </Pane>
       <Pane>
         <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Animal</Button>
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
-      </Pane>
+      </Pane> 
     </Pane>
   )
 }

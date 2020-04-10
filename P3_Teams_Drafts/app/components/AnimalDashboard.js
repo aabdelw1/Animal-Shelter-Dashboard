@@ -31,17 +31,11 @@ const AnimalDashboard = (props) => {
       const response = await fetch(`http://localhost:4000/animals`, {method: 'get'});
       const result = await response.json();
       if (!unmounted) {
-        //var newList = []
-        //for(var x = 0; x<result.length;x++){
-        //    newList[x] = result[x]
-        //}
-        // let list = newList.map(name => {return {label: name, value: name}});
         getAnimals(result);
         setLoading(false);
       }
     }
     getAnimalsAPI();
-
     return () => {
       unmounted = true;
     };
