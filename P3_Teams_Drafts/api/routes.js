@@ -9,8 +9,8 @@ module.exports = function(app) {
   var vaccineController = require('./controllers/vaccineController');
   var initController = require('./controllers/initController');
 
-  app.get('/init',initController.load_data);
-  
+  app.get('/initdb',initController.load_data);
+
   app.get('/animals',animalController.list_all_animals);
   app.post('/animal/add', animalController.add_animal);
   app.get('/animal/:animalId', animalController.get_animal);
