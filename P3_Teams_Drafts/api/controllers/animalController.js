@@ -233,33 +233,58 @@ exports.get_animal = function(req, res) {
 
   var params = [];
   var q = `SELECT
-              Animal.Pet_ID, 
-              Animal.Name, 
-              Animal.Species, 
-              GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
-              Animal.Sex, 
-              Animal.Alteration_Status, 
-              Animal.Age,
-              AdoptionApplication.State as Adoptability_Status
-            FROM Animal 
-            INNER JOIN AnimalBreeds ON Animal.Pet_ID = AnimalBreeds.Pet_ID
-            LEFT JOIN AdoptionApplication ON Animal.Adoption_Application_Number = AdoptionApplication.Application_Number
-            WHERE Animal.Pet_ID = ? `
+            Animal.Pet_ID, 
+            Animal.Name, 
+            Animal.Species, 
+            GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
+            Animal.Sex, 
+            Animal.Alteration_Status, 
+            Animal.Age,
+            Animal.Description,
+            Animal.Microchip_ID,
+            Animal.Surrender_Reason,
+            Animal.Surrender_By_Animal_Control,
+            Animal.Surrender_Date,
+            Animal.Surrender_Submitter,
+            Animal.Adoption_Date,
+            Animal.Adoption_Fee,
+            Animal.Adoption_Application_Number,
+            (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
+                (SELECT COUNT(Vaccine_Type)
+              FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
+              WHERE Require_for_Adoption=1 AND A.Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
+                (SELECT Vaccine_Type
+                FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
+                WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
+                ))) 
+              THEN "Ready"
+              ELSE "Pending"
+                END) AS Adoptability_Status 
+          FROM Animal NATURAL JOIN AnimalBreeds
+          WHERE Animal.Pet_ID = ? `
   params.push(req.params.animalId);
 
   db.query(q, params, (err, result) => {
     if (result!=null && result.length>0) {
       var a = result[0];
       return res.json({
-          petId: a.Pet_ID,
-          name: a.Name,
-          description: a.Description,
-          species: a.Species,
-          breeds: a.Breed_Name,
-          sex: a.Sex,
-          alterationStatus: a.Alteration_Status,
-          age: a.Age,
-          adoptability: a.Adoptability_Status
+            petId: a.Pet_ID,
+            name: a.Name,
+            species: a.Species,
+            breeds: a.Breed_Name,  
+            sex: a.Sex,
+            alterationStatus: a.Alteration_Status,
+            age: a.Age,
+            adoptability: a.Adoptability_Status,
+            microchipId: a.Microchip_ID,
+            description: a.Description,
+            surrenderReason: a.Surrender_Reason,
+            surrenderByAnimalControl: a.Surrender_By_Animal_Control,
+            surrenderDate: a.Surrender_Date,
+            surrenderSubmitter: a.Surrender_Submitter,
+            adoptionDate: a.Adoption_Date,
+            adoptionFee: a.Adoption_Fee,
+            adoptionApplicationNumber: a.Adoption_Application_Number
           //surrenderDate: a.Surrender_Date,
           //surrenderReason: a.Surrender_Reason,
           //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
