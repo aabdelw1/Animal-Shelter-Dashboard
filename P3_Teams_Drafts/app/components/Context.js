@@ -3,23 +3,12 @@ import React, { useState } from 'react'
 const Context = React.createContext({})
 
 const ContextProvider = (props) => {
-  // const { children } = props
-  // const [AssoDir, setAD] = useState('bb9209')
-  // const [smes, setSmes] = useState(['aa573g', 'pd967n'])
-  // const [interviewTime, setInterviewTime] = useState('8:00 am')
-  // const [date, setDate] = useState(new Date())
-  // const [specialty, setSpecialty] = useState('Software Engineer')
-  // const [acceptance, setAcceptance] = useState('Free')
-  // const [duration, setDuration] = useState(90)
-  // const [reset, setReset] = useState(false)
-  // const [candidate, setCandidate] = useState('')
-  // const [position, setPosition] = useState('Full Time')
-  const [isOwner, setIsOwner] = useState(false)
-  const [isVolunteer, setIsVolunteer] = useState(false)
-  const [isEmployee, setIsEmployee] = useState(false)
+  const [userType, setUserType] = useState('')
+  const [species, setSpecies] = useState('All')
+  const [adoptionStatus, setAdoptionStatus] = useState('All')
 
   return (
-    <Context.Provider value={[isOwner, setIsOwner, isVolunteer, setIsVolunteer, isEmployee, setIsEmployee]}>
+    <Context.Provider value={[userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus]}>
       {props.children}
     </Context.Provider>
   )

@@ -7,7 +7,7 @@ const Home = () => {
       const router = useRouter()
       const [username, setUsername] = useState(null)
       const [password, setPassword] = useState(null)
-      const [, setIsOwner, isVolunteer, setIsVolunteer,, setIsEmployee] = useContext(Context)
+      const [, setUserType] = useContext(Context)
 
 
 
@@ -23,6 +23,7 @@ const Home = () => {
                       localStorage.setItem('UserName', username);
                       localStorage.setItem('isLoggedin', true);
                       localStorage.setItem('userType', result[0].userType);
+                      setUserType( result[0].userType)
                       toaster.success('Successfully signed in');
                       router.push('/animalDashboard');
                     }
