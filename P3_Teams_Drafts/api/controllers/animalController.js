@@ -9,6 +9,15 @@ exports.list_all_animals = function(req, res) {
               Animal.Sex, 
               Animal.Alteration_Status, 
               Animal.Age,
+              Animal.Description,
+              Animal.Microchip_ID,
+              Animal.Surrender_Reason,
+              Animal.Surrender_By_Animal_Control,
+              Animal.Surrender_Date,
+              Animal.Surrender_Submitter,
+              Animal.Adoption_Date,
+              Animal.Adoption_Fee,
+              Animal.Adoption_Application_Number,
               (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
                   (SELECT COUNT(Vaccine_Type)
                 FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
@@ -20,7 +29,7 @@ exports.list_all_animals = function(req, res) {
                 THEN "Ready"
                 ELSE "Pending"
                   END) AS Adoptability_Status 
-            FROM Animal NATURAL JOIN AnimalBreeds 
+            FROM Animal NATURAL JOIN AnimalBreeds
             WHERE Adoption_Date IS NULL `
 
   if (req.query.species != null) {
@@ -58,7 +67,7 @@ exports.list_all_animals = function(req, res) {
               Animal.Sex, 
               Animal.Alteration_Status, 
               Animal.Age,
-              Adoptability_Status`;
+              Adoptability_Status `;
   
   if(req.query.sortParameter!=null)
   {
@@ -105,14 +114,24 @@ exports.list_all_animals = function(req, res) {
         animals.push({
           petId: a.Pet_ID,
           name: a.Name,
-          //description: a.Description,
           species: a.Species,
-          breeds: a.Breed_Name,
+          breeds: a.Breed_Name,  
           sex: a.Sex,
           alterationStatus: a.Alteration_Status,
           age: a.Age,
-          adoptability: a.Adoptability_Status
-          //surrenderDate: a.Surrender_Date,
+          adoptability: a.Adoptability_Status,
+          microchipId: a.Microchip_ID,
+          description: a.Description,
+          surrenderReason: a.Surrender_Reason,
+          surrenderByAnimalControl: a.Surrender_By_Animal_Control,
+          surrenderDate: a.Surrender_Date,
+          surrenderSubmitter: a.Surrender_Submitter,
+          adoptionDate: a.Adoption_Date,
+          adoptionFee: a.Adoption_Fee,
+          adoptionApplicationNumber: a.Adoption_Application_Number
+             
+          
+          //
           //surrenderReason: a.Surrender_Reason,
           //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
           //adoptionDate: a.Adoption_Date,
