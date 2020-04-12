@@ -18,18 +18,26 @@ exports.list_all_animals = function(req, res) {
               Animal.Adoption_Date,
               Animal.Adoption_Fee,
               Animal.Adoption_Application_Number,
-              (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
-                  (SELECT COUNT(Vaccine_Type)
-                FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                WHERE Require_for_Adoption=1 AND A.Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
-                  (SELECT Vaccine_Type
-                  FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                  WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
-                  ))) 
-                THEN "Ready"
-                ELSE "Pending"
-                  END) AS Adoptability_Status 
-            FROM Animal NATURAL JOIN AnimalBreeds
+              Adoptability.Adoptability_Status 
+            FROM 
+            Animal
+            NATURAL JOIN (
+              select a.Pet_ID,
+                case
+                when ((count(v.vaccine_type) =sum(case when va.pet_id is null then 0 else 1 end)) and 
+                a.alteration_status=1 and
+                a.adoption_application_number is null) then 'Ready'
+                when a.adoption_application_number then 'Adopted'
+                else 'Pending'
+              end as Adoptability_Status
+              from animal a
+              inner join vaccine v on 
+              v.species_name=a.species and require_for_adoption=1
+              left join vaccineadministration va on 
+              va.vaccine_type=v.vaccine_type and a.pet_id=va.pet_id
+              group by a.pet_id 
+            ) Adoptability 
+            NATURAL JOIN AnimalBreeds
             WHERE Adoption_Date IS NULL `
 
   if (req.query.species != null) {
@@ -38,26 +46,8 @@ exports.list_all_animals = function(req, res) {
   }
 
   if (req.query.adoptability != null) {
-    if(req.query.adoptability == 'Ready'){
-      q = q + ` AND (Alteration_Status = 1 AND (1 >
-                  (SELECT COUNT(Vaccine_Type)
-                FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                WHERE Require_for_Adoption=1 AND Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
-                  (SELECT Vaccine_Type
-                  FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                  WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
-                  ))))  `;
-    }
-    else if(req.query.adoptability == 'Pending'){
-      q = q + `  AND (Alteration_Status = 0 OR (1 <=
-                      (SELECT COUNT(Vaccine_Type)
-                    FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-                    WHERE Require_for_Adoption=1 AND Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
-                      (SELECT Vaccine_Type
-                      FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                      WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
-                      )))) `;
-    }
+    q = q + ' AND Adoptability.Adoptability_Status = ? ';
+    params.push(req.query.adoptability);
   }
 
   q = q + ` GROUP BY   
@@ -67,7 +57,7 @@ exports.list_all_animals = function(req, res) {
               Animal.Sex, 
               Animal.Alteration_Status, 
               Animal.Age,
-              Adoptability_Status `;
+              Adoptability.Adoptability_Status `;
   
   if(req.query.sortParameter!=null)
   {
@@ -104,7 +94,7 @@ exports.list_all_animals = function(req, res) {
   {
     q = q + ";"
   }
-
+  console.log(q);
   db.query(q, params, (err, result) => {
     var animals=[];
 
@@ -129,14 +119,6 @@ exports.list_all_animals = function(req, res) {
           adoptionDate: a.Adoption_Date,
           adoptionFee: a.Adoption_Fee,
           adoptionApplicationNumber: a.Adoption_Application_Number
-             
-          
-          //
-          //surrenderReason: a.Surrender_Reason,
-          //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
-          //adoptionDate: a.Adoption_Date,
-          //adoptionFee: a.Adoption_Fee,
-          //adoptionApplicationNumber: a.Adoption_Application_Number
         });
       });
 
@@ -232,35 +214,43 @@ exports.get_vaccine = function(req, res) {
 exports.get_animal = function(req, res) {
 
   var params = [];
-  var q = `SELECT
-            Animal.Pet_ID, 
-            Animal.Name, 
-            Animal.Species, 
-            GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
-            Animal.Sex, 
-            Animal.Alteration_Status, 
-            Animal.Age,
-            Animal.Description,
-            Animal.Microchip_ID,
-            Animal.Surrender_Reason,
-            Animal.Surrender_By_Animal_Control,
-            Animal.Surrender_Date,
-            Animal.Surrender_Submitter,
-            Animal.Adoption_Date,
-            Animal.Adoption_Fee,
-            Animal.Adoption_Application_Number,
-            (CASE 	 WHEN (Alteration_Status = 1 AND 1 >
-                (SELECT COUNT(Vaccine_Type)
-              FROM Vaccine AS V JOIN Animal AS A ON V.Species_Name=A.Species
-              WHERE Require_for_Adoption=1 AND A.Pet_ID=Animal.Pet_ID AND Vaccine_Type NOT IN
-                (SELECT Vaccine_Type
-                FROM VaccineAdministration AS VA JOIN Animal AS AN ON VA.Pet_ID = AN.Pet_ID
-                WHERE AN.Pet_ID=Animal.Pet_ID AND (Expiration_Date > NOW())
-                ))) 
-              THEN "Ready"
-              ELSE "Pending"
-                END) AS Adoptability_Status 
-          FROM Animal NATURAL JOIN AnimalBreeds
+  var q = ` SELECT
+              Animal.Pet_ID, 
+              Animal.Name, 
+              Animal.Species, 
+              GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
+              Animal.Sex, 
+              Animal.Alteration_Status, 
+              Animal.Age,
+              Animal.Description,
+              Animal.Microchip_ID,
+              Animal.Surrender_Reason,
+              Animal.Surrender_By_Animal_Control,
+              Animal.Surrender_Date,
+              Animal.Surrender_Submitter,
+              Animal.Adoption_Date,
+              Animal.Adoption_Fee,
+              Animal.Adoption_Application_Number,
+              Adoptability.Adoptability_Status 
+            FROM 
+            Animal
+            NATURAL JOIN (
+              select a.Pet_ID,
+                case
+                when ((count(v.vaccine_type) =sum(case when va.pet_id is null then 0 else 1 end)) and 
+                a.alteration_status=1 and
+                a.adoption_application_number is null) then 'Ready'
+                when a.adoption_application_number then 'Adopted'
+                else 'Pending'
+              end as Adoptability_Status
+              from animal a
+              inner join vaccine v on 
+              v.species_name=a.species and require_for_adoption=1
+              left join vaccineadministration va on 
+              va.vaccine_type=v.vaccine_type and a.pet_id=va.pet_id
+              group by a.pet_id 
+            ) Adoptability 
+            NATURAL JOIN AnimalBreeds
           WHERE Animal.Pet_ID = ? `
   params.push(req.params.animalId);
 
@@ -285,12 +275,6 @@ exports.get_animal = function(req, res) {
             adoptionDate: a.Adoption_Date,
             adoptionFee: a.Adoption_Fee,
             adoptionApplicationNumber: a.Adoption_Application_Number
-          //surrenderDate: a.Surrender_Date,
-          //surrenderReason: a.Surrender_Reason,
-          //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
-          //adoptionDate: a.Adoption_Date,
-          //adoptionFee: a.Adoption_Fee,
-          //adoptionApplicationNumber: a.Adoption_Application_Number
         });
     }
     
