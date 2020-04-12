@@ -4,9 +4,12 @@ import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, Selec
 import Component from '@reactions/component'
 import { useMutation } from 'react-apollo'
 import Mutations from '../graphql/mutations'
+import { useRouter } from 'next/router'
+
 
 const AddAnimalModal = (props) => {
   const { showModal, setShowModal } = props
+  const router = useRouter();
   const [animalName, setAnimalName] = useState('')
   const [species, setSpecies] = useState("Dog")
   const [breeds, setBreeds] = useState([])
@@ -22,6 +25,7 @@ const AddAnimalModal = (props) => {
   const [loading, setLoading] = useState(true);
   const [alterationStatus, setAlterationStatus] = useState('')
   const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('')
+  const [animalCount, setAnimalCount] = useState([{species: '', maxPerShelter: '', countWaitingAdoption: ''}])
   const [adoptability, setAdoptability] = useState('true')
 
   const getBreeds = async () => {
@@ -36,11 +40,14 @@ const AddAnimalModal = (props) => {
     const result = await response.json()
     setLoading(false)
     var newList = []
+    var countList = []
     for(var x = 0; x<result.length;x++){
         newList[x] = result[x].name
+        countList[x] = {species: result[x].name, maxPerShelter: result[x].maxPerShelter, countWaitingAdoption: result[x].countWaitingAdoption}
     }
     let list = newList.map(name => {return {label: name, value: name}});
     setSpeciesList(list);
+    setAnimalCount(countList)
   }
 
 
@@ -55,6 +62,9 @@ const AddAnimalModal = (props) => {
       title="🐶 Add New Animal"
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
+        for(var x = 0; x< animalCount.length; x++ ){
+          if(species == animalCount[x].name && animalCount[x].maxPerShelter < animalCount[x].countWaitingAdoption) return setShowModal(false)
+        }
         const requestOptions = {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
@@ -80,6 +90,7 @@ const AddAnimalModal = (props) => {
                       toaster.warning('Error with adding pet :( ')
                   }else{
                       toaster.success('Successfully added pet');
+                      router.push('/animalDashboard');
                     }
                   })
         setShowModal(false)
