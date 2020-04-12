@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, Fragment } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { toaster, Spinner, Pane } from 'evergreen-ui'
@@ -49,6 +49,7 @@ const AnimalDashboard = (props) => {
   }, [])
 
     return (
+      <Fragment>
       <Container>
             {
               loading && 
@@ -63,12 +64,22 @@ const AnimalDashboard = (props) => {
                 }
               })
             }
-            {
-              pendingAdoptions.map((pendingAdoptions, index) => { 
-                  if(true/*userType == 'Admin'*/) return <AdoptionCard index={index} data={pendingAdoptions}/>
-              })
-            }
     </Container>
+    <Container> 
+        {
+          loading && 
+          <Pane>
+            <Spinner margin='auto' marginTop='2rem'/>
+          </Pane>
+        }
+        {
+        pendingAdoptions.map((pendingAdoptions, index) => { 
+            if(true/*userType == 'Admin'*/) return <AdoptionCard index={index} data={pendingAdoptions}/>
+        })
+        }
+
+    </Container>
+    </Fragment>
       )
 }
 

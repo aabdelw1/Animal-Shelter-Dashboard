@@ -57,8 +57,8 @@ const CardPopoverAdopt = (props) => {
         content={
           <Menu>
             <Menu.Group>
-                <Menu.Item onSelect={() => { ApproveAdoption() }} intent="success">Approve Application</Menu.Item>
-                <Menu.Item onSelect={() => { RejectAdoption() }} intent="danger">Reject Application</Menu.Item>
+                <Menu.Item onSelect={() => { ApproveAdoption() }} intent="success" icon="tick-circle">Approve Application</Menu.Item>
+                <Menu.Item onSelect={() => { RejectAdoption() }} intent="danger" icon="cross">Reject Application</Menu.Item>
             </Menu.Group>
           </Menu>
         }
