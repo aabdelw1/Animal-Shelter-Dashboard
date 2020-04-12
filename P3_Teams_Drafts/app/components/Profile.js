@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge, Text, Table, Avatar } from 'evergreen-ui'
 import Router from 'next/router'
 import AddAdoptionModal from './AddAdoptionModal'
+import { Context } from './Context'
 import AddNewAdoptionApplication from './AddNewAdoptionApplication'
 
 
@@ -14,6 +15,7 @@ const Profile = (props) => {
   const [visible, setVisible] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showModalApp, setShowModalApp] = useState(false)
+  const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
   const data = null
 
   const animalInfo = async () => {
@@ -50,13 +52,9 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="calendar" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>Age: {animal.age}</Text></Pane>
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
-            <Pane>
-                <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption App</Button>
-                <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp} id={_id}/>
-            </Pane>
-            <Pane>
-                <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Adoption</Button>
-                <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
+            <Pane>         
+                  <Button marginRight="2rem" disabled={userType == 'Volunteer' ? true: false} onClick={() => setShowModal(true)}>Add Adoption</Button>
+                  <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
         </Pane>

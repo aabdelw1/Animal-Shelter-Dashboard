@@ -7,6 +7,7 @@ import { Context } from './Context'
 import { useRouter } from 'next/router'
 import AnimalDashboardColumn from './AnimalDashboardColumn'
 import AnimalCard from './AnimalCard'
+import AdoptionCard from './AdoptionCard'
 
 import Queries from '../graphql/queries'
 import { useQuery } from '@apollo/react-hooks'
@@ -24,6 +25,7 @@ const Container = styled.div`
 const AnimalDashboard = (props) => {
   const { setScheduleButton } = props
   const [animals, setAnimals] = useState([])
+  const [pendingAdoptions, setPendingAdoptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
@@ -34,12 +36,20 @@ const AnimalDashboard = (props) => {
     setAnimals(result)
   }
 
+  const fetchPending = async () => {
+    const response = await fetch(`http://localhost:4000/adoptionApplicationsPendingApproval`, {method: 'get'})
+    const result = await response.json()
+    setLoading(false)
+    setPendingAdoptions(result)
+  }
+
   useEffect(() => {
     fetchAnimals()
+    fetchPending()
   }, [])
 
     return (
-        <Container>
+      <Container>
             {
               loading && 
               <Pane>
@@ -53,7 +63,12 @@ const AnimalDashboard = (props) => {
                 }
               })
             }
-        </Container>
+            {
+              pendingAdoptions.map((pendingAdoptions, index) => { 
+                  if(true/*userType == 'Admin'*/) return <AdoptionCard index={index} data={pendingAdoptions}/>
+              })
+            }
+    </Container>
       )
 }
 

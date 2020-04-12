@@ -2,12 +2,14 @@ import React, { useState, useContext, useEffect } from 'react'
 import { Select, Button, Pane, Tooltip, Position, toaster, TextInput, SearchInput } from 'evergreen-ui'
 import PropTypes from 'prop-types'
 import AddAnimalModal from './AddAnimalModal'
+import AddNewAdoptionApplication from './AddNewAdoptionApplication'
 import { Context } from './Context'
 import { useRouter } from 'next/router'
 
 const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
   const [showModal, setShowModal] = useState(false)
+  const [showModalApp, setShowModalApp] = useState(false)
   const [loading, setLoading] = useState(true)
   const [speciesList, setSpeciesList] = useState([{ label: "Loading ...", value: ""}])
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
@@ -50,6 +52,10 @@ const AnimalDashboardFilters = (props) => {
         <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Animal</Button>
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
       </Pane> 
+      <Pane>
+        <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption Application</Button>
+        <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
+      </Pane>
     </Pane>
   )
 }

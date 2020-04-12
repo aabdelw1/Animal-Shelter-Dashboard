@@ -23,7 +23,7 @@ const Home = () => {
                       localStorage.setItem('UserName', username);
                       localStorage.setItem('isLoggedin', true);
                       localStorage.setItem('userType', result[0].userType);
-                      setUserType( result[0].userType)
+                      setUserType(result[0].userType)
                       toaster.success('Successfully signed in');
                       router.push('/animalDashboard');
                     }
