@@ -338,7 +338,6 @@ exports.add_animal = function(req, res) {
     {
       db.query('SELECT LAST_INSERT_ID() as id;', null, (err, result) => {
         var response = { petId:result[0].id };
-        console.log("petId: "+response.petId);
         if (req.body.breeds!=null) {
           var breeds = req.body.breeds.split(',');
           addBreeds(response.petId, breeds);
@@ -378,11 +377,11 @@ exports.put_animal_adoption_information = function(req, res) {
   params.push(req.body.applicationNumber);
   params.push(req.body.adoptionDate);
   params.push(req.body.adoptionFee);
-  params.push(req.params.petID);
+  params.push(req.params.PetID);
 
   db.query(q, params, (err, results) => {
      if(err) throw err;
-    //console.log("1 record inserted"); 
+     console.log(results); 
      res.send('Animal Adoption Information Updated');
   });
 };

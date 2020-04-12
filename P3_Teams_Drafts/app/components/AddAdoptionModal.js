@@ -5,70 +5,54 @@ import Component from '@reactions/component'
 import { useMutation } from 'react-apollo'
 import Mutations from '../graphql/mutations'
 
-const AddAnimalModal = (props) => {
+const AddAdoptionModal = (props) => {
   const { showModal, setShowModal, id } = props
+  const [adopterList, setAdopterList] = useState([])
   const [adopter, setAdopter] = useState('')
   const [adoptionDate, setAdoptionDate] = useState('')
   const [adoptionFee, setAdoptionFee] = useState('')
   const [adoptionID, setAdoptionID] = useState('')
 
-
-  const [species, setSpecies] = useState("Dog")
-  const [breeds, setBreeds] = useState([])
-  const [breedsList, setBreedsList] = useState([])
-  const [sex, setSex] = useState('Male')
-  const [age, setAge] = useState('')
-  const [description, setDescription] = useState('')
-  const [microchipId, setMicrochipId] = useState('')
-  
-  const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
   const [loading, setLoading] = useState(true);
-  const [alterationStatus, setAlterationStatus] = useState('')
-  const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('')
-  const [adoptability, setAdoptability] = useState('true')
 
-  const getBreeds = async () => {
-    const response = await fetch(`http://localhost:4000/breeds/${species}`, {method: 'get'})
+
+  const getAdopters = async () => {
+    const response = await fetch(`http://localhost:4000/adoptionApplications?applicantLastName=&coApplicantLastName=`, {method: 'get'})
     const result = await response.json()
     setLoading(false)
-    setBreedsList(result)
+
+    var newList = []
+    for(var x = 0; x<result.length;x++){
+        var newString = result[x].applicationNumber + " | " +result[x].applicantFirstName + " " + result[x].applicantLastName + " | " + result[x].street + " | " + result[x].city + " | " + result[x].state + " | " + result[x].zipCode + " | " + result[x].phoneNumber + " | " + result[x].emailAddress + " | " + result[x].coApplicantFirstName + " | " +result[x].coApplicantLastName
+        newList[x] = newString
+    }
+    setAdopterList(newList)
   }
   useEffect(() => {
-    getBreeds()
-  }, [species])
+    getAdopters()
+  }, [])
 
   return (
     <Dialog
       isShown={showModal}
-      title="🐶 Add New Animal"
+      title="🐶 Add Adoption"
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         const requestOptions = {
-          method: 'post',
+          method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            name: `${animalName}`,
-            description: `${description}`,
-            age: `${age}`,
-            sex: `${sex}`,
-            microchipId: `${microchipId}`,
-            surrenderDate: `${surrenderDate}`,  
-            surrenderSubmitter: `${localStorage.getItem('UserName')}`,
-            surrenderReason: `${surrenderReason}`,
-            surrenderByAnimalControl: `${surrenderByAnimalControl}`,
-            alterationStatus: `${alterationStatus}`,
-            breeds: `${breeds["selected"].join(',')}`,
-            species: `${species}`
+            applicationNumber: `${adopter}`,
+            adoptionDate: `${adoptionDate}`,
+            adoptionFee: `${adoptionFee}`
           })
         };
-        fetch(`http://localhost:4000/animal/add`, requestOptions)
-            .then((Response) => Response.json())
+        fetch(`http://localhost:4000/updateAnimalAdoptionInformation/${id}`, requestOptions)
             .then((result) => {
-                  if (result.petId){
-                      toaster.warning('Error with adding pet :( ')
+                  if (result.status != "200"){
+                      toaster.warning('Error with adding pet adoption info :(')
                   }else{
-                      toaster.success('Successfully added pet');
-                      router.push('/animalDashboard');
+                      toaster.success('Successfully added pet adoption info');
                     }
                   })
         setShowModal(false)
@@ -76,193 +60,60 @@ const AddAnimalModal = (props) => {
       >
       <Pane>
         <Pane display="flex">
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Enter Animal Name *</Heading>
-            <TextInputField
-              autoFocus
-              label=""
-              marginRight="2rem"
-              value={animalName}
-              placeholder="Sol"
-              onChange={e => setAnimalName(e.target.value)}
-            />
-          </Pane>
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Species *</Heading>
-            <Pane>
-              <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
-                  <option value="Cat">Cat</option>
-                  <option value="Dog">Dog</option>
-              </Select>
-            </Pane>
-          </Pane>
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Sex *</Heading>
-            <Pane>
-              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
-                <option value="Male" defaultValue>Male</option>
-                <option value="Female">Female</option>
-                <option value="Female">Unknown</option>
-              </Select>
-            </Pane>
-          </Pane>
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Age *</Heading>
-            <TextInputField
-              width={50}
-              autoFocus
-              placeholder={1}
-              label=""
-              marginRight="2rem"
-              value={age}
-              onChange={e => Number(setAge(e.target.value))}
-            />
-          </Pane>
+            <Heading size={500} marginY="0.5rem">Select Adopter</Heading>
+            <Pane marginLeft="2rem">
+            <Component
+                initialState={{
+                  options: adopterList.map(label => ({ label, value: label })),
+                  selected: ["Select name..."]
+                }}
+            >
+              {({ state, setState }) => (
+                    <SelectMenu
+                        width={700}
+                        hasTitle={false}
+                        hasFilter={true}
+                        marginRight="2rem"
+                        title="Select adopter"
+                        options={
+                          adopterList.map(label => ({ label, value: label }))
+                        }
+                        selected={state.selected}
+                        onSelect={item => { 
+                          setState({ selected: (item.value).split(" | ")[1] })
+                          setAdopter(item.value.split(" | ")[0])
+                          }}
+                        closeOnSelect={true}
+                        >
+                        <Button>{state.selected || 'Select name...'}</Button>
+                    </SelectMenu>
+                    )}
+            </Component>
+            </Pane> 
         </Pane>
         <Pane display="flex">
-          <Pane display="flex" marginBottom="3rem">
-            <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">Breed *</Heading>
-              <Pane marginRight="2rem">
-              <Component
-                initialState={{
-                  options: breedsList.map(label => ({ label, value: label })),
-                  selected: []
-                }}
-              >
-                {({ state, setState }) => (
-                  <SelectMenu
-                     
-                    isMultiSelect
-                    title="Select multiple Breeds"
-                    options={breedsList.map(label => ({ label, value: label }))}
-                    selected={state.selected}
-                    onSelect={item => {
-                      const selected = [...state.selected, item.value]
-                      const selectedItems = selected
-                      const selectedItemsLength = selectedItems.length
-                      let selectedNames = ''
-                      if (selectedItemsLength === 0) {
-                        selectedNames = ''
-                      } else if (selectedItemsLength === 1) {
-                        selectedNames = selectedItems.toString()
-                      } else if (selectedItemsLength > 1) {
-                        selectedNames = selectedItemsLength.toString() + ' selected...'
-                      }
-                      setBreeds({selected, selectedNames})
-                      setState({
-                        selected,
-                        selectedNames
-                      })
-                    }}
-                    onDeselect={item => {
-                      const deselectedItemIndex = state.selected.indexOf(item.value)
-                      const selectedItems = state.selected.filter(
-                        (_item, i) => i !== deselectedItemIndex
-                      )
-                      const selectedItemsLength = selectedItems.length
-                      let selectedNames = ''
-                      if (selectedItemsLength === 0) {
-                        selectedNames = ''
-                      } else if (selectedItemsLength === 1) {
-                        selectedNames = selectedItems.toString()
-                      } else if (selectedItemsLength > 1) {
-                        selectedNames = selectedItemsLength.toString() + ' selected...'
-                      }
-                      setState({ selected: selectedItems, selectedNames })
-                      setBreeds({ selected: selectedItems, selectedNames })
-                    }}
-                  >
-                    <Button>{state.selectedNames || 'Select multiple...'}</Button>
-                  </SelectMenu>
-                )}
-              </Component> 
-              </Pane>
-
-
-              {/* change this to a tagInput */}
-              {/* <Select marginRight="2rem" value={breedsAdd} disabled={loading} onChange={e => setBreedsAdd(e.target.value)}>
-                {breedsListAdd.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-              </Select> */}
-            </Pane>
-          </Pane>
-          <Pane display="flex" marginBottom="3rem">
-            <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">Alteration Status *</Heading>
-              <Combobox
-                width={150}
-                openOnFocus
-                marginRight="2rem"
-                items={['true', 'false']}
-                autocompleteProps={{ title: 'Alteration Status' }}
-                initialSelectedItem={alterationStatus || ''}
-                onChange={selected => setAlterationStatus(selected == 'true' ? 1 : 0)}
-                value={alterationStatus}
-              />
-            </Pane>
-          </Pane>
-          <Pane display="flex" marginBottom="3rem">
-            <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">MicrochipID</Heading>
-              <TextInputField
-                width={70}
+          <Pane display="flex" flexDirection="column" marginRight="2rem">
+            <Heading size={500} marginY="0.5rem">Adoption Fee</Heading>
+                <TextInputField
+                width={50}
                 autoFocus
-                placeholder={7089353147}
+                placeholder="$20"
                 label=""
                 marginRight="2rem"
-                value={microchipId}
-                onChange={e => Number(setMicrochipId(e.target.value))}
+                value={adoptionFee}
+                onChange={e => setAdoptionFee(e.target.value)}
               />
-            </Pane>
-          </Pane>
-        </Pane>
-        <Pane display="flex">
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Enter Description</Heading>
-            <TextInputField
-              autoFocus
-              label=""
-              marginRight="2rem"
-              value={description}
-              placeholder="Enter Description"
-              onChange={e => setDescription(e.target.value)}
-            />
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrender Date</Heading>
-            <TextInputField
-              autoFocus
-              label=""
-              marginRight="2rem"
-              value={surrenderDate}
-              placeholder="YYYY-DD-MM"
-              onChange={e => setSurrenderDate(e.target.value)}
-            />
-          </Pane>
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrender Reason</Heading>
-            <TextInputField
-              autoFocus
-              label=""
-              marginRight="2rem"
-              value={surrenderReason}
-              placeholder="Surrender Reason"
-              onChange={e => setSurrenderReason(e.target.value)}
-            />
-          </Pane>
-        </Pane>
-        <Pane display="flex">
-          <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrendered by Animal control</Heading>
-            <Combobox
-                width={150}
-                openOnFocus
+          <Heading size={500} marginY="0.5rem">Adoption Date</Heading>
+                <TextInputField
+                width={100}
+                autoFocus
+                placeholder="YYYY-DD-MM"
+                label=""
                 marginRight="2rem"
-                items={['true', 'false']}
-                autocompleteProps={{ title: 'Surrendered by animal control' }}
-                initialSelectedItem={surrenderByAnimalControl || ''}
-                onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
-                value={surrenderByAnimalControl}
+                value={adoptionDate}
+                onChange={e => setAdoptionDate(e.target.value)}
               />
           </Pane>
         </Pane>
@@ -271,10 +122,10 @@ const AddAnimalModal = (props) => {
   )
 }
 
-AddAnimalModal.propTypes = {
+AddAdoptionModal.propTypes = {
   Interviewer: PropTypes.object,
   showModal: PropTypes.bool,
   setShowModal: PropTypes.func
 }
 
-export default AddAnimalModal
+export default AddAdoptionModal

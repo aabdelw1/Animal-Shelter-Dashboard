@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge, Text, Table, Avatar } from 'evergreen-ui'
 import Router from 'next/router'
-import AddAnimalModal from './AddAnimalModal'
+import AddAdoptionModal from './AddAdoptionModal'
+import AddNewAdoptionApplication from './AddNewAdoptionApplication'
+
 
 
 const Profile = (props) => {
   const { _id } = props
   const [animal, setAnimal] = useState(null)
+  const [vaccines, setVaccines] = useState([])
   const [visible, setVisible] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showModalApp, setShowModalApp] = useState(false)
   const data = null
 
   const animalInfo = async () => {
@@ -18,9 +22,11 @@ const Profile = (props) => {
     setAnimal(result)
   }
 
-  useEffect(() => {
+  useEffect(() => { 
     animalInfo()
   }, [])
+
+
 
   return (
     <>
@@ -45,75 +51,57 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>
-              <Tooltip content="Edit Candidate" position={Position.BOTTOM}>
-                <Button marginY="0.75rem" iconBefore="edit" disabled={!data || error} onClick={() => setVisible(true)}>Edit</Button>
-              </Tooltip>
+                <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption App</Button>
+                <AddNewAdoptionApplication showModalApp={showModalApp} setShowModalApp={setShowModalApp} id={_id}/>
+            </Pane>
+            <Pane>
                 <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Adoption</Button>
-                <AddAnimalModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
+                <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
         </Pane>
-        <Pane flex="3">
+        {animal && <Pane flex="3">
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1" marginX="3rem">
-            <Heading size={700}>Description</Heading>
+            <Heading size={700}>Animal Detail</Heading>
             <Text marginY="1rem" size={500}>Surrender Information</Text>
             <Table.Row isSelectable>
-              <Table.TextCell>Surrender Reason</Table.TextCell>
+              <Table.TextCell>Surrender Reason: <b>{animal.surrenderReason == null ? 'None' : animal.surrenderReason}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
-              <Table.TextCell>Surrender Date</Table.TextCell>
+              <Table.TextCell>Surrender Date: <b>{animal.surrenderDate == null ? 'None' : animal.surrenderDate}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
-              <Table.TextCell>Surrender By Anial Control</Table.TextCell>
+              <Table.TextCell>Surrender By Animal Control: <b>{animal.surrenderByAnimalControl == '1' ? 'Yes' : 'No'}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
-              <Table.TextCell>Surrender Submitter</Table.TextCell>
+              <Table.TextCell>Surrender Submitter: <b>{animal.surrenderSubmitter == null ? 'None' : animal.surrenderSubmitter}</b></Table.TextCell>
             </Table.Row>
             <Text marginY="1rem" size={500}>Adoption Information</Text>
             <Table.Row isSelectable>
-              <Table.TextCell>Adoptoion Date</Table.TextCell>
+              <Table.TextCell>Adoptoion Date: <b>{animal.adoptionDate == null ? 'None' : animal.adoptionDate}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
-              <Table.TextCell>Adoption Fee</Table.TextCell>
+              <Table.TextCell>Adoption Fee: <b>{animal.adoptionFee == null ? 'None' : animal.adoptionFee}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
-              <Table.TextCell>Adoption Application Number</Table.TextCell>
+              <Table.TextCell>Adoption Application Number: <b>{animal.adoptionApplicationNumber == null ? 'None' : animal.adoptionApplicationNumber}</b></Table.TextCell>
             </Table.Row>
-            <Table.Row isSelectable>
-              <Table.TextCell>Other</Table.TextCell>
-            </Table.Row>
-            <Heading marginTop="2rem" size={500}>Comments</Heading>
+            <Heading marginTop="2rem" size={500}>Animal Description</Heading>
 
             <Pane borderRadius={3} elevation={1} marginY="1rem" padding="2rem" display="flex" flexDirection="row" flex="1">
-              <Avatar name="Brian Smith" marginRight="1rem" size={30}/>
               <Pane display="flex" flexDirection="column" flex="1" justifyContent="flex-start">
                 { animal && <Pane>
-                  <Heading size={400}>Brian Smith</Heading>
-                  <Pane><Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text></Pane>
+                <Pane><Text>{animal.description}</Text></Pane>
                 </Pane>}
               </Pane>
-            </Pane>
-
-            <Pane borderRadius={3} elevation={1} marginY="1rem" padding="2rem" display="flex" flexDirection="row" flex="1">
-              <Avatar name="Ingie" marginRight="1rem" size={30}/>
-              <Pane display="flex" flexDirection="column" flex="1" justifyContent="flex-start">
-                { animal && <Pane>
-                  <Heading size={400}>Ingie</Heading>
-                  <Pane><Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text></Pane>
-                </Pane>}
-              </Pane>
-            </Pane>
-
-            <Pane marginY="1rem" marginBottom="4rem" display="flex" flexDirection="row" flex="1" justifyContent="center">
-              <Text>End of comments</Text>
             </Pane>
 
           </Pane>
-        </Pane>
+        </Pane>}
         <Pane flex="1">
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1">
             <Heading size={600}>Vaccinations</Heading>
-            <Text marginY="1rem" size={500}>Last Updated: Tuesday, November 5th, 2019</Text>
+            <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
             <Table.Row isSelectable>
               <Table.TextCell>No Vaccinations</Table.TextCell>
             </Table.Row>

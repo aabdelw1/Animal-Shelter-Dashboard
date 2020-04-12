@@ -11,6 +11,7 @@ const AddAnimalModal = (props) => {
   const [species, setSpecies] = useState("Dog")
   const [breeds, setBreeds] = useState([])
   const [breedsList, setBreedsList] = useState([])
+  const [speciesList, setSpeciesList] = useState([])
   const [sex, setSex] = useState('Male')
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
@@ -29,7 +30,22 @@ const AddAnimalModal = (props) => {
     setLoading(false)
     setBreedsList(result)
   }
+
+  const getSpecies = async () => {
+    const response = await fetch(`http://localhost:4000/species`, {method: 'get'})
+    const result = await response.json()
+    setLoading(false)
+    var newList = []
+    for(var x = 0; x<result.length;x++){
+        newList[x] = result[x].name
+    }
+    let list = newList.map(name => {return {label: name, value: name}});
+    setSpeciesList(list);
+  }
+
+
   useEffect(() => {
+    getSpecies()
     getBreeds()
   }, [species])
 
@@ -87,8 +103,7 @@ const AddAnimalModal = (props) => {
             <Heading size={500} marginY="0.5rem">Species *</Heading>
             <Pane>
               <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
-                  <option value="Cat">Cat</option>
-                  <option value="Dog">Dog</option>
+                {speciesList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
               </Select>
             </Pane>
           </Pane>

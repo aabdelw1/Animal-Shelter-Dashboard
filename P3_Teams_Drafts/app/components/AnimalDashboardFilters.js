@@ -9,7 +9,7 @@ const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [speciesList, setSpeciesList] = useState([])
+  const [speciesList, setSpeciesList] = useState([{ label: "Loading ...", value: ""}])
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
   
@@ -17,7 +17,13 @@ const AnimalDashboardFilters = (props) => {
     const response = await fetch(`http://localhost:4000/species`, {method: 'get'})
     const result = await response.json()
     setLoading(false)
-    setSpeciesList(result)
+    var newList = []
+    for(var x = 0; x<result.length;x++){
+        newList[x] = result[x].name
+    }
+    let list = newList.map(name => {return {label: name, value: name}});
+    setSpeciesList(list);
+    //setSpeciesList(result)
   }
   useEffect(() => {
     getSpecies()
@@ -29,8 +35,7 @@ const AnimalDashboardFilters = (props) => {
       <Pane>
         <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
           <option value="All" defaultValue>{loading ? 'Loading' : 'All Species'}</option>
-          <option value="Cat">Cats</option>
-          <option value="Dog">Dogs</option>
+          {speciesList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
         </Select>
       </Pane>
       <Pane>
