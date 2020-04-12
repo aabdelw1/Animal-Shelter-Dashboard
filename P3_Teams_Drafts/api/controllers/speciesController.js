@@ -4,7 +4,7 @@ exports.list_species = function(req, res) {
     var q = `SELECT
                 s.Name,
                 s.Max_Per_Shelter,
-                SUM(IF(a.Adoption_Application_Number is null,1,0)) as CountWaitingAdoption,
+                SUM(IF(a.Adoption_Application_Number is null AND Alteration_Status=1,1,0)) as CountWaitingAdoption,
                 SUM(IF(a.Adoption_Application_Number is null,0,1)) as CountAdopted
               FROM Species s
               LEFT JOIN Animal a ON a.Species=s.Name 

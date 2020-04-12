@@ -82,13 +82,16 @@ async function loadAnimals() {
         //description	age_months	microchip	username	species_name	group_concat(hb.breed_name)
       var fields = line.split('\t');
       if (fields[0]!='pet_id') {
-        fields[6] = fields[5].replace("'","''");
-        fields[7] = fields[6].replace("'","''");
-        var q=`INSERT INTO Animal (Pet_ID, Name, Sex, Alteration_Status,Surrender_By_Animal_Control,Surrender_Date,
-            Surrender_Reason, Description, Age, microchip_id, Surrender_Submitter, Species) values 
+        fields[6] = fields[6].replace(/'/g,"''");
+        fields[7] = fields[7].replace(/'/g,"''");
+        var q=`INSERT INTO Animal (
+            Pet_ID, Name, Sex, Alteration_Status,
+            Surrender_By_Animal_Control, Surrender_Date,
+            Surrender_Reason, Description, Age, microchip_id, 
+            Surrender_Submitter, Species) values 
             (
-                '${fields[0]}','${fields[1]}','${fields[2]}','${fields[3]}','${fields[4]}',
-                '${fields[5]}','${fields[6]}','${fields[7]}','${fields[8]}','${fields[9]}',
+                ${fields[0]},'${fields[1]}','${fields[2]}',${fields[3]},${fields[4]},
+                '${fields[5]}','${fields[6]}','${fields[7]}',${fields[8]},'${fields[9]}',
                 '${fields[10]}','${fields[11]}'
         );`;
         //console.log(q);
@@ -211,7 +214,7 @@ async function loadUsers() {
         await db.query(q); 
 
         // is_employee
-        if (fields[8]='1') {
+        if (fields[8]=='1') {
             var q2=`insert into employees (username) values  
             ('${fields[0]}');`;
             //console.log(q2);
@@ -219,15 +222,15 @@ async function loadUsers() {
         }
         
         // is_owner
-        if (fields[7]='1') {
+        if (fields[7]=='1') {
             var q2=`insert into admin (username) values  
             ('${fields[0]}');`;
-            //console.log(q2);
+            console.log(q2);
             await db.query(q2); 
         }
 
         // is_volunteer
-        if (fields[6]='1') {
+        if (fields[6]=='1') {
             var q2=`insert into volunteer (username,phone_number) values 
             ('${fields[0]}','${fields[9]}');`;
             //console.log(q2);
