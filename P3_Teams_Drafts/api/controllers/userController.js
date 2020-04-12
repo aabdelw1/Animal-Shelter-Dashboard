@@ -95,8 +95,9 @@ exports.get_volunteers = function(req, res) {
 exports.get_password = function(req, res) {
 
   var query = [];
-  var q = ` SELECT Password, (CASE WHEN E.Username = U.Username THEN "Employee"
+  var q = ` SELECT Password, (CASE 
               WHEN A.Username = U.Username THEN "Admin"
+              WHEN E.Username = U.Username THEN "Employee"
               WHEN V.Username = U.Username THEN "Volunteer"
             END) AS UserType
             FROM Users AS U JOIN Employees AS E JOIN Admin AS A JOIN Volunteer AS V
