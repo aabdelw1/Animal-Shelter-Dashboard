@@ -6,7 +6,7 @@ import { useMutation } from 'react-apollo'
 import Mutations from '../graphql/mutations'
 
 const AddNewAdoptionApplication = (props) => {
-  const { showModalApp, setShowModalApp } = props
+  const { showModal, setShowModal } = props
   const [emailAddress, setEmailAddress] = useState('')
   const [dateOfApplication, setDateOfApplication] = useState('')
   const [cofirstName, setCoFirstName] = useState('')
@@ -24,11 +24,21 @@ const AddNewAdoptionApplication = (props) => {
 
   return (
     <Dialog
-      isShown={showModalApp}
+      isShown={showModal}
       title="🐶 Add New Adoption Info"
-      onCloseComplete={() => setShowModalApp(false)}
+      onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
-        const requestOptions = {
+        const requestOptionsNewApplication = {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            emailAddress: `${emailAddress}`,
+            dateOfApplication: `${dateOfApplication}`,
+            coApplicantFirstName: `${cofirstName}`,
+            coApplicantLastName: `${colastName}`
+          })
+        };
+        const requestOptionsNewAdopter = {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -42,18 +52,28 @@ const AddNewAdoptionApplication = (props) => {
               applicantLastName: `${lastName}`
             })
           };
-          console.log(requestOptions)
-        fetch(`http://localhost:4000/newAdopter`, requestOptions)
-            .then((Response) => Response.json())
+        fetch(`http://localhost:4000/newAdopter`, requestOptionsNewAdopter)
             .then((result) => {
                 console.log(result)
                 if (result.status != "200"){
                     toaster.warning('Error with adding new adoption info :(')
                 }else{
-                    toaster.success('I got here')
+                    fetch(`http://localhost:4000/newAdoptionApplication`, requestOptionsNewApplication)
+                    .then((result) => {
+                        console.log(result)
+                        if(result.status != "200"){
+                            toaster.warning('Error with adding new adoption info :(')
+                        }else{
+                            fetch(`http://localhost:4000/adoptionApplicationsNumber?EmailAddress=${emailAddress}&DateOfApplication=${dateOfApplication}&CoApplicantFirstName=${cofirstName}&CoApplicantLastName=${colastName}`, { method: 'get'})
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    toaster.success('Successfully added new adoption info, application ID is: '+ result.applicationNumber);
+                                })
+                            }
+                        })
                 }
             })
-        setShowModalApp(false)
+        setShowModal(false)
       }}
       >
       <Pane>
@@ -198,8 +218,8 @@ const AddNewAdoptionApplication = (props) => {
 
 AddNewAdoptionApplication.propTypes = {
   Interviewer: PropTypes.object,
-  showModalApp: PropTypes.bool,
-  setShowModalApp: PropTypes.func
+  showModal: PropTypes.bool,
+  setShowModal: PropTypes.func
 }
 
 export default AddNewAdoptionApplication

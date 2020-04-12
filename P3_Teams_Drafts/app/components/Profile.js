@@ -52,7 +52,7 @@ const Profile = (props) => {
 
             <Pane>
                 <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption App</Button>
-                <AddNewAdoptionApplication showModalApp={showModalApp} setShowModalApp={setShowModalApp} id={_id}/>
+                <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp} id={_id}/>
             </Pane>
             <Pane>
                 <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Adoption</Button>
