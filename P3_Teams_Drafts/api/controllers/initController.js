@@ -9,6 +9,7 @@ exports.load_data = async function(req, res) {
     await loadApplications();
     await loadUsers();
     await loadAnimals();
+    await loadAdoptions();
     await loadVaccines();
     await loadVolunteerHours();
     console.log("Initialization complete.");
@@ -124,6 +125,32 @@ async function loadAdopters() {
                 '${fields[0]}','${fields[1]}','${fields[2]}','${fields[3]}','${fields[4]}',
                 '${fields[5]}','${fields[6]}','${fields[7]}'
         );`;
+        //console.log(q);
+        await db.query(q); 
+      }
+    }        
+}
+
+async function loadAdoptions() {
+    const fs = require('fs');
+    const readline = require('readline');
+    const fileStream = fs.createReadStream('../data/Adoptions.tsv');
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity
+    });
+    console.log(" Loading adoptions (update animal)");
+    //pet_id	app_num	adoption_date	fee
+    for await (const line of rl) {
+      var fields = line.split('\t');
+      if (fields[0]!='pet_id') {
+        var q=`update animal 
+                set 
+                    Adoption_Application_number= '${fields[1]}',
+                    Adoption_Date='${fields[2]}',
+                    Adoption_Fee='${fields[3]}'
+                where
+                    Pet_ID=${fields[0]};`;
         //console.log(q);
         await db.query(q); 
       }
