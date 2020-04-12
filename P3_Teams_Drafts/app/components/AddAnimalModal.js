@@ -76,11 +76,10 @@ const AddAnimalModal = (props) => {
         fetch(`http://localhost:4000/animal/add`, requestOptions)
             .then((Response) => Response.json())
             .then((result) => {
-                  if (result.petId){
+                  if (!result.petId){
                       toaster.warning('Error with adding pet :( ')
                   }else{
                       toaster.success('Successfully added pet');
-                      router.push('/animalDashboard');
                     }
                   })
         setShowModal(false)

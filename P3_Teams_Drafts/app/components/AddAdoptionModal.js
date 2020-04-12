@@ -97,6 +97,7 @@ const AddAdoptionModal = (props) => {
                 <TextInputField
                 width={50}
                 autoFocus
+                required={true}
                 placeholder="$20"
                 label=""
                 marginRight="2rem"
@@ -109,6 +110,7 @@ const AddAdoptionModal = (props) => {
                 <TextInputField
                 width={100}
                 autoFocus
+                required={true}
                 placeholder="YYYY-DD-MM"
                 label=""
                 marginRight="2rem"

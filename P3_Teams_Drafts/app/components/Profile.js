@@ -4,7 +4,8 @@ import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge
 import Router from 'next/router'
 import AddAdoptionModal from './AddAdoptionModal'
 import { Context } from './Context'
-import AddNewAdoptionApplication from './AddNewAdoptionApplication'
+import AddVaccineModal from './AddVaccineModal'
+import VaccineCard from './VaccineCard'
 
 
 
@@ -14,7 +15,9 @@ const Profile = (props) => {
   const [vaccines, setVaccines] = useState([])
   const [visible, setVisible] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  const [showModalApp, setShowModalApp] = useState(false)
+  const [showModalVacc, setShowModalVacc] = useState(false)
+  const [loading, setLoading] = useState(true);
+
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
   const data = null
 
@@ -24,11 +27,18 @@ const Profile = (props) => {
     setAnimal(result)
   }
 
+  const vaccineList = async () => {
+    const response = await fetch(`http://localhost:4000/animal/${_id}/vaccines`, {method: 'get'})
+    const result = await response.json()
+    setLoading(false);
+    setVaccines(result)
+  }
+
   useEffect(() => { 
     animalInfo()
+    vaccineList()
   }, [])
-
-
+  
 
   return (
     <>
@@ -76,7 +86,7 @@ const Profile = (props) => {
             </Table.Row>
             <Text marginY="1rem" size={500}>Adoption Information</Text>
             <Table.Row isSelectable>
-              <Table.TextCell>Adoptoion Date: <b>{animal.adoptionDate == null ? 'None' : animal.adoptionDate}</b></Table.TextCell>
+              <Table.TextCell>Adoption Date: <b>{animal.adoptionDate == null ? 'None' : animal.adoptionDate}</b></Table.TextCell>
             </Table.Row>
             <Table.Row isSelectable>
               <Table.TextCell>Adoption Fee: <b>{animal.adoptionFee == null ? 'None' : animal.adoptionFee}</b></Table.TextCell>
@@ -100,9 +110,16 @@ const Profile = (props) => {
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1">
             <Heading size={600}>Vaccinations</Heading>
             <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
-            <Table.Row isSelectable>
-              <Table.TextCell>No Vaccinations</Table.TextCell>
-            </Table.Row>
+            {animal && <Pane>         
+                <Button marginRight="2rem" onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+                <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
+            </Pane>
+            }
+            {
+              vaccines.map((vaccines, index) => { 
+                  return <VaccineCard index={index} data={vaccines}/>
+              })
+            }
           </Pane>
         </Pane>
       </Pane>
