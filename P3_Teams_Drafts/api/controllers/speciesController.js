@@ -2,13 +2,14 @@ exports.list_species = function(req, res) {
 
     var params = [];
     var q = `SELECT
-              s.Name,
-              s.Max_Per_Shelter,
-              COUNT(a.Pet_ID) as Count
-            FROM Species s
-            LEFT JOIN Animal a ON a.Species=s.Name
-            GROUP BY s.Name, s.Max_Per_Shelter
-            ORDER BY s.Name`
+                s.Name,
+                s.Max_Per_Shelter,
+                SUM(IF(a.Adoption_Application_Number is null,1,0)) as CountWaitingAdoption,
+                SUM(IF(a.Adoption_Application_Number is null,0,1)) as CountAdopted
+              FROM Species s
+              LEFT JOIN Animal a ON a.Species=s.Name 
+              GROUP BY s.Name, s.Max_Per_Shelter
+              ORDER BY s.Name`
   
     db.query(q, params, (err, result) => {
       var species=[];
@@ -19,7 +20,8 @@ exports.list_species = function(req, res) {
           species.push({
             name: row.Name,
             maxPerShelter: row.Max_Per_Shelter,
-            count: row.Count
+            countWaitingAdoption: row.CountWaitingAdoption,
+            countAdopted: row.CountAdopted
           });
         });
   
