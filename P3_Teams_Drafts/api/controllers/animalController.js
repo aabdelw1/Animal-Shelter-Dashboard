@@ -368,6 +368,44 @@ async function addBreeds(petId,breeds)
   }
 }
 
+exports.add_vaccine = function(req, res) {
+  console.log("add_vaccine:");
+  console.log(req.body);
+  res.setHeader('Content-Type', 'application/json');
+
+  var params = [];
+  var q = `INSERT INTO VaccineAdministration
+          (Pet_ID,
+          Species_Name,
+          Vaccine_Type,
+          Vaccination_Number,
+          Date_Administired,
+          Expiration_Date,
+          Vaccine_Submitter)
+          VALUES
+            (?,?,?,?,?,?,?);`;
+
+  params.push(req.params.animalId);
+  params.push(req.body.speciesName);
+  params.push(req.body.vaccineType);
+  params.push(req.body.vaccinationNumber);
+  params.push(req.body.dateAdministered);
+  params.push(req.body.expirationDate);
+  params.push(req.body.vaccineSubmitter);
+
+  db.query(q, params, (err, result) => {
+    if (err==null)
+    {
+      console.log("vaccine administration added");
+      res.json({status:"success"})
+    } else {
+      res.status(500);
+      console.log(err);
+      res.end(JSON.stringify(err, null, 2));
+    }
+  });  
+}
+
 exports.put_animal_adoption_information = function(req, res) {
   var params = [];
   var q = `UPDATE Animal

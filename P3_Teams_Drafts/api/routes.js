@@ -15,6 +15,7 @@ module.exports = function(app) {
   app.post('/animal/add', animalController.add_animal);
   app.get('/animal/:animalId', animalController.get_animal);
   app.get('/animal/:animalId/breeds', animalController.get_breeds);
+  app.post('/animal/:animalId/vaccines/add', animalController.add_vaccine);
   app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
   app.get('/animal/:animalId/vaccines/:vaccineType', animalController.get_vaccine);
   app.get('/breeds/:species',breedController.list_breeds);
