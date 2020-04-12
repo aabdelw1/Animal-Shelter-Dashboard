@@ -6,8 +6,13 @@ import { useMutation } from 'react-apollo'
 import Mutations from '../graphql/mutations'
 
 const AddAnimalModal = (props) => {
-  const { showModal, setShowModal } = props
-  const [animalName, setAnimalName] = useState('')
+  const { showModal, setShowModal, id } = props
+  const [adopter, setAdopter] = useState('')
+  const [adoptionDate, setAdoptionDate] = useState('')
+  const [adoptionFee, setAdoptionFee] = useState('')
+  const [adoptionID, setAdoptionID] = useState('')
+
+
   const [species, setSpecies] = useState("Dog")
   const [breeds, setBreeds] = useState([])
   const [breedsList, setBreedsList] = useState([])
@@ -15,8 +20,7 @@ const AddAnimalModal = (props) => {
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
   const [microchipId, setMicrochipId] = useState('')
-  const [surrenderDate, setSurrenderDate] = useState('')
-  const [surrenderReason, setSurrenderReason] = useState('')
+  
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
   const [loading, setLoading] = useState(true);
   const [alterationStatus, setAlterationStatus] = useState('')

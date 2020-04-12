@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge, Text, Table, Avatar } from 'evergreen-ui'
 import Router from 'next/router'
+import AddAnimalModal from './AddAnimalModal'
 
 
 const Profile = (props) => {
   const { _id } = props
   const [animal, setAnimal] = useState(null)
   const [visible, setVisible] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const data = null
 
   const animalInfo = async () => {
@@ -46,7 +48,8 @@ const Profile = (props) => {
               <Tooltip content="Edit Candidate" position={Position.BOTTOM}>
                 <Button marginY="0.75rem" iconBefore="edit" disabled={!data || error} onClick={() => setVisible(true)}>Edit</Button>
               </Tooltip>
-                <Button marginLeft="1rem" disabled='true'>Add Adoption</Button>
+                <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Adoption</Button>
+                <AddAnimalModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
         </Pane>

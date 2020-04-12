@@ -1,1 +1,1 @@
-{"/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js","/animal/[id]":"static/development/pages/animal/[id].js","/animalDashboard":"static/development/pages/animalDashboard.js"}
+{"/_app":"static/development/pages/_app.js","/_document":"static/development/pages/_document.js","/_error":"static/development/pages/_error.js","/animalDashboard":"static/development/pages/animalDashboard.js","/animal/[id]":"static/development/pages/animal/[id].js"}
