@@ -49,7 +49,7 @@ const AnimalDashboardFilters = (props) => {
         </Select>
       </Pane>
       <Pane>
-        <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Animal</Button>
+        <Button marginRight="2rem" disabled={userType == 'Volunteer' ? true: false} onClick={() => setShowModal(true)}>Add Animal</Button>
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
       </Pane> 
       <Pane>
