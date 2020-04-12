@@ -2,20 +2,24 @@ exports.list_species = function(req, res) {
 
     var params = [];
     var q = `SELECT
-                Name,
-                Max_Per_Shelter
-              FROM Species
-              ORDER BY Name`
+              s.Name,
+              s.Max_Per_Shelter,
+              COUNT(a.Pet_ID) as Count
+            FROM Species s
+            LEFT JOIN Animal a ON a.Species=s.Name
+            GROUP BY s.Name, s.Max_Per_Shelter
+            ORDER BY s.Name`
   
     db.query(q, params, (err, result) => {
       var species=[];
   
       if (result!=null) {
   
-        result.forEach(b => {
+        result.forEach(row => {
           species.push({
-            name: b.Name,
-            maxPerShelter: b.Max_Per_Shelter
+            name: row.Name,
+            maxPerShelter: row.Max_Per_Shelter,
+            count: row.Count
           });
         });
   
