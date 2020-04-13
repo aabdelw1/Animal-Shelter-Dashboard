@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 
 const EditAnimalModal = (props) => {
   const { animal, visible, setVisible } = props
+  const router = useRouter()
   const { petId, name, species, breeds, sex, alterationStatus, age, adoptability, microchipId } = animal
   const [newBreeds, setNewBreeds] = useState(breeds.split('/'))
   const [breedsList, setBreedsList] = useState([])
@@ -13,10 +14,9 @@ const EditAnimalModal = (props) => {
   let [newMicrochipId, setNewMicrochipId] = useState('')
   const [loading, setLoading] = useState(true)
   let [newAlterationStatus, setNewAlterationStatus] = useState('')
-
-  if(sex != 'Unknown') [newSex, setNewSex] = useState(sex)
-  if(microchipId != '') [newMicrochipId, setNewMicrochipId] = useState(microchipId)
-  if(alterationStatus != '') [newAlterationStatus, setNewAlterationStatus] = useState(alterationStatus)
+  let [showSex, setShowSex] = useState(false)
+  let [showMicroID, setShowMicroID] = useState(false)
+  let [showAlteration, setShowAlteration] = useState(false)
 
   const getBreeds = async () => {
     const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
@@ -27,6 +27,9 @@ const EditAnimalModal = (props) => {
 
 
   useEffect(() => {
+    if(sex == 'Unknown') setShowSex(true)
+    if(microchipId == '') setShowMicroID(true)
+    if(alterationStatus == 'false' || alterationStatus == '') setShowAlteration(true)
     getBreeds()
   }, [])
 
@@ -37,14 +40,17 @@ const EditAnimalModal = (props) => {
       title="🐶 Edit Animal"
       onCloseComplete={() => setVisible(false)}
       onConfirm={() => {
+        var tempAlterationStatus = (newAlterationStatus == 'Yes') ? !alterationStatus : alterationStatus
+        tempAlterationStatus = (tempAlterationStatus == true) ? 1 : 0
+        var newBreedArr = (newBreeds.length == 1) ? newBreeds[0] : newBreeds.selected.join(',')
         const requestOptions = {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sex: `${newSex}`,
-            microchipId: `${newMicrochipId}`,
-            alterationStatus: `${newAlterationStatus}`,
-            breeds: `${newBreeds.selected.join(',')}`,
+            sex: `${(newSex == '') ? sex: newSex}`,
+            microchipId: `${(newMicrochipId == '') ? microchipId: newMicrochipId}`,
+            alterationStatus: `${tempAlterationStatus}`,
+            breeds: `${newBreedArr}`,
           })
         }
         fetch(`http://localhost:4000/updateAnimalInformation/${petId}`, requestOptions)
@@ -53,6 +59,7 @@ const EditAnimalModal = (props) => {
               toaster.warning('Error when updating pet :( ')
             } else {
               toaster.success('Successfully updated pet')
+              router.push('/animalDashboard')
             }
           })
         setVisible(false)
@@ -60,15 +67,17 @@ const EditAnimalModal = (props) => {
     >
       <Pane>
         <Pane display="flex">
+          { showSex &&
           <Pane display="flex" flexDirection="column">
             <Heading size={500} marginY="0.5rem">Sex *</Heading>
             <Pane>
-              <Select marginRight="2rem" value={newSex} width={100} onChange={e => setNewSex(e.target.value)}>
+              <Select marginRight="2rem"  value={newSex} width={100} onChange={e => setNewSex(e.target.value)}>
                 <option value="Male" defaultValue>Male</option>
                 <option value="Female">Female</option>
               </Select>
             </Pane>
           </Pane>
+          }
 
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
@@ -132,22 +141,24 @@ const EditAnimalModal = (props) => {
           </Pane>
         </Pane>
         <Pane display="flex">
-          
+        { showAlteration &&
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">Alteration Status *</Heading>
+              <Heading size={500} marginRight="2rem" marginY="0.5rem">Change Alteration Status?</Heading>
               <Combobox
                 width={150}
                 openOnFocus
                 marginRight="2rem"
-                items={['true', 'false']}
+                items={['Yes', 'No']}
                 autocompleteProps={{ title: 'Alteration Status' }}
                 initialSelectedItem={alterationStatus || ''}
-                onChange={selected => setNewAlterationStatus(selected == 'true' ? 1 : 0)}
+                onChange={selected => setNewAlterationStatus(selected)}
                 value={newAlterationStatus}
               />
             </Pane>
           </Pane>
+        }
+        { showMicroID &&
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">MicrochipID</Heading>
@@ -162,8 +173,8 @@ const EditAnimalModal = (props) => {
               />
             </Pane>
           </Pane>
+        }
         </Pane>
-      
       </Pane>
     </Dialog>
   )

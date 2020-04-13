@@ -60,7 +60,7 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>
-              <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+              <Button marginRight="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModal(true)}>Add Adoption</Button>
               <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}

@@ -119,7 +119,7 @@ const AddAnimalModal = (props) => {
               <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
                 <option value="Male" defaultValue>Male</option>
                 <option value="Female">Female</option>
-                <option value="Female">Unknown</option>
+                <option value="Unknown">Unknown</option>
               </Select>
             </Pane>
           </Pane>
