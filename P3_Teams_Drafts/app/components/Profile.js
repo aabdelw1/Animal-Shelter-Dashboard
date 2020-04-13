@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge, Text, Table, Avatar } from 'evergreen-ui'
 import Router from 'next/router'
@@ -7,8 +7,6 @@ import { Context } from './Context'
 import AddVaccineModal from './AddVaccineModal'
 import VaccineCard from './VaccineCard'
 
-
-
 const Profile = (props) => {
   const { _id } = props
   const [animal, setAnimal] = useState(null)
@@ -16,39 +14,38 @@ const Profile = (props) => {
   const [visible, setVisible] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showModalVacc, setShowModalVacc] = useState(false)
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true)
 
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
   const data = null
 
   const animalInfo = async () => {
-    const response = await fetch(`http://localhost:4000/animal/${_id}`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/animal/${_id}`, { method: 'get' })
     const result = await response.json()
     setAnimal(result)
   }
 
   const vaccineList = async () => {
-    const response = await fetch(`http://localhost:4000/animal/${_id}/vaccines`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/animal/${_id}/vaccines`, { method: 'get' })
     const result = await response.json()
-    setLoading(false);
+    setLoading(false)
     setVaccines(result)
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     animalInfo()
     vaccineList()
   }, [])
-  
 
   return (
     <>
       <Pane display="flex" flex="1" flexDirection="row">
         <BackButton intent="none" height={40} onClick={() => Router.back() }/>
       </Pane>
-      { animal && 
+      { animal &&
       <Pane display="flex" flex="1" flexDirection="row" marginTop="2rem">
         <Heading size={800}>{animal.name} </Heading>
-        <Avatar src={animal.species == 'Dog' ? "/static/dog-face.png" : "/static/cat-face.png"} name={animal.species} size={40} marginY={'-0.5rem'} marginLeft={'1rem'}/>
+        <Avatar src={animal.species == 'Dog' ? '/static/dog-face.png' : '/static/cat-face.png'} name={animal.species} size={40} marginY={'-0.5rem'} marginLeft={'1rem'}/>
       </Pane> }
       <Pane display="flex" flex="1" flexDirection="row">
         <Pane flex="1">
@@ -62,9 +59,9 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="calendar" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>Age: {animal.age}</Text></Pane>
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
-            <Pane>         
-                  <Button marginRight="2rem" disabled={userType == 'Volunteer' ? true: false} onClick={() => setShowModal(true)}>Add Adoption</Button>
-                  <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
+            <Pane>
+              <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+              <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
         </Pane>
@@ -99,7 +96,7 @@ const Profile = (props) => {
             <Pane borderRadius={3} elevation={1} marginY="1rem" padding="2rem" display="flex" flexDirection="row" flex="1">
               <Pane display="flex" flexDirection="column" flex="1" justifyContent="flex-start">
                 { animal && <Pane>
-                <Pane><Text>{animal.description}</Text></Pane>
+                  <Pane><Text>{animal.description}</Text></Pane>
                 </Pane>}
               </Pane>
             </Pane>
@@ -109,15 +106,15 @@ const Profile = (props) => {
         <Pane flex="1">
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1">
             <Heading size={600}>Vaccinations</Heading>
-            <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
-            {animal && <Pane>         
-                <Button marginRight="2rem" onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
-                <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
+            <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+            {animal && <Pane>
+              <Button marginRight="2rem" onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+              <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
             </Pane>
             }
             {
-              vaccines.map((vaccines, index) => { 
-                  return <VaccineCard index={index} data={vaccines}/>
+              vaccines.map((vaccines, index) => {
+                return <VaccineCard index={index} data={vaccines}/>
               })
             }
           </Pane>

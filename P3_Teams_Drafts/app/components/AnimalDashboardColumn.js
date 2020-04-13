@@ -25,7 +25,7 @@ const ColumnContainer = styled.div`
 
 const AnimalDashboardColumn = (props) => {
   const { label, loading, data } = props
-  const [userType,, species,, adoptionStatus,] = useContext(Context)
+  const [userType,, species,, adoptionStatus] = useContext(Context)
 
   return (
     <ColumnContainer>
@@ -54,22 +54,21 @@ const AnimalDashboardColumn = (props) => {
       }
       {
         label == 'Animals' &&
-        data.map((animal, index) => { 
-          if((species === 'All' || animal.species === species) && (adoptionStatus === 'All' || animal.adoptability === adoptionStatus)) {
+        data.map((animal, index) => {
+          if ((species === 'All' || animal.species === species) && (adoptionStatus === 'All' || animal.adoptability === adoptionStatus)) {
             return <AnimalCard index={index} data={animal}/>
           }
         })
-      }   
+      }
       { label == 'Adoptions' &&
-        data.map((pendingAdoptions, index) => { 
-            if(userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
+        data.map((pendingAdoptions, index) => {
+          if (userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
         })
-      }   
-      
+      }
+
     </ColumnContainer>
 
   )
-
 }
 
 AnimalDashboardColumn.propTypes = {

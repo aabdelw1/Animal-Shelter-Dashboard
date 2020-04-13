@@ -4,12 +4,11 @@ import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, Selec
 import Component from '@reactions/component'
 import { useRouter } from 'next/router'
 
-
 const AddAnimalModal = (props) => {
   const { showModal, setShowModal } = props
-  const router = useRouter();
+  const router = useRouter()
   const [animalName, setAnimalName] = useState('')
-  const [species, setSpecies] = useState("Dog")
+  const [species, setSpecies] = useState('Dog')
   const [breeds, setBreeds] = useState([])
   const [breedsList, setBreedsList] = useState([])
   const [speciesList, setSpeciesList] = useState([])
@@ -20,34 +19,33 @@ const AddAnimalModal = (props) => {
   const [surrenderDate, setSurrenderDate] = useState('')
   const [surrenderReason, setSurrenderReason] = useState('')
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true)
   const [alterationStatus, setAlterationStatus] = useState('')
   const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('')
-  const [animalCount, setAnimalCount] = useState([{species: '', maxPerShelter: '', countWaitingAdoption: ''}])
+  const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
 
   const getBreeds = async () => {
-    const response = await fetch(`http://localhost:4000/breeds/${species}`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setBreedsList(result)
   }
 
   const getSpecies = async () => {
-    const response = await fetch(`http://localhost:4000/species`, {method: 'get'})
+    const response = await fetch('http://localhost:4000/species', { method: 'get' })
     const result = await response.json()
     setLoading(false)
     var newList = []
     var countList = []
-    for(var x = 0; x<result.length;x++){
-        newList[x] = result[x].name
-        countList[x] = {species: result[x].name, maxPerShelter: result[x].maxPerShelter, countWaitingAdoption: result[x].countWaitingAdoption, countNotReadyForAdoption: result[x].countNotReadyForAdoption}
+    for (var x = 0; x < result.length; x++) {
+      newList[x] = result[x].name
+      countList[x] = { species: result[x].name, maxPerShelter: result[x].maxPerShelter, countWaitingAdoption: result[x].countWaitingAdoption, countNotReadyForAdoption: result[x].countNotReadyForAdoption }
     }
-    let list = newList.map(name => {return {label: name, value: name}});
-    setSpeciesList(list);
+    const list = newList.map(name => { return { label: name, value: name } })
+    setSpeciesList(list)
     setAnimalCount(countList)
   }
-
 
   useEffect(() => {
     getSpecies()
@@ -60,40 +58,40 @@ const AddAnimalModal = (props) => {
       title="🐶 Add New Animal"
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
-        for(var x = 0; x< animalCount.length; x++ ){
-          if(species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
+        for (var x = 0; x < animalCount.length; x++) {
+          if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
         }
         const requestOptions = {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             name: `${animalName}`,
             description: `${description}`,
             age: `${age}`,
             sex: `${sex}`,
             microchipId: `${microchipId}`,
-            surrenderDate: `${surrenderDate}`,  
+            surrenderDate: `${surrenderDate}`,
             surrenderSubmitter: `${localStorage.getItem('UserName')}`,
             surrenderReason: `${surrenderReason}`,
             surrenderByAnimalControl: `${surrenderByAnimalControl}`,
             alterationStatus: `${alterationStatus}`,
-            breeds: `${breeds["selected"].join(',')}`,
+            breeds: `${breeds.selected.join(',')}`,
             species: `${species}`
           })
-        };
-        fetch(`http://localhost:4000/animal/add`, requestOptions)
-            .then((Response) => Response.json())
-            .then((result) => {
-                  if (!result.petId){
-                      toaster.warning('Error with adding pet :( ')
-                  }else{
-                      toaster.success('Successfully added pet');
-                      router.push('/animalDashboard');
-                    }
-                  })
+        }
+        fetch('http://localhost:4000/animal/add', requestOptions)
+          .then((Response) => Response.json())
+          .then((result) => {
+            if (!result.petId) {
+              toaster.warning('Error with adding pet :( ')
+            } else {
+              toaster.success('Successfully added pet')
+              router.push('/animalDashboard')
+            }
+          })
         setShowModal(false)
       }}
-      >
+    >
       <Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">
@@ -143,61 +141,60 @@ const AddAnimalModal = (props) => {
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">Breed *</Heading>
               <Pane marginRight="2rem">
-              <Component
-                initialState={{
-                  options: breedsList.map(label => ({ label, value: label })),
-                  selected: []
-                }}
-              >
-                {({ state, setState }) => (
-                  <SelectMenu
-                     
-                    isMultiSelect
-                    title="Select multiple Breeds"
-                    options={breedsList.map(label => ({ label, value: label }))}
-                    selected={state.selected}
-                    onSelect={item => {
-                      const selected = [...state.selected, item.value]
-                      const selectedItems = selected
-                      const selectedItemsLength = selectedItems.length
-                      let selectedNames = ''
-                      if (selectedItemsLength === 0) {
-                        selectedNames = ''
-                      } else if (selectedItemsLength === 1) {
-                        selectedNames = selectedItems.toString()
-                      } else if (selectedItemsLength > 1) {
-                        selectedNames = selectedItemsLength.toString() + ' selected...'
-                      }
-                      setBreeds({selected, selectedNames})
-                      setState({
-                        selected,
-                        selectedNames
-                      })
-                    }}
-                    onDeselect={item => {
-                      const deselectedItemIndex = state.selected.indexOf(item.value)
-                      const selectedItems = state.selected.filter(
-                        (_item, i) => i !== deselectedItemIndex
-                      )
-                      const selectedItemsLength = selectedItems.length
-                      let selectedNames = ''
-                      if (selectedItemsLength === 0) {
-                        selectedNames = ''
-                      } else if (selectedItemsLength === 1) {
-                        selectedNames = selectedItems.toString()
-                      } else if (selectedItemsLength > 1) {
-                        selectedNames = selectedItemsLength.toString() + ' selected...'
-                      }
-                      setState({ selected: selectedItems, selectedNames })
-                      setBreeds({ selected: selectedItems, selectedNames })
-                    }}
-                  >
-                    <Button>{state.selectedNames || 'Select multiple...'}</Button>
-                  </SelectMenu>
-                )}
-              </Component> 
-              </Pane>
+                <Component
+                  initialState={{
+                    options: breedsList.map(label => ({ label, value: label })),
+                    selected: []
+                  }}
+                >
+                  {({ state, setState }) => (
+                    <SelectMenu
 
+                      isMultiSelect
+                      title="Select multiple Breeds"
+                      options={breedsList.map(label => ({ label, value: label }))}
+                      selected={state.selected}
+                      onSelect={item => {
+                        const selected = [...state.selected, item.value]
+                        const selectedItems = selected
+                        const selectedItemsLength = selectedItems.length
+                        let selectedNames = ''
+                        if (selectedItemsLength === 0) {
+                          selectedNames = ''
+                        } else if (selectedItemsLength === 1) {
+                          selectedNames = selectedItems.toString()
+                        } else if (selectedItemsLength > 1) {
+                          selectedNames = selectedItemsLength.toString() + ' selected...'
+                        }
+                        setBreeds({ selected, selectedNames })
+                        setState({
+                          selected,
+                          selectedNames
+                        })
+                      }}
+                      onDeselect={item => {
+                        const deselectedItemIndex = state.selected.indexOf(item.value)
+                        const selectedItems = state.selected.filter(
+                          (_item, i) => i !== deselectedItemIndex
+                        )
+                        const selectedItemsLength = selectedItems.length
+                        let selectedNames = ''
+                        if (selectedItemsLength === 0) {
+                          selectedNames = ''
+                        } else if (selectedItemsLength === 1) {
+                          selectedNames = selectedItems.toString()
+                        } else if (selectedItemsLength > 1) {
+                          selectedNames = selectedItemsLength.toString() + ' selected...'
+                        }
+                        setState({ selected: selectedItems, selectedNames })
+                        setBreeds({ selected: selectedItems, selectedNames })
+                      }}
+                    >
+                      <Button>{state.selectedNames || 'Select multiple...'}</Button>
+                    </SelectMenu>
+                  )}
+                </Component>
+              </Pane>
 
               {/* change this to a tagInput */}
               {/* <Select marginRight="2rem" value={breedsAdd} disabled={loading} onChange={e => setBreedsAdd(e.target.value)}>
@@ -274,15 +271,15 @@ const AddAnimalModal = (props) => {
           <Pane display="flex" flexDirection="column">
             <Heading size={500} marginY="0.5rem">Surrendered by Animal control</Heading>
             <Combobox
-                width={150}
-                openOnFocus
-                marginRight="2rem"
-                items={['true', 'false']}
-                autocompleteProps={{ title: 'Surrendered by animal control' }}
-                initialSelectedItem={surrenderByAnimalControl || ''}
-                onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
-                value={surrenderByAnimalControl}
-              />
+              width={150}
+              openOnFocus
+              marginRight="2rem"
+              items={['true', 'false']}
+              autocompleteProps={{ title: 'Surrendered by animal control' }}
+              initialSelectedItem={surrenderByAnimalControl || ''}
+              onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
+              value={surrenderByAnimalControl}
+            />
           </Pane>
         </Pane>
       </Pane>

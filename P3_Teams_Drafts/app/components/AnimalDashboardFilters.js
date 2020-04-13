@@ -8,36 +8,35 @@ import { useRouter } from 'next/router'
 
 const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
-  const router = useRouter();
+  const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [showModalApp, setShowModalApp] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [speciesList, setSpeciesList] = useState([{ label: "Loading ...", value: ""}])
-  const [inShelterCount, setInShelterCount] = useState([{ label: "Loading ...", value: ""}])
+  const [speciesList, setSpeciesList] = useState([{ label: 'Loading ...', value: '' }])
+  const [inShelterCount, setInShelterCount] = useState([{ label: 'Loading ...', value: '' }])
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
-  
   const getSpecies = async () => {
-    const response = await fetch(`http://localhost:4000/species`, {method: 'get'})
+    const response = await fetch('http://localhost:4000/species', { method: 'get' })
     const result = await response.json()
     setLoading(false)
     var newList = []
     var countList = []
     var animalList = []
-    for(var x = 0; x<result.length;x++){
-        newList[x] = result[x].name
-        if(result[x].maxPerShelter > result[x].countWaitingAdoption){
-          animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption)]
-          countList[x] = (result[x].name + " Space Left: " + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
-        }
+    for (var x = 0; x < result.length; x++) {
+      newList[x] = result[x].name
+      if (result[x].maxPerShelter > result[x].countWaitingAdoption) {
+        animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption)]
+        countList[x] = (result[x].name + ' Space Left: ' + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
+      }
     }
-    let list = newList.map(name => {return {label: name, value: name}});
-    let count = countList.map(name => {return {label: name, value: name}});
-    setSpeciesList(list);
-    setInShelterCount(animalList);
+    const list = newList.map(name => { return { label: name, value: name } })
+    const count = countList.map(name => { return { label: name, value: name } })
+    setSpeciesList(list)
+    setInShelterCount(animalList)
   }
   useEffect(() => {
-    if(localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
+    if (localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
     getSpecies()
   }, [])
 
@@ -51,30 +50,30 @@ const AnimalDashboardFilters = (props) => {
       </Pane>
       <Pane>
         <Select marginRight="2rem" value={adoptionStatus} onChange={e => setAdoptionStatus(e.target.value)}>
-         <option value="All" defaultValue>All Statuses</option>
-         <option value="Pending">Pending</option>
-         <option value="Ready">Ready</option>
-         <option value="Adopted">Adopted</option>
+          <option value="All" defaultValue>All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Ready">Ready</option>
+          <option value="Adopted">Adopted</option>
         </Select>
       </Pane>
       <Pane>
-        <Button marginRight="2rem" disabled={userType == 'Volunteer' ? true: false} onClick={() => setShowModal(true)}>Add Animal</Button>
+        <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Animal</Button>
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
-      </Pane> 
+      </Pane>
       <Pane>
         <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption Application</Button>
         <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
       </Pane>
       <Pane marginLeft="auto" display="flex">
-      { 
-      userType == 'Admin' &&
+        {
+          userType == 'Admin' &&
           inShelterCount.map((label, value) => {
             return <Pane display="flex" flexDirection="row">
-              <Avatar src={label[0] == 'Dog' ? "/static/dog-face.png" : "/static/cat-face.png"} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
+              <Avatar src={label[0] == 'Dog' ? '/static/dog-face.png' : '/static/cat-face.png'} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
               <Text>: {100 - label[1]} / 100</Text>
             </Pane>
           })
-      }
+        }
       </Pane>
     </Pane>
   )

@@ -6,7 +6,6 @@ import Meta from './Meta'
 import Footer from './Footer'
 import { ContextProvider } from '../components/Context'
 
-
 const theme = {
   blue: '#009FDB',
   cobalt: '#0057B8',
@@ -54,8 +53,7 @@ class Page extends Component {
             <Footer />
           </StyledPage>
         </ThemeProvider>
-      </ContextProvider> 
-
+      </ContextProvider>
     )
   }
 }

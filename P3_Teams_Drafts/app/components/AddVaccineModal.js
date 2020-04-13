@@ -8,27 +8,25 @@ import { useRouter } from 'next/router'
 
 const AddVaccineModal = (props) => {
   const { showModal, setShowModal, id, species } = props
-  const router = useRouter();
-  const [vaccine, setVaccine] = useState("")
+  const router = useRouter()
+  const [vaccine, setVaccine] = useState('')
   const [vaccineList, setVaccineList] = useState([])
   const [vaccinationDate, setVaccinationDate] = useState('')
   const [nextDate, setNextDate] = useState('')
   const [vaccineTagNumber, setVaccineTagNumber] = useState(null)
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(true)
 
   const getVaccine = async () => {
-    const response = await fetch(`http://localhost:4000/vaccines/${id}`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/vaccines/${id}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
     var newList = []
-    for(var x = 0; x<result.length;x++){
-        newList[x] = result[x]
+    for (var x = 0; x < result.length; x++) {
+      newList[x] = result[x]
     }
-    let list = newList.map(name => {return {label: name, value: name}});
-    setVaccineList(list);
+    const list = newList.map(name => { return { label: name, value: name } })
+    setVaccineList(list)
   }
-
 
   useEffect(() => {
     getVaccine()
@@ -44,7 +42,7 @@ const AddVaccineModal = (props) => {
         const requestOptions = {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             speciesName: `${species}`,
             vaccineType: `${vaccine}`,
             vaccinationNumber: num,
@@ -52,21 +50,21 @@ const AddVaccineModal = (props) => {
             expirationDate: `${nextDate}`,
             vaccineSubmitter: `${localStorage.getItem('UserName')}`
           })
-        };
+        }
         console.log(requestOptions)
         fetch(`http://localhost:4000/animal/${id}/vaccines/add`, requestOptions)
-            .then((Response) => Response.json())
-            .then((result) => {
-                  if (result.status != 'success'){
-                      toaster.warning('Error with adding vaccine info :( ')
-                  }else{
-                      toaster.success('Successfully added vaccine info');
-                      router.push('/animal/'+id);
-                    }
-                 })
+          .then((Response) => Response.json())
+          .then((result) => {
+            if (result.status != 'success') {
+              toaster.warning('Error with adding vaccine info :( ')
+            } else {
+              toaster.success('Successfully added vaccine info')
+              router.push('/animal/' + id)
+            }
+          })
         setShowModal(false)
       }}
-      >
+    >
       <Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">

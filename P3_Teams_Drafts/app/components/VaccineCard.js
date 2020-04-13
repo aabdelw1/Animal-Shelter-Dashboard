@@ -19,10 +19,10 @@ const VaccineCard = (props) => {
             {/* <Heading size={600} marginLeft=".5rem" color={sex == 'Male' ? '#1070CA' : '#735DD0'}>{name}</Heading> */}
             <Heading size={600}>{type}</Heading>
           </Pane>
-        <Pane><Text size={300} marginLeft=".5rem">{"Vacc # : "} <b>{(number == null ? 'None' : number)}</b></Text></Pane>
-        <Pane><Text size={300} marginLeft=".5rem">{"Date admin: "} <b>{dateAdministered.split('T')[0]}</b></Text></Pane>
-        <Pane><Text size={300} marginLeft=".5rem">{"Ex Date: "} <b>{expDate.split('T')[0]}</b></Text></Pane>
-        <Pane><Text size={300} marginLeft=".5rem">{"Submitter: "} <b>{submitter}</b></Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{'Vacc # : '} <b>{(number == null ? 'None' : number)}</b></Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{'Date admin: '} <b>{dateAdministered.split('T')[0]}</b></Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{'Ex Date: '} <b>{expDate.split('T')[0]}</b></Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{'Submitter: '} <b>{submitter}</b></Text></Pane>
         </Pane>
       </Pane>
     </Pane>

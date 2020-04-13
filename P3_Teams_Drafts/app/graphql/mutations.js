@@ -47,7 +47,7 @@ const Mutations = {
       }
     }
   `,
- 
+
   DELETE_ANIMAL: gql`
     mutation deleteAnimal($_id: ID!) {
       deleteAnimal(_id: $_id) {

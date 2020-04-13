@@ -4,14 +4,12 @@ import { Menu, Position, Pane, Popover, IconButton, Strong, toaster } from 'ever
 import Link from 'next/link'
 import { Context } from './Context'
 
-
 const CardPopover = (props) => {
   const { animal } = props
 
   const [editVisible, setEditVisible] = useState(false)
   const [deleteVisible, setDeleteVisible] = useState(false)
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
-
 
   return (
     <Pane>
