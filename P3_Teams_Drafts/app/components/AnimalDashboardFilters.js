@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 
 const AnimalDashboardFilters = (props) => {
   const { scheduleButton } = props
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false)
   const [showModalApp, setShowModalApp] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -63,7 +64,10 @@ const AnimalDashboardFilters = (props) => {
         <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
       </Pane>
       <Pane>
-        {userType == 'admin' ? inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""}
+        {userType == 'admin' ? 
+          inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""
+        }
+        <Button display={userType == 'admin' ? 'block': 'block'} is="a" href="/reports">Reports</Button>
       </Pane>
     </Pane>
   )
