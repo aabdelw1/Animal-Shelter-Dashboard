@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import { Text, Avatar, Tooltip, Pane, Heading, Button, toaster } from 'evergreen-ui'
+import { Context } from './Context'
+
 
 const StyledNav = styled.nav`
   display: flex;
@@ -38,7 +40,7 @@ const Logo = styled.div`
   border: 3px dashed rgba(35, 67, 97, 0.5);
 `
 
-const RouteList = [
+let RouteList = [
   {
     title: 'Ingie\'s Animal Shelter',
     href: '/',
@@ -62,7 +64,34 @@ const RouteListSignedOut = [
 const Nav = () => {
   const [loggedin, setLoggedin] = useState(null);
   const router = useRouter();
+  const [userType] = useContext(Context)
 
+  if(userType == 'Admin') {
+    RouteList = [
+      {
+        title: 'Ingie\'s Animal Shelter',
+        href: '/',
+        default: true
+      }, {
+        title: 'Animal Dashboard',
+        href: '/animalDashboard'
+      }, {
+        title: 'Reports',
+        href: '/reports'
+      }
+    ]
+  } else {
+    RouteList = [
+      {
+        title: 'Ingie\'s Animal Shelter',
+        href: '/',
+        default: true
+      }, {
+        title: 'Animal Dashboard',
+        href: '/animalDashboard'
+      }
+    ]
+  }
   
   useEffect (() => {
     if (localStorage.getItem('isLoggedin')) {

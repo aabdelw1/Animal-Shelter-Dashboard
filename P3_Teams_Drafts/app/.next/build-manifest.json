@@ -28,7 +28,11 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
+<<<<<<< HEAD
+    "/reports": [
+=======
     "/index": [
+>>>>>>> 2b3e33fae7f44b9374b888d06c5bf4ada0dcacca
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]

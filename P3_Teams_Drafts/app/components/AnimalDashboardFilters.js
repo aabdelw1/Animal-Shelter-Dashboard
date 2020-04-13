@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Select, Button, Pane,Spinner, Tooltip, Position, toaster, TextInput, SearchInput, Badge, Link } from 'evergreen-ui'
+import { Select, Button, Pane, Spinner, Tooltip, Position, toaster, TextInput, SearchInput, Badge, Link, Avatar, Text } from 'evergreen-ui'
 import PropTypes from 'prop-types'
 import AddAnimalModal from './AddAnimalModal'
 import AddNewAdoptionApplication from './AddNewAdoptionApplication'
@@ -23,22 +23,23 @@ const AnimalDashboardFilters = (props) => {
     setLoading(false)
     var newList = []
     var countList = []
+    var animalList = []
     for(var x = 0; x<result.length;x++){
         newList[x] = result[x].name
         if(result[x].maxPerShelter > result[x].countWaitingAdoption){
+          animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption)]
           countList[x] = (result[x].name + " Space Left: " + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
         }
     }
     let list = newList.map(name => {return {label: name, value: name}});
     let count = countList.map(name => {return {label: name, value: name}});
     setSpeciesList(list);
-    setInShelterCount(count);
+    setInShelterCount(animalList);
   }
   useEffect(() => {
     if(localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
     getSpecies()
   }, [])
-
 
   return (
     <Pane display="flex" marginY='2rem'>
@@ -63,11 +64,16 @@ const AnimalDashboardFilters = (props) => {
         <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption Application</Button>
         <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
       </Pane>
-      <Pane>
-        {userType == 'Admin' ? 
-          inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""
-        }
-        <Button display={userType == 'Admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
+      <Pane marginLeft="auto" display="flex">
+      { 
+      userType == 'Admin' &&
+          inShelterCount.map((label, value) => {
+            return <Pane display="flex" flexDirection="row">
+              <Avatar src={label[0] == 'Dog' ? "/static/dog-face.png" : "/static/cat-face.png"} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
+              <Text>: {100 - label[1]} / 100</Text>
+            </Pane>
+          })
+      }
       </Pane>
     </Pane>
   )

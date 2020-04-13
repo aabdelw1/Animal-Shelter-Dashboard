@@ -29,7 +29,8 @@ const AnimalCard = (props) => {
       <Pane display="flex" flexDirection="row">
         <Pane display="flex" flexDirection="row" marginRight={'2rem'} marginY='auto'>
           {/* <Text size={500}>Sex:</Text> */}
-          <Text marginLeft=".5rem" size={500} fontWeight='bold'color={sex == 'Male' ? '#1070CA' : '#735DD0'}> {sex}</Text>
+          { (sex =='Male' || sex == 'Female') && <Text marginLeft=".5rem" size={500} fontWeight='bold'color={sex == 'Male' ? '#1070CA' : '#735DD0'}> {sex}</Text> }
+          { sex == 'Unknown' && <Text marginLeft=".5rem" size={500} fontWeight='bold'color={'neutral'}> {sex}</Text> }
         </Pane>
         <Pane marginY='0.1rem' marginRight='0.5rem'>
           <CardPopover animal={data}/>

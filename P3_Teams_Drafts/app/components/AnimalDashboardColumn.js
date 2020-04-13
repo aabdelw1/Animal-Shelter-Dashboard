@@ -32,6 +32,14 @@ const AnimalDashboardColumn = (props) => {
       <Pane display="flex" flexDirection="row" marginTop="1rem">
         <Text marginLeft="1rem" size={400} color="muted">{label}</Text>
         <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.length}</Text>
+        {/* { label == 'Animals' &&
+        <Pane marginLeft="auto">
+          <Text marginLeft="1rem" size={400} color="muted">Cats</Text>
+          <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.filter(c => c.species === 'Cat' ).length}</Text>
+          <Text marginLeft="1rem" marginRight=".5rem" size={400} color="muted">Dogs</Text>
+          <Text marginRight=".5rem" fontWeight="bold" size={400}>{data && data.filter(c => c.species === 'Dog' ).length}</Text>
+        </Pane>
+        } */}
       </Pane>
       { loading &&
         <Pane>

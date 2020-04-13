@@ -1,17 +1,9 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
-import { toaster, Spinner, Pane } from 'evergreen-ui'
-import { Query } from 'react-apollo'
 import { Context } from './Context'
-import { useRouter } from 'next/router'
 import AnimalDashboardColumn from './AnimalDashboardColumn'
-import AnimalCard from './AnimalCard'
-import AdoptionCard from './AdoptionCard'
 
-import Queries from '../graphql/queries'
-import { useQuery } from '@apollo/react-hooks'
-const Categories = ['Animals', 'Adoptions']
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -26,6 +18,9 @@ const AnimalDashboard = (props) => {
   const [pendingAdoptions, setPendingAdoptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
+  let Categories = ['Animals', 'Adoptions']
+  
+  if(userType != 'Admin') Categories = ['Animals']
 
   const fetchAnimals = async () => {
     const response = await fetch(`http://localhost:4000/animals`, {method: 'get'})
