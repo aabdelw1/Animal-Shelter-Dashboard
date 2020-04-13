@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 import { Menu, Position, Pane, Popover, IconButton, Strong, toaster } from 'evergreen-ui'
 import Link from 'next/link'
 import { Context } from './Context'
+import EditAnimalModal from './EditAnimalModal'
 
 const CardPopover = (props) => {
   const { animal } = props
 
   const [editVisible, setEditVisible] = useState(false)
-  const [deleteVisible, setDeleteVisible] = useState(false)
   const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
   return (
@@ -26,6 +26,7 @@ const CardPopover = (props) => {
       >
         <IconButton appearance="minimal" icon="more" iconSize={10} />
       </Popover>
+      <EditAnimalModal animal={animal} visible={editVisible} setVisible={setEditVisible}/>
     </Pane>
   )
 }
