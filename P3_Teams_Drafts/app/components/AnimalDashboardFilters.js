@@ -64,10 +64,10 @@ const AnimalDashboardFilters = (props) => {
         <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
       </Pane>
       <Pane>
-        {userType == 'admin' ? 
+        {userType == 'Admin' ? 
           inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""
         }
-        <Button display={userType == 'admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
+        <Button display={userType == 'Admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
       </Pane>
     </Pane>
   )

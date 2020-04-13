@@ -74,7 +74,7 @@ const AnimalDashboard = (props) => {
         }
         {
         pendingAdoptions.map((pendingAdoptions, index) => { 
-            if(true/*userType == 'Admin'*/) return <AdoptionCard index={index} data={pendingAdoptions}/>
+            if(userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
         })
         }
 
