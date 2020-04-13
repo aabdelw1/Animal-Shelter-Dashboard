@@ -71,6 +71,7 @@ const AnimalDashboardFilters = (props) => {
         <Button display={userType == 'Admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
       </Pane>
     </Pane>
+  )
 }
 AnimalDashboardFilters.propTypes = {
   specialty: PropTypes.string,
