@@ -1,6 +1,7 @@
 'use strict';
 module.exports = function(app) {
   var animalController = require('./controllers/animalController');
+  var animalsController = require('./controllers/animalsController');
   var userController = require('./controllers/userController');
   var adopterController = require('./controllers/adopterController');
   var speciesController = require('./controllers/speciesController');
@@ -9,19 +10,18 @@ module.exports = function(app) {
   var vaccineController = require('./controllers/vaccineController');
   var initController = require('./controllers/initController');
 
-  app.get('/initdb',initController.load_data);
+  app.get('/initdb',initController.load_data); 
 
-  app.get('/animals',animalController.list_all_animals);
+  app.get('/animals',animalsController.list_all_animals);
+
   app.post('/animal/add', animalController.add_animal);
   app.get('/animal/:animalId', animalController.get_animal);
   app.get('/animal/:animalId/breeds', animalController.get_breeds);
   app.post('/animal/:animalId/vaccines/add', animalController.add_vaccine);
   app.get('/animal/:animalId/vaccines', animalController.get_vaccines);
   app.get('/animal/:animalId/vaccines/:vaccineType', animalController.get_vaccine);
+  
   app.get('/breeds/:species',breedController.list_breeds);
-
-  app.get('/breeds/:species',breedController.list_breeds);
-
   app.get('/species',speciesController.list_species);
   app.get('/species/:species/vaccines', speciesController.list_species_vaccines);
 
@@ -45,8 +45,6 @@ module.exports = function(app) {
   //13 Works
   app.route('/updateAnimalAdoptionInformation/:PetID').put(animalController.put_animal_adoption_information);
 
-  //app.route('/updateAnimalInformation/:PetID').put(animalController.put_update_animal_information);
-
   //14 Works    
   app.route('/newAdoptionApplication').post(adopterController.post_new_adoption_application);
 
@@ -69,26 +67,19 @@ module.exports = function(app) {
   app.route('/adoptionApplicationReject/:applicationNumber').put(adopterController.put_application_status_reject);
 
   //23 Works
-  app.route('/viewAnimalControlReportLists').get(animalController.get_animal_control_report);
+  app.route('/viewAnimalControlReportLists').get(animalsController.get_animal_control_report);
 
   //24 Works - but needs more data for testing
-  app.route('/viewAnimalControlSurrenders/:YearMonth').get(animalController.get_report_animal_control_surrenders);
+  app.route('/viewAnimalControlSurrenders/:YearMonth').get(animalsController.get_report_animal_control_surrenders);
 
   //25 Works - but needs more data for testing
-  app.route('/viewAnimalAdoptedOver60Days/:YearMonth').get(animalController.get_report_animal_adopted_over_60_days);
+  app.route('/viewAnimalAdoptedOver60Days/:YearMonth').get(animalsController.get_report_animal_adopted_over_60_days);
 
   //26 Works
   app.route('/monthsWithVolunteerHours').get(userController.get_months_with_volunteer_hours);
 
   //27 Works
   app.route('/volunteeroftheMonth/:YearMonth').get(userController.get_volunteer_of_the_month);
-
-  
-//   app.route('/animal/:animalId')
-//     .get(animalController.read_a_task)
-//     .put(animalController.update_a_task)
-//     .delete(animalController.delete_a_task);
-
 
 
 };
