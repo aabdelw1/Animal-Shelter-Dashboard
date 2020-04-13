@@ -542,3 +542,53 @@ exports.get_report_animal_adopted_over_60_days = function(req, res) {
 };
 
 
+
+exports.put_update_animal_information = function(req, res) {
+ // console.log("update_animal:");
+ // console.log(req.body);
+ // res.setHeader('Content-Type', 'application/json');
+
+  var params = [];
+  var q = ` `; 
+
+  if (req.body.sex != null) {
+    q = q +`UPDATE Animal
+    SET   Sex = ?
+    WHERE Pet_ID = ? ; `;
+    params.push(req.body.sex);
+    params.push(req.params.PetID);
+  }
+
+  if (req.body.alterationStatus != null) {
+    q = q +`UPDATE Animal
+    SET   Alteration_Status = ?
+    WHERE Pet_ID = ? ; `;
+    params.push(req.body.alterationStatus);
+    params.push(req.params.PetID);
+  }
+ 
+  if (req.body.microchipID != null) {
+    q = q +`UPDATE Animal
+    SET   Microchip_ID = ?
+    WHERE Pet_ID = ? ; `;
+    params.push(req.body.microchipID);
+    params.push(req.params.PetID);
+  }
+
+  if (req.body.breeds != null) {
+    q = q +` DELETE FROM AnimalBreeds WHERE Pet_ID = ? ;`;
+    params.push(req.params.PetID);
+  }
+   
+  db.query(q, params, (err, results) => {
+    if(err) throw err;
+    if (req.body.breeds != null) {
+      res.status(200);
+      var breeds = req.body.breeds.split(',');
+      addBreeds(req.params.PetID, breeds);
+      res.status(200);
+    }
+    console.log(results); 
+    res.send('Animal Information Updated');
+ });
+}
