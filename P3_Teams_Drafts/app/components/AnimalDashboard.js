@@ -11,8 +11,7 @@ const DashboardContainer = styled.div`
   max-height: 70vh;
 `
 
-const AnimalDashboard = (props) => {
-  const { setScheduleButton } = props
+const AnimalDashboard = () => {
   const [animals, setAnimals] = useState([])
   const [pendingAdoptions, setPendingAdoptions] = useState([])
   const [loading, setLoading] = useState(true)

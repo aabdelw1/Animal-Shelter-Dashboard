@@ -15,25 +15,3 @@ const ContextProvider = (props) => {
 }
 
 export { Context, ContextProvider }
-
-// const [
-//   AssoDir,
-//   setAD,
-//   smes,
-//   setSmes,
-//   interviewTime,
-//   setInterviewTime,
-//   date,
-//   setDate,
-//   specialty,
-//   setSpecialty,
-//   acceptance,
-//   setAcceptance,
-//   duration,
-//   setDuration,
-//   reset,
-//   setReset,
-//   candidate,
-//   setCandidate
-//   postion,
-//   setPosition ] = useContext(Context)

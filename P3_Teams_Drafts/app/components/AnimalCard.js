@@ -1,8 +1,7 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, Badge, Pane, Avatar, Text } from 'evergreen-ui'
 import CardPopover from './CardPopover'
-import Head from 'next/head'
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 

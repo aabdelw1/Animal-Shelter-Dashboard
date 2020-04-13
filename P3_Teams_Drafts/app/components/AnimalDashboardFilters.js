@@ -6,8 +6,7 @@ import AddNewAdoptionApplication from './AddNewAdoptionApplication'
 import { Context } from './Context'
 import { useRouter } from 'next/router'
 
-const AnimalDashboardFilters = (props) => {
-  const { scheduleButton } = props
+const AnimalDashboardFilters = () => {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [showModalApp, setShowModalApp] = useState(false)

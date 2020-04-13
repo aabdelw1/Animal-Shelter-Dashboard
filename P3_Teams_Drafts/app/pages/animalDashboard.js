@@ -5,8 +5,6 @@ import AnimalDashboard from '../components/AnimalDashboard'
 import AnimalDashboardFilters from '../components/AnimalDashboardFilters'
 
 const animalDashboard = () => {
-  const [scheduleButton, setScheduleButton] = useState(true)
-
   return (
     <div>
       <Head>
@@ -14,8 +12,8 @@ const animalDashboard = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Heading size={900}>Animal Dashboard</Heading>
-      <AnimalDashboardFilters scheduleButton={scheduleButton}/>
-      <AnimalDashboard setScheduleButton={setScheduleButton}/>
+      <AnimalDashboardFilters />
+      <AnimalDashboard />
     </div>
   )
 }
