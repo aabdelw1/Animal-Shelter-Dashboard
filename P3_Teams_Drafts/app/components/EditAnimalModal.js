@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 const EditAnimalModal = (props) => {
   const { animal, visible, setVisible } = props
   const { petId, name, species, breeds, sex, alterationStatus, age, adoptability, microchipId } = animal
-  const [newBreeds, setNewBreeds] = useState([])
+  const [newBreeds, setNewBreeds] = useState(breeds.split('/'))
   const [breedsList, setBreedsList] = useState([])
   let [newSex, setNewSex] = useState('')
   let [newMicrochipId, setNewMicrochipId] = useState('')
@@ -30,6 +30,7 @@ const EditAnimalModal = (props) => {
     getBreeds()
   }, [])
 
+  
   return (
     <Dialog
       isShown={visible}
@@ -43,7 +44,7 @@ const EditAnimalModal = (props) => {
             sex: `${newSex}`,
             microchipId: `${newMicrochipId}`,
             alterationStatus: `${newAlterationStatus}`,
-            breeds: `${breeds.selected.join(',')}`,
+            breeds: `${newBreeds.selected.join(',')}`,
           })
         }
         fetch(`http://localhost:4000/updateAnimalInformation/${petId}`, requestOptions)
@@ -76,7 +77,7 @@ const EditAnimalModal = (props) => {
                 <Component
                   initialState={{
                     options: breedsList.map(label => ({ label, value: label })),
-                    selected: []
+                    selected: newBreeds
                   }}
                 >
                   {({ state, setState }) => (
@@ -98,7 +99,7 @@ const EditAnimalModal = (props) => {
                         } else if (selectedItemsLength > 1) {
                           selectedNames = selectedItemsLength.toString() + ' selected...'
                         }
-                        setBreeds({ selected, selectedNames })
+                        setNewBreeds({ selected, selectedNames })
                         setState({
                           selected,
                           selectedNames
@@ -119,7 +120,7 @@ const EditAnimalModal = (props) => {
                           selectedNames = selectedItemsLength.toString() + ' selected...'
                         }
                         setState({ selected: selectedItems, selectedNames })
-                        setBreeds({ selected: selectedItems, selectedNames })
+                        setNewBreeds({ selected: selectedItems, selectedNames })
                       }}
                     >
                       <Button>{state.selectedNames || 'Select multiple...'}</Button>
