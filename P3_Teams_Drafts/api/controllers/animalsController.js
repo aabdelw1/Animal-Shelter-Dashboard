@@ -38,17 +38,19 @@ exports.list_all_animals = function(req, res) {
                 group by a.pet_id 
               ) Adoptability 
               NATURAL JOIN AnimalBreeds
-              WHERE (1=1) `
-  
+              WHERE `;
+
+    if (req.query.adoptability != null) {
+        q = q + 'Adoptability.Adoptability_Status = ? ';
+        params.push(req.query.adoptability);
+    } else {
+        q = q + 'Adoption_Date is null '
+    }
+
     if (req.query.species != null) {
       q = q + ' AND Animal.Species = ? ';
       params.push(req.query.species);
-    }
-  
-    if (req.query.adoptability != null) {
-      q = q + ' AND Adoptability.Adoptability_Status = ? ';
-      params.push(req.query.adoptability);
-    }
+    } 
   
     q = q + ` GROUP BY   
                 Animal.Pet_ID, 
