@@ -53,7 +53,6 @@ const AnimalDashboardFilters = (props) => {
          <option value="All" defaultValue>All Statuses</option>
          <option value="Pending">Pending</option>
          <option value="Ready">Ready</option>
-         <option value="Adopted">Adopted</option>
         </Select>
       </Pane>
       <Pane>
