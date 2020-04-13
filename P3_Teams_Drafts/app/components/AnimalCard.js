@@ -19,7 +19,7 @@ const AnimalCard = (props) => {
           <Pane display="flex" flexDirection="row">
             {/* <Heading size={600} marginLeft=".5rem" color={sex == 'Male' ? '#1070CA' : '#735DD0'}>{name}</Heading> */}
             <Heading size={600}>{name}</Heading>
-            { (adoptability == 'Approved' || adoptability == 'Rejected') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={adoptability == 'Approved' ? 'green' : 'red'}>{adoptability}</Badge> }
+            { (adoptability == 'Adopted' || adoptability == 'Ready') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={adoptability == 'Adopted' ? 'purple' : 'green'}>{adoptability}</Badge> }
               { (adoptability == 'Pending' || adoptability == null) && <Badge marginLeft={'1rem'} marginY="0.5rem" color='blue'>Pending</Badge> }
             
           </Pane>
