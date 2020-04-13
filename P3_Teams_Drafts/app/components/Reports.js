@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
-import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab } from 'evergreen-ui'
+import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab, TextInputField } from 'evergreen-ui'
 import { Context } from './Context'
 import Router, { useRouter } from 'next/router'
 
@@ -29,7 +29,11 @@ const Reports = (props) => {
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
   const [showVolunteerLookup, setShowVolunteerLookup] = useState(false)
   const [showVaccineReminderReport, setShowVaccineReminderReport] = useState(false)
-  const whenClickedArray = ['animalControl', 'VolunteerMonth', 'MonthlyAdopt', 'VolunteerLookup', 'default']
+  const [volLastName, setVolLastName] = useState(null)
+  const [volFirstName, setVolFirstName] = useState(null)
+  const yearAndMonth = 202002
+
+  const whenClickedArray = ['animalControl','MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup' ]
 
   const fetchAnimalControl = async () => {
     const response = await fetch('http://localhost:4000/viewAnimalControlReportLists', { method: 'get' })
@@ -38,7 +42,7 @@ const Reports = (props) => {
     setAnimalsContol(result)
   }
 
-  const fetchVolunteerMonth = async () => {
+  const fetchVolunteerMonth = async (yearAndMonth) => {
     const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearAndMonth}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
@@ -52,7 +56,7 @@ const Reports = (props) => {
     setMonthlyAdopt(result)
   }
 
-  const fetchVolunteerLookup = async () => {
+  const fetchVolunteerLookup = async (volLastName, volFirstName) => {
     const response = await fetch(`http://localhost:4000/users/volunteers?lastName=${volLastName}&firstName=${volFirstName}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
@@ -71,6 +75,16 @@ const Reports = (props) => {
     fetchVaccineReminderReport()
     fetchMonthlyAdopt()
   }, [])
+
+  useEffect(() => {
+    fetchVolunteerLookup(volLastName, volFirstName)
+  }, [volLastName, volFirstName])
+
+  useEffect(() => {
+    fetchVolunteerMonth(yearAndMonth)
+  }, [])
+
+  console.log('VolunteerMonth', showVolunteerMonth)
 
   function renderRowAnimalControl (data) {
     return data.map((student, index) => {
@@ -159,6 +173,26 @@ const Reports = (props) => {
     })
   }
 
+  function renderHeaderVolunteerOfMonth (data) {
+      return (
+        <Table.Row>
+          <Table.TextCell>Last Name </Table.TextCell>
+          <Table.TextCell>First Name</Table.TextCell>
+        </Table.Row>
+      )
+  }
+
+  function renderRowVolunteerOfMonth (data) {
+    return data.map((volunteer, index) => {
+      return (
+        <Table.Row>
+          <Table.TextCell>{volunteer}</Table.TextCell>
+          <Table.TextCell>{volunteer}</Table.TextCell>
+        </Table.Row>
+      )
+    })
+}
+
   function whenClicked (state) {
     if (state == 'animalControl') {
       setShowAnimalsContol(true)
@@ -192,13 +226,14 @@ const Reports = (props) => {
       setShowVaccineReminderReport(true)
     }
   }
+  console.log(volunteerLookup)
 
   return (
     <Pane display="flex" flexDirection="column" marginY='2rem'>
       <Component
         initialState={{
           selectedIndex: 0,
-          tabs: ['Animal Control Report', 'Volunteer of the Month', 'Monthly Adoption', 'Volunteer lookup', 'Vaccine Reminder Report']
+          tabs: ['Animal Control Report', 'Monthly Adoption', 'Vaccine Reminder Report', 'Volunteer of the Month','Volunteer lookup', ]
         }}
       >
         {({ state, setState }) => (
@@ -237,7 +272,30 @@ const Reports = (props) => {
                   aria-hidden={index !== state.selectedIndex}
                   display={index === state.selectedIndex ? 'block' : 'none'}
                 >
+                  <Pane>
+                    {
+                      showVolunteerLookup && 
+                        <Pane display="flex" flexDirection="row">
+                          <TextInputField
+                            autoFocus
+                            label=""
+                            marginRight="2rem"
+                            value={volLastName}
+                            placeholder="Last Name"
+                            onChange={e => setVolLastName(e.target.value)}
+                          />
+                          <TextInputField
+                            autoFocus
+                            label=""
+                            marginRight="2rem"
+                            value={volFirstName}
+                            placeholder="First Name"
+                            onChange={e => setVolFirstName(e.target.value)}
+                          />
+                          <Button marginRight="2rem" marginY={'0.4rem'}onClick={() => renderRowVolunteerOfMonth(volunteerLookup)} iconBefore="search">Search</Button>
 
+                        </Pane>
+                    }
                   <Table>
                     <Table.Body>
                       {showVaccineReminderReport && renderHeaderVaccine()}
@@ -246,8 +304,11 @@ const Reports = (props) => {
                       {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
                       {showAnimalsContol && renderHeaderAnimalControl()}
                       {showAnimalsContol && renderRowAnimalControl(animalsContol)}
+                      {showVolunteerLookup && renderHeaderVolunteerOfMonth()}
+                      {showVolunteerLookup && renderRowVolunteerOfMonth(volunteerLookup)}
                     </Table.Body>
                   </Table>
+                  </Pane>
                 </Pane>
               ))}
             </Pane>
