@@ -67,7 +67,7 @@ const AnimalDashboardFilters = (props) => {
         {userType == 'admin' ? 
           inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""
         }
-        <Button display={userType == 'admin' ? 'block': 'block'} is="a" href="/reports">Reports</Button>
+        <Button display={userType == 'admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
       </Pane>
     </Pane>
   )
