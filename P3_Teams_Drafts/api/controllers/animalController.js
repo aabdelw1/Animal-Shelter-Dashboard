@@ -451,6 +451,8 @@ exports.get_animal_control_report = function(req, res) {
           results.forEach(a => {
             yearMonth.push({
                   yearMonth: a.yr_month,
+                  surrenderByAnimalControlCount: a.Surrender_By_Animal_Control_Count,
+                  rescueOver60Count: a.Rescue_Over_60_Count
               });
           });
       }

@@ -46,10 +46,6 @@ const RouteList = [
   }, {
     title: 'Animal Dashboard',
     href: '/animalDashboard'
-  }, {
-    title: 'Adoptions'
-  }, {
-    title: 'Users'
   }
 ]
 
@@ -60,10 +56,6 @@ const RouteListSignedOut = [
     default: true
   }, {
     title: 'Animal Dashboard'
-  }, {
-    title: 'Adoptions'
-  }, {
-    title: 'Users'
   }
 ]
 

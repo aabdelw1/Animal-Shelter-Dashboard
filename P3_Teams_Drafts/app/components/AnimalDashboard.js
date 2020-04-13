@@ -42,6 +42,7 @@ const AnimalDashboard = (props) => {
   }
 
   useEffect(() => {
+    if(localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
     fetchAnimals()
     fetchPending()
   }, [])
