@@ -247,7 +247,6 @@ function renderRowVolunteerMonth(data) {
       setShowVaccineReminderReport(true)
     }
   }
-  console.log(volunteerLookup)
 
   return (
     <Pane display="flex" flexDirection="column" marginY='2rem'>
