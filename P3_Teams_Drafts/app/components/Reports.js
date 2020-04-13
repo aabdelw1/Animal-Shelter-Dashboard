@@ -3,11 +3,9 @@ import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab } from 'evergreen-ui'
 import { Context } from './Context'
-import { useRouter } from 'next/router'
-import Router from 'next/router'
+import Router, { useRouter } from 'next/router'
+
 import Component from '@reactions/component'
-
-
 
 const Container = styled.div`
   display: flex;
@@ -31,38 +29,38 @@ const Reports = (props) => {
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
   const [showVolunteerLookup, setShowVolunteerLookup] = useState(false)
   const [showVaccineReminderReport, setShowVaccineReminderReport] = useState(false)
-  const whenClickedArray = ['animalControl', 'VolunteerMonth','MonthlyAdopt','VolunteerLookup', 'default']
+  const whenClickedArray = ['animalControl', 'VolunteerMonth', 'MonthlyAdopt', 'VolunteerLookup', 'default']
 
   const fetchAnimalControl = async () => {
-    const response = await fetch(`http://localhost:4000/viewAnimalControlReportLists`, {method: 'get'})
+    const response = await fetch('http://localhost:4000/viewAnimalControlReportLists', { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setAnimalsContol(result)
   }
 
   const fetchVolunteerMonth = async () => {
-    const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearAndMonth}`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearAndMonth}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setVolunteerMonth(result)
   }
 
   const fetchMonthlyAdopt = async () => {
-    const response = await fetch(`http://localhost:4000/adoption/report`, {method: 'get'})
+    const response = await fetch('http://localhost:4000/adoption/report', { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setMonthlyAdopt(result)
   }
 
   const fetchVolunteerLookup = async () => {
-    const response = await fetch(`http://localhost:4000/users/volunteers?lastName=${volLastName}&firstName=${volFirstName}`, {method: 'get'})
+    const response = await fetch(`http://localhost:4000/users/volunteers?lastName=${volLastName}&firstName=${volFirstName}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setVolunteerLookup(result)
   }
 
   const fetchVaccineReminderReport = async () => {
-    const response = await fetch(`http://localhost:4000/vaccineReminderReport`, {method: 'get'})
+    const response = await fetch('http://localhost:4000/vaccineReminderReport', { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setVaccineReminderReport(result)
@@ -74,146 +72,147 @@ const Reports = (props) => {
     fetchMonthlyAdopt()
   }, [])
 
-  function renderRowAnimalControl(data){
+  function renderRowAnimalControl (data) {
     return data.map((student, index) => {
-        const { yearMonth, surrenderByAnimalControlCount, rescueOver60Count} = student //destructuring
-        return (
-           <Table.Row key={yearMonth}>
-              <Table.TextCell>{yearMonth}</Table.TextCell>
-              <Table.TextCell>{surrenderByAnimalControlCount}</Table.TextCell>
-              <Table.TextCell>{rescueOver60Count}</Table.TextCell>
-           </Table.Row>
-        )
-     })
-  }
-
-  function renderHeaderAnimalControl(){
-    return(
-      <Table.Head>
-          <Table.TextHeaderCell>Year Month</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Surrender By Animal Control Count</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Rescue Over 60 Count</Table.TextHeaderCell>
-      </Table.Head>
-    )
-}
-
-  function renderHeaderVaccine(){
-      return(
-        <Table.Head>
-            <Table.TextHeaderCell>PetID</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Species</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Vaccine type</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Date</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Vaccine submitter</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Breed</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Alteration Status</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Surrender Date</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Microchip ID</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Sex</Table.TextHeaderCell>
-        </Table.Head>
-      )
-  }
-
-  function renderRowVaccine(data){
-    return data.map((student, index) => {
-        const { petID, speciesName, vaccineType, dateAdministired, vaccineSubmitter, breedName, alterationStatus, surrenderDate, microchipID, sex  } = student //destructuring
-        return (
-           <Table.Row key={petID}>
-              <Table.TextCell>{petID}</Table.TextCell>
-              <Table.TextCell>{speciesName}</Table.TextCell>
-              <Table.TextCell>{vaccineType}</Table.TextCell>
-              <Table.TextCell>{dateAdministired}</Table.TextCell>
-              <Table.TextCell>{vaccineSubmitter}</Table.TextCell>
-              <Table.TextCell>{breedName}</Table.TextCell>
-              <Table.TextCell>{alterationStatus}</Table.TextCell>
-              <Table.TextCell>{surrenderDate}</Table.TextCell>
-              <Table.TextCell>{microchipID}</Table.TextCell>
-              <Table.TextCell>{sex}</Table.TextCell>
-           </Table.Row>
-        )
-     })
-  }
-
-  function renderHeaderAdoption(){
-    return(
-      <Table.Head>
-          <Table.TextHeaderCell>yrMonth</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Species</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Breed</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Adoption Count</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Surrender Count</Table.TextHeaderCell>
-      </Table.Head>
-    )
-}
-
-function renderRowAdoption(data){
-  return data.map((student, index) => {
-      const { yrMonth, species, breedName, adoptionCount, surrenderCount } = student //destructuring
+      const { yearMonth, surrenderByAnimalControlCount, rescueOver60Count } = student // destructuring
       return (
-         <Table.Row key={yrMonth}>
-            <Table.TextCell>{yrMonth}</Table.TextCell>
-            <Table.TextCell>{species}</Table.TextCell>
-            <Table.TextCell>{breedName}</Table.TextCell>
-            <Table.TextCell>{adoptionCount}</Table.TextCell>
-            <Table.TextCell>{surrenderCount}</Table.TextCell>
-         </Table.Row>
+        <Table.Row key={yearMonth}>
+          <Table.TextCell>{yearMonth}</Table.TextCell>
+          <Table.TextCell>{surrenderByAnimalControlCount}</Table.TextCell>
+          <Table.TextCell>{rescueOver60Count}</Table.TextCell>
+        </Table.Row>
       )
-   })
-}
+    })
+  }
 
-function whenClicked(state){
-    if(state == 'animalControl'){
-        setShowAnimalsContol(true)
-        setShowVolunteerMonth(false)
-        setShowMonthlyAdopt(false)
-        setShowVolunteerLookup(false)
-        setShowVaccineReminderReport(false)
-    }else if(state == 'VolunteerMonth'){
-        setShowAnimalsContol(false)
-        setShowVolunteerMonth(true)
-        setShowMonthlyAdopt(false)
-        setShowVolunteerLookup(false)
-        setShowVaccineReminderReport(false)
-    }else if(state == 'MonthlyAdopt'){
-        setShowAnimalsContol(false)
-        setShowVolunteerMonth(false)
-        setShowMonthlyAdopt(true)
-        setShowVolunteerLookup(false)
-        setShowVaccineReminderReport(false)
-    }else if(state == 'VolunteerLookup'){
-        setShowAnimalsContol(false)
-        setShowVolunteerMonth(false)
-        setShowMonthlyAdopt(false)
-        setShowVolunteerLookup(true)
-        setShowVaccineReminderReport(false)
-    }else{
-        setShowAnimalsContol(false)
-        setShowVolunteerMonth(false)
-        setShowMonthlyAdopt(false)
-        setShowVolunteerLookup(false)
-        setShowVaccineReminderReport(true)
-    }
-}
-
+  function renderHeaderAnimalControl () {
     return (
+      <Table.Head>
+        <Table.TextHeaderCell>Year Month</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Surrender By Animal Control Count</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Rescue Over 60 Count</Table.TextHeaderCell>
+      </Table.Head>
+    )
+  }
+
+  function renderHeaderVaccine () {
+    return (
+      <Table.Head>
+        <Table.TextHeaderCell>PetID</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Species</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Vaccine type</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Date</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Vaccine submitter</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Breed</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Alteration Status</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Surrender Date</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Microchip ID</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Sex</Table.TextHeaderCell>
+      </Table.Head>
+    )
+  }
+
+  function renderRowVaccine (data) {
+    return data.map((student, index) => {
+      const { petID, speciesName, vaccineType, dateAdministired, vaccineSubmitter, breedName, alterationStatus, surrenderDate, microchipID, sex } = student // destructuring
+      return (
+        <Table.Row key={petID}>
+          <Table.TextCell>{petID}</Table.TextCell>
+          <Table.TextCell>{speciesName}</Table.TextCell>
+          <Table.TextCell>{vaccineType}</Table.TextCell>
+          <Table.TextCell>{dateAdministired}</Table.TextCell>
+          <Table.TextCell>{vaccineSubmitter}</Table.TextCell>
+          <Table.TextCell>{breedName}</Table.TextCell>
+          <Table.TextCell>{alterationStatus}</Table.TextCell>
+          <Table.TextCell>{surrenderDate}</Table.TextCell>
+          <Table.TextCell>{microchipID}</Table.TextCell>
+          <Table.TextCell>{sex}</Table.TextCell>
+        </Table.Row>
+      )
+    })
+  }
+
+  function renderHeaderAdoption () {
+    return (
+      <Table.Head>
+        <Table.TextHeaderCell>yrMonth</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Species</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Breed</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Adoption Count</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Surrender Count</Table.TextHeaderCell>
+      </Table.Head>
+    )
+  }
+
+  function renderRowAdoption (data) {
+    return data.map((student, index) => {
+      const { yrMonth, species, breedName, adoptionCount, surrenderCount } = student // destructuring
+      return (
+        <Table.Row key={yrMonth}>
+          <Table.TextCell>{yrMonth}</Table.TextCell>
+          <Table.TextCell>{species}</Table.TextCell>
+          <Table.TextCell>{breedName}</Table.TextCell>
+          <Table.TextCell>{adoptionCount}</Table.TextCell>
+          <Table.TextCell>{surrenderCount}</Table.TextCell>
+        </Table.Row>
+      )
+    })
+  }
+
+  function whenClicked (state) {
+    if (state == 'animalControl') {
+      setShowAnimalsContol(true)
+      setShowVolunteerMonth(false)
+      setShowMonthlyAdopt(false)
+      setShowVolunteerLookup(false)
+      setShowVaccineReminderReport(false)
+    } else if (state == 'VolunteerMonth') {
+      setShowAnimalsContol(false)
+      setShowVolunteerMonth(true)
+      setShowMonthlyAdopt(false)
+      setShowVolunteerLookup(false)
+      setShowVaccineReminderReport(false)
+    } else if (state == 'MonthlyAdopt') {
+      setShowAnimalsContol(false)
+      setShowVolunteerMonth(false)
+      setShowMonthlyAdopt(true)
+      setShowVolunteerLookup(false)
+      setShowVaccineReminderReport(false)
+    } else if (state == 'VolunteerLookup') {
+      setShowAnimalsContol(false)
+      setShowVolunteerMonth(false)
+      setShowMonthlyAdopt(false)
+      setShowVolunteerLookup(true)
+      setShowVaccineReminderReport(false)
+    } else {
+      setShowAnimalsContol(false)
+      setShowVolunteerMonth(false)
+      setShowMonthlyAdopt(false)
+      setShowVolunteerLookup(false)
+      setShowVaccineReminderReport(true)
+    }
+  }
+
+  return (
     <Pane display="flex" flexDirection="column" marginY='2rem'>
       <Component
-          initialState={{
-            selectedIndex: 0,
-            tabs: ['Animal Control Report', 'Volunteer of the Month','Monthly Adoption', 'Volunteer lookup', 'Vaccine Reminder Report']
-          }}
-        >
-          {({ state, setState }) => (
-            <Pane height={120}>
-              <Pane>
+        initialState={{
+          selectedIndex: 0,
+          tabs: ['Animal Control Report', 'Volunteer of the Month', 'Monthly Adoption', 'Volunteer lookup', 'Vaccine Reminder Report']
+        }}
+      >
+        {({ state, setState }) => (
+          <Pane height={120}>
+            <Pane>
               <Tablist marginBottom={16} flexBasis={240} marginRight={24}>
                 {state.tabs.map((tab, index) => (
                   <Tab
                     key={tab}
                     id={tab}
-                    onSelect={() => 
-                      {setState({ selectedIndex: index })
-                      whenClicked(whenClickedArray[index])}
+                    onSelect={() => {
+                      setState({ selectedIndex: index })
+                      whenClicked(whenClickedArray[index])
+                    }
                     }
                     isSelected={index === state.selectedIndex}
                     aria-controls={`panel-${tab}`}
@@ -226,36 +225,35 @@ function whenClicked(state){
                   <Pane>
                     <Spinner margin="auto" marginTop="2rem"/>
                   </Pane>
-                }
-                </Pane>
-              <Pane padding={16} background="tint1" flex="1">
-                {state.tabs.map((tab, index) => (
-                  <Pane
-                    key={tab}
-                    id={`panel-${tab}`}
-                    role="tabpanel"
-                    aria-labelledby={tab}
-                    aria-hidden={index !== state.selectedIndex}
-                    display={index === state.selectedIndex ? 'block' : 'none'}
-                  >
-                    
-                    <Table>
-                      <Table.Body>
-                        {showVaccineReminderReport && renderHeaderVaccine()}
-                        {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
-                        {showMonthlyAdopt && renderHeaderAdoption()}
-                        {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
-                        {showAnimalsContol && renderHeaderAnimalControl()}
-                        {showAnimalsContol && renderRowAnimalControl(animalsContol)}
-                      </Table.Body>
-                   </Table>
-                  </Pane>
-                ))}
-              </Pane>
+              }
             </Pane>
-          )}
-        </Component>
+            <Pane padding={16} background="tint1" flex="1">
+              {state.tabs.map((tab, index) => (
+                <Pane
+                  key={tab}
+                  id={`panel-${tab}`}
+                  role="tabpanel"
+                  aria-labelledby={tab}
+                  aria-hidden={index !== state.selectedIndex}
+                  display={index === state.selectedIndex ? 'block' : 'none'}
+                >
 
+                  <Table>
+                    <Table.Body>
+                      {showVaccineReminderReport && renderHeaderVaccine()}
+                      {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
+                      {showMonthlyAdopt && renderHeaderAdoption()}
+                      {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
+                      {showAnimalsContol && renderHeaderAnimalControl()}
+                      {showAnimalsContol && renderRowAnimalControl(animalsContol)}
+                    </Table.Body>
+                  </Table>
+                </Pane>
+              ))}
+            </Pane>
+          </Pane>
+        )}
+      </Component>
 
       {/* <Pane>
         <Button marginRight="2rem" onClick={() => whenClicked('animalControl')}>Animal Control Report</Button>
@@ -284,7 +282,7 @@ function whenClicked(state){
         }
      </Pane> */}
     </Pane>
-      )
+  )
 }
 
 Reports.propTypes = {

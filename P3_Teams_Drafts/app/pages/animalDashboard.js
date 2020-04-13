@@ -8,15 +8,15 @@ const animalDashboard = () => {
   const [scheduleButton, setScheduleButton] = useState(true)
 
   return (
-      <div>
-        <Head>
-          <title>Animal Dashboard - Ingies Animal Shelter</title>
-          <link rel='icon' href='/favicon.ico' />
-        </Head>
-        <Heading size={900}>Animal Dashboard</Heading>
-        <AnimalDashboardFilters scheduleButton={scheduleButton}/>
-        <AnimalDashboard setScheduleButton={setScheduleButton}/>
-      </div>
+    <div>
+      <Head>
+        <title>Animal Dashboard - Ingies Animal Shelter</title>
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+      <Heading size={900}>Animal Dashboard</Heading>
+      <AnimalDashboardFilters scheduleButton={scheduleButton}/>
+      <AnimalDashboard setScheduleButton={setScheduleButton}/>
+    </div>
   )
 }
 

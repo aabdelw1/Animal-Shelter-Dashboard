@@ -3,21 +3,21 @@ import Head from 'next/head'
 import Home from '../components/Home'
 import { useRouter } from 'next/router'
 const home = () => {
-  const [loggedin, setLoggedin] = useState(null);
-  const router = useRouter();
-  
-  useEffect (() => {
-    if (localStorage.getItem('isLoggedin')) {
-      setLoggedin(true);
-    }else {
-      setLoggedin(false);
-    }
-  });
+  const [loggedin, setLoggedin] = useState(null)
+  const router = useRouter()
 
-  if(loggedin){
-    router.push('/animalDashboard');
-  }else{
-    return ( 
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedin')) {
+      setLoggedin(true)
+    } else {
+      setLoggedin(false)
+    }
+  })
+
+  if (loggedin) {
+    router.push('/animalDashboard')
+  } else {
+    return (
       <div>
         <Head>
           <title>Ingie's Animal Shelter</title>
@@ -25,7 +25,7 @@ const home = () => {
         </Head>
         <Home />
       </div>
-  ) 
+    )
   }
 }
 

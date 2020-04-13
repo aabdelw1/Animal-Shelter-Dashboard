@@ -8,7 +8,7 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 
 const AdoptionCard = (props) => {
   const { data } = props
-  const { applicationNumber, applicantFirstName, applicantLastName, street, city, state, zipCode, phoneNumber, emailAddress,  coApplicantFirstName, coApplicantLastName } = data
+  const { applicationNumber, applicantFirstName, applicantLastName, street, city, state, zipCode, phoneNumber, emailAddress, coApplicantFirstName, coApplicantLastName } = data
   const [visible, setVisible] = useState(false)
 
   return (
@@ -17,9 +17,9 @@ const AdoptionCard = (props) => {
         <Pane marginY="auto">
           <Pane display="flex" flexDirection="row">
             {/* <Heading size={600} marginLeft=".5rem" color={sex == 'Male' ? '#1070CA' : '#735DD0'}>{name}</Heading> */}
-            <Heading size={600}>{applicantFirstName + " " + applicantLastName + " #" + applicationNumber}</Heading>
+            <Heading size={600}>{applicantFirstName + ' ' + applicantLastName + ' #' + applicationNumber}</Heading>
           </Pane>
-        <Pane><Text size={300} marginLeft=".5rem">{street} - {city}, {state}, {zipCode} - {phoneNumber} - {emailAddress}</Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{street} - {city}, {state}, {zipCode} - {phoneNumber} - {emailAddress}</Text></Pane>
         </Pane>
       </Pane>
       <Pane display="flex" flexDirection="row">

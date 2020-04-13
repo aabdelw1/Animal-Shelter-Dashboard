@@ -6,7 +6,6 @@ import { useRouter } from 'next/router'
 import { Text, Avatar, Tooltip, Pane, Heading, Button, toaster } from 'evergreen-ui'
 import { Context } from './Context'
 
-
 const StyledNav = styled.nav`
   display: flex;
   justify-content: space-between;
@@ -62,11 +61,11 @@ const RouteListSignedOut = [
 ]
 
 const Nav = () => {
-  const [loggedin, setLoggedin] = useState(null);
-  const router = useRouter();
+  const [loggedin, setLoggedin] = useState(null)
+  const router = useRouter()
   const [userType] = useContext(Context)
 
-  if(userType == 'Admin') {
+  if (userType == 'Admin') {
     RouteList = [
       {
         title: 'Ingie\'s Animal Shelter',
@@ -92,19 +91,19 @@ const Nav = () => {
       }
     ]
   }
-  
-  useEffect (() => {
-    if (localStorage.getItem('isLoggedin')) {
-      setLoggedin(true);
-    }else {
-      setLoggedin(false);
-    }
-  });
 
-  function logout() {
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedin')) {
+      setLoggedin(true)
+    } else {
+      setLoggedin(false)
+    }
+  })
+
+  function logout () {
     toaster.success('Successfully signed out')
-    localStorage.clear();
-    router.push('/');
+    localStorage.clear()
+    router.push('/')
   }
 
   return (
@@ -116,8 +115,8 @@ const Nav = () => {
           </Pane>
         </StyledLi>
         {
-          loggedin ?
-            RouteList.map((r, index) => {
+          loggedin
+            ? RouteList.map((r, index) => {
               return (
                 <StyledLi key={index}>
                   <Link href={r.href}>
@@ -128,8 +127,7 @@ const Nav = () => {
                 </StyledLi>
               )
             })
-            :
-            RouteListSignedOut.map((r, index) => {
+            : RouteListSignedOut.map((r, index) => {
               return (
                 <StyledLi key={index}>
                   <Link href={r.href}>
@@ -140,15 +138,15 @@ const Nav = () => {
                 </StyledLi>
               )
             })
-          }
+        }
       </StyledUl>
 
-      { loggedin ?
-        <Pane display="flex" flexDirection="row">
+      { loggedin
+        ? <Pane display="flex" flexDirection="row">
           <Pane marginY="auto" marginRight="1rem">
             <Text>{localStorage.getItem('UserName')}</Text>
           </Pane>
-          <Tooltip content={"Signed in as " + localStorage.getItem('UserName')}>
+          <Tooltip content={'Signed in as ' + localStorage.getItem('UserName')}>
             <Avatar
               src=""
               name={localStorage.getItem('UserName')}
@@ -160,12 +158,11 @@ const Nav = () => {
             <Button appearance="primary" onClick={logout} type="submit">Log out</Button>
           </Pane>
         </Pane>
-        :
-        <Pane display="flex" flexDirection="row">
-        <Pane marginY="auto" marginRight="1rem">
-          <Text></Text>
+        : <Pane display="flex" flexDirection="row">
+          <Pane marginY="auto" marginRight="1rem">
+            <Text></Text>
+          </Pane>
         </Pane>
-      </Pane>
       }
     </StyledNav>)
 }
