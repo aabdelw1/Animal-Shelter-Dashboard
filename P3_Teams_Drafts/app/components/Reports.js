@@ -1,18 +1,13 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
-import { toaster, Spinner, Pane,BackButton, Button, Table } from 'evergreen-ui'
-import { Query } from 'react-apollo'
+import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab } from 'evergreen-ui'
 import { Context } from './Context'
 import { useRouter } from 'next/router'
 import Router from 'next/router'
-import AnimalDashboardColumn from './AnimalDashboardColumn'
-import AnimalCard from './AnimalCard'
-import AdoptionCard from './AdoptionCard'
+import Component from '@reactions/component'
 
-import Queries from '../graphql/queries'
-import { useQuery } from '@apollo/react-hooks'
-const Categories = ['Animals ']
+
 
 const Container = styled.div`
   display: flex;
@@ -20,7 +15,6 @@ const Container = styled.div`
   justify-content:flex-start;
   flex: 1;
   min-height: 70vh;
-  /* max-height: 70vh; */
 `
 
 const Reports = (props) => {
@@ -32,11 +26,12 @@ const Reports = (props) => {
   const [volunteerLookup, setVolunteerLookup] = useState([])
   const [vaccineReminderReport, setVaccineReminderReport] = useState([])
 
-  const [showAnimalsContol, setShowAnimalsContol] = useState(false)
+  const [showAnimalsContol, setShowAnimalsContol] = useState(true)
   const [showVolunteerMonth, setShowVolunteerMonth] = useState(false)
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
   const [showVolunteerLookup, setShowVolunteerLookup] = useState(false)
   const [showVaccineReminderReport, setShowVaccineReminderReport] = useState(false)
+  const whenClickedArray = ['animalControl', 'VolunteerMonth','MonthlyAdopt','VolunteerLookup', 'default']
 
   const fetchAnimalControl = async () => {
     const response = await fetch(`http://localhost:4000/viewAnimalControlReportLists`, {method: 'get'})
@@ -166,26 +161,26 @@ function renderRowAdoption(data){
    })
 }
 
-function whenClicked(boolean){
-    if(boolean == 'animalControl'){
+function whenClicked(state){
+    if(state == 'animalControl'){
         setShowAnimalsContol(true)
         setShowVolunteerMonth(false)
         setShowMonthlyAdopt(false)
         setShowVolunteerLookup(false)
         setShowVaccineReminderReport(false)
-    }else if(boolean == 'VolunteerMonth'){
+    }else if(state == 'VolunteerMonth'){
         setShowAnimalsContol(false)
         setShowVolunteerMonth(true)
         setShowMonthlyAdopt(false)
         setShowVolunteerLookup(false)
         setShowVaccineReminderReport(false)
-    }else if(boolean == 'MonthlyAdopt'){
+    }else if(state == 'MonthlyAdopt'){
         setShowAnimalsContol(false)
         setShowVolunteerMonth(false)
         setShowMonthlyAdopt(true)
         setShowVolunteerLookup(false)
         setShowVaccineReminderReport(false)
-    }else if(boolean == 'VolunteerLookup'){
+    }else if(state == 'VolunteerLookup'){
         setShowAnimalsContol(false)
         setShowVolunteerMonth(false)
         setShowMonthlyAdopt(false)
@@ -201,18 +196,75 @@ function whenClicked(boolean){
 }
 
     return (
-    <Fragment>
-      <Pane display="flex" flex="1" flexDirection="row">
-        <BackButton intent="none" height={40} onClick={() => Router.back() }/>
-      </Pane>
-      <Pane>
+    <Pane display="flex" flexDirection="column" marginY='2rem'>
+      <Component
+          initialState={{
+            selectedIndex: 0,
+            tabs: ['Animal Control Report', 'Volunteer of the Month','Monthly Adoption', 'Volunteer lookup', 'Vaccine Reminder Report']
+          }}
+        >
+          {({ state, setState }) => (
+            <Pane height={120}>
+              <Pane>
+              <Tablist marginBottom={16} flexBasis={240} marginRight={24}>
+                {state.tabs.map((tab, index) => (
+                  <Tab
+                    key={tab}
+                    id={tab}
+                    onSelect={() => 
+                      {setState({ selectedIndex: index })
+                      whenClicked(whenClickedArray[index])}
+                    }
+                    isSelected={index === state.selectedIndex}
+                    aria-controls={`panel-${tab}`}
+                  >
+                    {tab}
+                  </Tab>
+                ))}
+              </Tablist>
+              { loading &&
+                  <Pane>
+                    <Spinner margin="auto" marginTop="2rem"/>
+                  </Pane>
+                }
+                </Pane>
+              <Pane padding={16} background="tint1" flex="1">
+                {state.tabs.map((tab, index) => (
+                  <Pane
+                    key={tab}
+                    id={`panel-${tab}`}
+                    role="tabpanel"
+                    aria-labelledby={tab}
+                    aria-hidden={index !== state.selectedIndex}
+                    display={index === state.selectedIndex ? 'block' : 'none'}
+                  >
+                    
+                    <Table>
+                      <Table.Body>
+                        {showVaccineReminderReport && renderHeaderVaccine()}
+                        {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
+                        {showMonthlyAdopt && renderHeaderAdoption()}
+                        {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
+                        {showAnimalsContol && renderHeaderAnimalControl()}
+                        {showAnimalsContol && renderRowAnimalControl(animalsContol)}
+                      </Table.Body>
+                   </Table>
+                  </Pane>
+                ))}
+              </Pane>
+            </Pane>
+          )}
+        </Component>
+
+
+      {/* <Pane>
         <Button marginRight="2rem" onClick={() => whenClicked('animalControl')}>Animal Control Report</Button>
         <Button marginRight="2rem" onClick={() => whenClicked('VolunteerMonth')}>Volunteer of the Month</Button>
         <Button marginRight="2rem" onClick={() => whenClicked('MonthlyAdopt')}>Monthly Adoption</Button>
         <Button marginRight="2rem" onClick={() => whenClicked('VolunteerLookup')}>Volunteer lookup</Button>
         <Button marginRight="2rem" onClick={() => whenClicked('default')}>Vaccine Reminder Report</Button>
      </Pane>
-     <Pane>
+     <Pane marginY='2rem'>
         {loading &&
             <Table>
                 <Table.Body>
@@ -230,8 +282,8 @@ function whenClicked(boolean){
                 </Table.Body>
             </Table>
         }
-     </Pane>
-    </Fragment>
+     </Pane> */}
+    </Pane>
       )
 }
 

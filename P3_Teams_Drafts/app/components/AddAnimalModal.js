@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button } from 'evergreen-ui'
 import Component from '@reactions/component'
-import { useMutation } from 'react-apollo'
-import Mutations from '../graphql/mutations'
 import { useRouter } from 'next/router'
 
 
