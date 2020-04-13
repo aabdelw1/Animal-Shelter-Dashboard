@@ -29,9 +29,9 @@ const Reports = (props) => {
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
   const [showVolunteerLookup, setShowVolunteerLookup] = useState(false)
   const [showVaccineReminderReport, setShowVaccineReminderReport] = useState(false)
-  const [volLastName, setVolLastName] = useState(null)
-  const [volFirstName, setVolFirstName] = useState(null)
-  const yearAndMonth = 202002
+  const [volLastName, setVolLastName] = useState('')
+  const [volFirstName, setVolFirstName] = useState('')
+  const [yearMonth, setYearMonth] = useState('')
 
   const whenClickedArray = ['animalControl','MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup' ]
 
@@ -42,8 +42,8 @@ const Reports = (props) => {
     setAnimalsContol(result)
   }
 
-  const fetchVolunteerMonth = async (yearAndMonth) => {
-    const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearAndMonth}`, { method: 'get' })
+  const fetchVolunteerMonth = async () => {
+    const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearMonth}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
     setVolunteerMonth(result)
@@ -56,7 +56,7 @@ const Reports = (props) => {
     setMonthlyAdopt(result)
   }
 
-  const fetchVolunteerLookup = async (volLastName, volFirstName) => {
+  const fetchVolunteerLookup = async () => {
     const response = await fetch(`http://localhost:4000/users/volunteers?lastName=${volLastName}&firstName=${volFirstName}`, { method: 'get' })
     const result = await response.json()
     setLoading(false)
@@ -76,15 +76,6 @@ const Reports = (props) => {
     fetchMonthlyAdopt()
   }, [])
 
-  useEffect(() => {
-    fetchVolunteerLookup(volLastName, volFirstName)
-  }, [volLastName, volFirstName])
-
-  useEffect(() => {
-    fetchVolunteerMonth(yearAndMonth)
-  }, [])
-
-  console.log('VolunteerMonth', showVolunteerMonth)
 
   function renderRowAnimalControl (data) {
     return data.map((student, index) => {
@@ -173,24 +164,54 @@ const Reports = (props) => {
     })
   }
 
-  function renderHeaderVolunteerOfMonth (data) {
+  function renderHeaderVolunteerLookup() {
       return (
         <Table.Row>
-          <Table.TextCell>Last Name </Table.TextCell>
-          <Table.TextCell>First Name</Table.TextCell>
+          <Table.TextCell>First Name </Table.TextCell>
+          <Table.TextCell>Last Name</Table.TextCell>
+          <Table.TextCell>Email</Table.TextCell>
+          <Table.TextCell>Phone number</Table.TextCell>
         </Table.Row>
       )
   }
 
-  function renderRowVolunteerOfMonth (data) {
+  function renderRowVolunteerLookup(data) {
     return data.map((volunteer, index) => {
+      const { firstName, lastName, emailAddress, phoneNumber} = volunteer // destructuring
       return (
-        <Table.Row>
-          <Table.TextCell>{volunteer}</Table.TextCell>
-          <Table.TextCell>{volunteer}</Table.TextCell>
+        <Table.Row key={firstName}>
+          <Table.TextCell>{firstName}</Table.TextCell>
+          <Table.TextCell>{lastName}</Table.TextCell>
+          <Table.TextCell>{emailAddress}</Table.TextCell>
+          <Table.TextCell>{phoneNumber}</Table.TextCell>
         </Table.Row>
       )
     })
+}
+
+function renderHeaderVolunteerMonth() {
+    return (
+      <Table.Row>
+        <Table.TextCell>First Name </Table.TextCell>
+        <Table.TextCell>Last Name</Table.TextCell>
+        <Table.TextCell>Email</Table.TextCell>
+        <Table.TextCell>Hours</Table.TextCell>
+      </Table.Row>
+    )
+}
+
+function renderRowVolunteerMonth(data) {
+  return data.map((volunteer, index) => {
+    const { firstName, lastName, emailAddress, hours} = volunteer // destructuring
+    return (
+      <Table.Row key={firstName}>
+        <Table.TextCell>{firstName}</Table.TextCell>
+        <Table.TextCell>{lastName}</Table.TextCell>
+        <Table.TextCell>{emailAddress}</Table.TextCell>
+        <Table.TextCell>{hours}</Table.TextCell>
+      </Table.Row>
+    )
+  })
 }
 
   function whenClicked (state) {
@@ -292,7 +313,26 @@ const Reports = (props) => {
                             placeholder="First Name"
                             onChange={e => setVolFirstName(e.target.value)}
                           />
-                          <Button marginRight="2rem" marginY={'0.4rem'}onClick={() => renderRowVolunteerOfMonth(volunteerLookup)} iconBefore="search">Search</Button>
+                          <Button marginRight="2rem" marginY={'0.4rem'} onClick={() => {
+                              fetchVolunteerLookup()
+                              }} iconBefore="search">Search</Button>
+
+                        </Pane>
+                    }
+                    {
+                      showVolunteerMonth && 
+                        <Pane display="flex" flexDirection="row">
+                          <TextInputField
+                            autoFocus
+                            label=""
+                            marginRight="2rem"
+                            value={yearMonth}
+                            placeholder="yearMonth = 202002"
+                            onChange={e => setYearMonth(e.target.value)}
+                          />
+                          <Button marginRight="2rem" marginY={'0.4rem'} onClick={() => {
+                              fetchVolunteerMonth()
+                              }} iconBefore="search">Search</Button>
 
                         </Pane>
                     }
@@ -304,8 +344,10 @@ const Reports = (props) => {
                       {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
                       {showAnimalsContol && renderHeaderAnimalControl()}
                       {showAnimalsContol && renderRowAnimalControl(animalsContol)}
-                      {showVolunteerLookup && renderHeaderVolunteerOfMonth()}
-                      {showVolunteerLookup && renderRowVolunteerOfMonth(volunteerLookup)}
+                      {showVolunteerLookup &&  renderHeaderVolunteerLookup()}
+                      {showVolunteerLookup && renderRowVolunteerLookup(volunteerLookup)}
+                      {showVolunteerMonth &&  renderHeaderVolunteerMonth()}
+                      {showVolunteerMonth && renderRowVolunteerMonth(volunteerMonth)}
                     </Table.Body>
                   </Table>
                   </Pane>
