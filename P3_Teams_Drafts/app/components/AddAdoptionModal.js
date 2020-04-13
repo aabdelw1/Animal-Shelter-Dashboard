@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button } from 'evergreen-ui'
 import Component from '@reactions/component'
-import { useMutation } from 'react-apollo'
-import Mutations from '../graphql/mutations'
 
 const AddAdoptionModal = (props) => {
   const { showModal, setShowModal, id } = props
@@ -11,7 +9,6 @@ const AddAdoptionModal = (props) => {
   const [adopter, setAdopter] = useState('')
   const [adoptionDate, setAdoptionDate] = useState('')
   const [adoptionFee, setAdoptionFee] = useState('')
-  const [adoptionID, setAdoptionID] = useState('')
 
   const [loading, setLoading] = useState(true)
 

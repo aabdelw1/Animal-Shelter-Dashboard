@@ -6,8 +6,7 @@ import AddNewAdoptionApplication from './AddNewAdoptionApplication'
 import { Context } from './Context'
 import { useRouter } from 'next/router'
 
-const AnimalDashboardFilters = (props) => {
-  const { scheduleButton } = props
+const AnimalDashboardFilters = () => {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [showModalApp, setShowModalApp] = useState(false)
@@ -50,9 +49,9 @@ const AnimalDashboardFilters = (props) => {
       </Pane>
       <Pane>
         <Select marginRight="2rem" value={adoptionStatus} onChange={e => setAdoptionStatus(e.target.value)}>
-         <option value="All" defaultValue>All Statuses</option>
-         <option value="Pending">Pending</option>
-         <option value="Ready">Ready</option>
+          <option value="All" defaultValue>All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Ready">Ready</option>
         </Select>
       </Pane>
       <Pane>

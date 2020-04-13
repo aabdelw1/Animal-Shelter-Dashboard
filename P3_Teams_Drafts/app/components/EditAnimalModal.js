@@ -25,7 +25,6 @@ const EditAnimalModal = (props) => {
     setBreedsList(result)
   }
 
-
   useEffect(() => {
     if(sex == 'Unknown') setShowSex(true)
     if(microchipId == '') setShowMicroID(true)
@@ -33,7 +32,6 @@ const EditAnimalModal = (props) => {
     getBreeds()
   }, [])
 
-  
   return (
     <Dialog
       isShown={visible}

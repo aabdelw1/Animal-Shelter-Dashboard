@@ -33,7 +33,7 @@ const Reports = (props) => {
   const [volFirstName, setVolFirstName] = useState('')
   const [yearMonth, setYearMonth] = useState('')
 
-  const whenClickedArray = ['animalControl','MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup' ]
+  const whenClickedArray = ['animalControl', 'MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup']
 
   const fetchAnimalControl = async () => {
     const response = await fetch('http://localhost:4000/viewAnimalControlReportLists', { method: 'get' })
@@ -75,7 +75,6 @@ const Reports = (props) => {
     fetchVaccineReminderReport()
     fetchMonthlyAdopt()
   }, [])
-
 
   function renderRowAnimalControl (data) {
     return data.map((student, index) => {
@@ -164,20 +163,20 @@ const Reports = (props) => {
     })
   }
 
-  function renderHeaderVolunteerLookup() {
-      return (
-        <Table.Row>
-          <Table.TextCell>First Name </Table.TextCell>
-          <Table.TextCell>Last Name</Table.TextCell>
-          <Table.TextCell>Email</Table.TextCell>
-          <Table.TextCell>Phone number</Table.TextCell>
-        </Table.Row>
-      )
+  function renderHeaderVolunteerLookup () {
+    return (
+      <Table.Row>
+        <Table.TextCell>First Name </Table.TextCell>
+        <Table.TextCell>Last Name</Table.TextCell>
+        <Table.TextCell>Email</Table.TextCell>
+        <Table.TextCell>Phone number</Table.TextCell>
+      </Table.Row>
+    )
   }
 
-  function renderRowVolunteerLookup(data) {
+  function renderRowVolunteerLookup (data) {
     return data.map((volunteer, index) => {
-      const { firstName, lastName, emailAddress, phoneNumber} = volunteer // destructuring
+      const { firstName, lastName, emailAddress, phoneNumber } = volunteer // destructuring
       return (
         <Table.Row>
           <Table.TextCell>{firstName}</Table.TextCell>
@@ -187,9 +186,9 @@ const Reports = (props) => {
         </Table.Row>
       )
     })
-}
+  }
 
-function renderHeaderVolunteerMonth() {
+  function renderHeaderVolunteerMonth () {
     return (
       <Table.Row>
         <Table.TextCell>First Name </Table.TextCell>
@@ -198,21 +197,21 @@ function renderHeaderVolunteerMonth() {
         <Table.TextCell>Hours</Table.TextCell>
       </Table.Row>
     )
-}
+  }
 
-function renderRowVolunteerMonth(data) {
-  return data.map((volunteer, index) => {
-    const { firstName, lastName, emailAddress, hours} = volunteer // destructuring
-    return (
-      <Table.Row>
-        <Table.TextCell>{firstName}</Table.TextCell>
-        <Table.TextCell>{lastName}</Table.TextCell>
-        <Table.TextCell>{emailAddress}</Table.TextCell>
-        <Table.TextCell>{hours}</Table.TextCell>
-      </Table.Row>
-    )
-  })
-}
+  function renderRowVolunteerMonth (data) {
+    return data.map((volunteer, index) => {
+      const { firstName, lastName, emailAddress, hours } = volunteer // destructuring
+      return (
+        <Table.Row>
+          <Table.TextCell>{firstName}</Table.TextCell>
+          <Table.TextCell>{lastName}</Table.TextCell>
+          <Table.TextCell>{emailAddress}</Table.TextCell>
+          <Table.TextCell>{hours}</Table.TextCell>
+        </Table.Row>
+      )
+    })
+  }
 
   function whenClicked (state) {
     if (state == 'animalControl') {
@@ -253,7 +252,7 @@ function renderRowVolunteerMonth(data) {
       <Component
         initialState={{
           selectedIndex: 0,
-          tabs: ['Animal Control Report', 'Monthly Adoption', 'Vaccine Reminder Report', 'Volunteer of the Month','Volunteer lookup', ]
+          tabs: ['Animal Control Report', 'Monthly Adoption', 'Vaccine Reminder Report', 'Volunteer of the Month', 'Volunteer lookup']
         }}
       >
         {({ state, setState }) => (
@@ -294,7 +293,7 @@ function renderRowVolunteerMonth(data) {
                 >
                   <Pane>
                     {
-                      showVolunteerLookup && 
+                      showVolunteerLookup &&
                         <Pane display="flex" flexDirection="row">
                           <TextInputField
                             autoFocus
@@ -313,13 +312,13 @@ function renderRowVolunteerMonth(data) {
                             onChange={e => setVolFirstName(e.target.value)}
                           />
                           <Button marginRight="2rem" marginY={'0.4rem'} onClick={() => {
-                              fetchVolunteerLookup()
-                              }} iconBefore="search">Search</Button>
+                            fetchVolunteerLookup()
+                          }} iconBefore="search">Search</Button>
 
                         </Pane>
                     }
                     {
-                      showVolunteerMonth && 
+                      showVolunteerMonth &&
                         <Pane display="flex" flexDirection="row">
                           <TextInputField
                             autoFocus
@@ -330,25 +329,25 @@ function renderRowVolunteerMonth(data) {
                             onChange={e => setYearMonth(e.target.value)}
                           />
                           <Button marginRight="2rem" marginY={'0.4rem'} onClick={() => {
-                              fetchVolunteerMonth()
-                              }} iconBefore="search">Search</Button>
+                            fetchVolunteerMonth()
+                          }} iconBefore="search">Search</Button>
 
                         </Pane>
                     }
-                  <Table>
-                    <Table.Body>
-                      {showVaccineReminderReport && renderHeaderVaccine()}
-                      {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
-                      {showMonthlyAdopt && renderHeaderAdoption()}
-                      {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
-                      {showAnimalsContol && renderHeaderAnimalControl()}
-                      {showAnimalsContol && renderRowAnimalControl(animalsContol)}
-                      {showVolunteerLookup &&  renderHeaderVolunteerLookup()}
-                      {showVolunteerLookup && renderRowVolunteerLookup(volunteerLookup)}
-                      {showVolunteerMonth &&  renderHeaderVolunteerMonth()}
-                      {showVolunteerMonth && renderRowVolunteerMonth(volunteerMonth)}
-                    </Table.Body>
-                  </Table>
+                    <Table>
+                      <Table.Body>
+                        {showVaccineReminderReport && renderHeaderVaccine()}
+                        {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
+                        {showMonthlyAdopt && renderHeaderAdoption()}
+                        {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
+                        {showAnimalsContol && renderHeaderAnimalControl()}
+                        {showAnimalsContol && renderRowAnimalControl(animalsContol)}
+                        {showVolunteerLookup && renderHeaderVolunteerLookup()}
+                        {showVolunteerLookup && renderRowVolunteerLookup(volunteerLookup)}
+                        {showVolunteerMonth && renderHeaderVolunteerMonth()}
+                        {showVolunteerMonth && renderRowVolunteerMonth(volunteerMonth)}
+                      </Table.Body>
+                    </Table>
                   </Pane>
                 </Pane>
               ))}
