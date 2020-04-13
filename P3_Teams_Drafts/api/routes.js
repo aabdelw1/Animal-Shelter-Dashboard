@@ -45,6 +45,8 @@ module.exports = function(app) {
   //13 Works
   app.route('/updateAnimalAdoptionInformation/:PetID').put(animalController.put_animal_adoption_information);
 
+  app.route('/updateAnimalInformation/:PetID').put(animalController.put_update_animal_information);
+
   //14 Works    
   app.route('/newAdoptionApplication').post(adopterController.post_new_adoption_application);
 
