@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Pane, Text, Icon, Spinner, Table, Popover, Menu, Position } from 'evergreen-ui'
 import { Context } from './Context'
-
-const _ = require('lodash')
+import AnimalCard from './AnimalCard'
+import AdoptionCard from './AdoptionCard'
 
 const ColumnContainer = styled.div`
   flex: 1;
@@ -24,98 +24,44 @@ const ColumnContainer = styled.div`
 `
 
 const AnimalDashboardColumn = (props) => {
-  const { stage, data, error, columnIndex } = props
-  let data2 = ''
-
-  const Species = 'Dog'
-  let targetUrl = ''
-
-  const [filteredSpecies, setFilteredSpecies] = useState("");
-  const [filteredAdopt, setFilteredAdopt] = useState("");
-
-  const [adActiveIndex, setAdActiveIndex] = useState(null)
-  const [searchQuery, setSearchQuery] = useState(null)
-  const [, setAD,,,,,,, specialty] = useContext(Context)
-  const [species, setSpecies] = useState("")
-  const [speciesList, getSpecies] = useState([{ label: "Loading ...", value: ""}]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let unmounted = false;
-    async function getSpeciesAPI() {
-      const response = await fetch(`http://localhost:4000/species`, {method: 'get'});
-      const result = await response.json();
-      if (!unmounted) {
-        var newList = []
-        for(var x = 0; x<result.length;x++){
-            newList[x] = result[x].name
-        }
-        let list = newList.map(name => {return {label: name, value: name}});
-        getSpecies(list);
-        setLoading(false);
-      }
-    }
-    getSpeciesAPI();
-
-    if (localStorage.getItem('filterSpecies')) {
-      setFilteredSpecies(localStorage.getItem('filterSpecies'));
-    }
-    if(localStorage.getItem('filterAdopt')){
-      setFilteredAdopt(localStorage.getItem('filterAdopt'));
-    }
-    return () => {
-      unmounted = true;
-    };
-
-
-  });
-
-  function filterVal(data){
-    if(filteredSpecies || filteredAdopt){
-      return data.filter((row) => (row.species === filteredSpecies && row.adoptability === filteredAdopt))
-    }else{
-      return data
-    }
-  }
-
-
-
-  function renderRow ({ animal }) {
-    return (
-      <Table.Row key={animal.petId} isSelectable onSelect={() => alert("This will lead to animal detail: ")}>
-        <Table.TextCell>{animal.name}</Table.TextCell>
-        <Table.TextCell>{animal.species}</Table.TextCell>
-        <Table.TextCell>{animal.breeds}</Table.TextCell>
-        <Table.TextCell>{animal.sex}</Table.TextCell>
-        <Table.TextCell>{animal.alterationStatus}</Table.TextCell>
-        <Table.TextCell isNumber>{animal.age}</Table.TextCell>
-        <Table.TextCell>{animal.adoptability}</Table.TextCell>
-      </Table.Row>
-    )
-  }
+  const { label, loading, data } = props
+  const [userType,, species,, adoptionStatus,] = useContext(Context)
 
   return (
     <ColumnContainer>
       <Pane display="flex" flexDirection="row" marginTop="1rem">
-        <Text marginLeft="1rem" size={500} color="muted">{stage}</Text>
+        <Text marginLeft="1rem" size={400} color="muted">{label}</Text>
+        <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.length}</Text>
       </Pane>
-      <Table>
-        <Table.Head>
-              <Table.TextHeaderCell>Name</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Breeds</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Species</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Sex</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Alteration Status</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Age</Table.TextHeaderCell>
-              <Table.TextHeaderCell>Adoptability</Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body >
-          {filterVal(data).map(animal => (renderRow({ animal: animal })))}
-        </Table.Body >
-      </Table>
- 
+      { loading &&
+        <Pane>
+          <Spinner margin="auto" marginTop="2rem"/>
+        </Pane>
+      }
+      { !loading && !data &&
+        <Pane display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+          <Pane><Icon size="20" marginX="auto" marginTop="2rem" icon="warning-sign" color="muted"/></Pane>
+          <Pane><Text color="muted">Error</Text></Pane>
+        </Pane>
+      }
+      {
+        label == 'Animals' &&
+        data.map((animal, index) => { 
+          if((species === 'All' || animal.species === species) && (adoptionStatus === 'All' || animal.adoptability === adoptionStatus)) {
+            return <AnimalCard index={index} data={animal}/>
+          }
+        })
+      }   
+      { label == 'Adoptions' &&
+        data.map((pendingAdoptions, index) => { 
+            if(userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
+        })
+      }   
+      
     </ColumnContainer>
+
   )
+
 }
 
 AnimalDashboardColumn.propTypes = {

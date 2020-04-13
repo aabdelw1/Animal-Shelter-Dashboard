@@ -11,15 +11,13 @@ import AdoptionCard from './AdoptionCard'
 
 import Queries from '../graphql/queries'
 import { useQuery } from '@apollo/react-hooks'
-const Categories = ['Animals ']
+const Categories = ['Animals', 'Adoptions']
 
-const Container = styled.div`
+const DashboardContainer = styled.div`
   display: flex;
-  flex-direction:column;
-  justify-content:flex-start;
   flex: 1;
   min-height: 70vh;
-  /* max-height: 70vh; */
+  max-height: 70vh;
 `
 
 const AnimalDashboard = (props) => {
@@ -49,37 +47,14 @@ const AnimalDashboard = (props) => {
   }, [])
 
     return (
-      <Fragment>
-      <Container>
-            {
-              loading && 
-              <Pane>
-                <Spinner margin='auto' marginTop='2rem'/>
-              </Pane>
-            }
-            {
-              animals.map((animal, index) => { 
-                if((species === 'All' || animal.species === species) && (adoptionStatus === 'All' || animal.adoptability === adoptionStatus)) {
-                  return <AnimalCard index={index} data={animal}/>
-                }
-              })
-            }
-    </Container>
-    <Container> 
-        {
-          loading && 
-          <Pane>
-            <Spinner margin='auto' marginTop='2rem'/>
-          </Pane>
-        }
-        {
-        pendingAdoptions.map((pendingAdoptions, index) => { 
-            if(userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
-        })
-        }
-
-    </Container>
-    </Fragment>
+      <DashboardContainer>
+         {
+           Categories.map((label, index) => {
+             return <AnimalDashboardColumn key={index} label={label} loading={loading}
+             data={label === 'Animals' ? animals : pendingAdoptions}/>
+           })
+         }
+      </DashboardContainer>
       )
 }
 

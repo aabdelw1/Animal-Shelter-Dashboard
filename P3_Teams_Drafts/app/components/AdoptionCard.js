@@ -12,7 +12,7 @@ const AdoptionCard = (props) => {
   const [visible, setVisible] = useState(false)
 
   return (
-    <Pane border="default" marginBottom="2rem" display="flex" margin="1rem" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1} width="40%">
+    <Pane border="default" marginBottom="2rem" display="flex" margin="1rem" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1}>
       <Pane display="flex" flexDirection="row" paddingY="0.5rem" margin="1rem">
         <Pane marginY="auto">
           <Pane display="flex" flexDirection="row">

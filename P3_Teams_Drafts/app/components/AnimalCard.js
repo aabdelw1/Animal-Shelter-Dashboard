@@ -12,7 +12,7 @@ const AnimalCard = (props) => {
   const [visible, setVisible] = useState(false)
 
   return (
-    <Pane border="default" marginBottom="2rem" display="flex" margin="1rem" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1} width="50%">
+    <Pane border="default" marginBottom="2rem" display="flex" margin="1rem" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1}>
       <Pane display="flex" flexDirection="row" paddingY="0.5rem" margin="1rem">
         <Avatar src={species == 'Dog' ? "/static/dog-face.png" : "/static/cat-face.png"} name={species} size={40} marginRight={'1rem'} marginLeft={'1rem'}/>
         <Pane marginY="auto">
