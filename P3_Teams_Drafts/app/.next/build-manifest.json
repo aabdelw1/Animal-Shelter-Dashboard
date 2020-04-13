@@ -23,6 +23,14 @@
     "/animalDashboard": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
+    ],
+    "/next/dist/pages/_error": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/reports": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
     ]
   }
 }

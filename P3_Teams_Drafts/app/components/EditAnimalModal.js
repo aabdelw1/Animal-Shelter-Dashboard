@@ -14,9 +14,9 @@ const EditAnimalModal = (props) => {
   const [loading, setLoading] = useState(true)
   let [newAlterationStatus, setNewAlterationStatus] = useState('')
 
-  if(sex != 'Unknown') [newSex, setNewSex] = useState(sex)
-  if(microchipId != '') [newMicrochipId, setNewMicrochipId] = useState(microchipId)
-  if(alterationStatus != '') [newAlterationStatus, setNewAlterationStatus] = useState(alterationStatus)
+  if (sex != 'Unknown') [newSex, setNewSex] = useState(sex)
+  if (microchipId != '') [newMicrochipId, setNewMicrochipId] = useState(microchipId)
+  if (alterationStatus != '') [newAlterationStatus, setNewAlterationStatus] = useState(alterationStatus)
 
   const getBreeds = async () => {
     const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
@@ -25,12 +25,10 @@ const EditAnimalModal = (props) => {
     setBreedsList(result)
   }
 
-
   useEffect(() => {
     getBreeds()
   }, [])
 
-  
   return (
     <Dialog
       isShown={visible}
@@ -44,7 +42,7 @@ const EditAnimalModal = (props) => {
             sex: `${newSex}`,
             microchipId: `${newMicrochipId}`,
             alterationStatus: `${newAlterationStatus}`,
-            breeds: `${newBreeds.selected.join(',')}`,
+            breeds: `${newBreeds.selected.join(',')}`
           })
         }
         fetch(`http://localhost:4000/updateAnimalInformation/${petId}`, requestOptions)
@@ -132,7 +130,7 @@ const EditAnimalModal = (props) => {
           </Pane>
         </Pane>
         <Pane display="flex">
-          
+
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">Alteration Status *</Heading>
@@ -163,7 +161,7 @@ const EditAnimalModal = (props) => {
             </Pane>
           </Pane>
         </Pane>
-      
+
       </Pane>
     </Dialog>
   )

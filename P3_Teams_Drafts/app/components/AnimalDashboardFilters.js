@@ -50,9 +50,9 @@ const AnimalDashboardFilters = (props) => {
       </Pane>
       <Pane>
         <Select marginRight="2rem" value={adoptionStatus} onChange={e => setAdoptionStatus(e.target.value)}>
-         <option value="All" defaultValue>All Statuses</option>
-         <option value="Pending">Pending</option>
-         <option value="Ready">Ready</option>
+          <option value="All" defaultValue>All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Ready">Ready</option>
         </Select>
       </Pane>
       <Pane>
