@@ -31,7 +31,7 @@ const AnimalDashboardColumn = (props) => {
     <ColumnContainer>
       <Pane display="flex" flexDirection="row" marginTop="1rem">
         <Text marginLeft="1rem" size={400} color="muted">{label}</Text>
-        <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.length}</Text>
+        <Text marginLeft=".5rem" fontWeight="bold" size={400}></Text>
         {/* { label == 'Animals' &&
         <Pane marginLeft="auto">
           <Text marginLeft="1rem" size={400} color="muted">Cats</Text>

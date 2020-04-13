@@ -179,7 +179,7 @@ const Reports = (props) => {
     return data.map((volunteer, index) => {
       const { firstName, lastName, emailAddress, phoneNumber} = volunteer // destructuring
       return (
-        <Table.Row key={firstName}>
+        <Table.Row>
           <Table.TextCell>{firstName}</Table.TextCell>
           <Table.TextCell>{lastName}</Table.TextCell>
           <Table.TextCell>{emailAddress}</Table.TextCell>
@@ -204,7 +204,7 @@ function renderRowVolunteerMonth(data) {
   return data.map((volunteer, index) => {
     const { firstName, lastName, emailAddress, hours} = volunteer // destructuring
     return (
-      <Table.Row key={firstName}>
+      <Table.Row>
         <Table.TextCell>{firstName}</Table.TextCell>
         <Table.TextCell>{lastName}</Table.TextCell>
         <Table.TextCell>{emailAddress}</Table.TextCell>
