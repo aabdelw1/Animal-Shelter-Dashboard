@@ -36,15 +36,12 @@ const EditAnimalModal = (props) => {
       title="🐶 Add New Animal"
       onCloseComplete={() => setVisible(false)}
       onConfirm={() => {
-        for (var x = 0; x < animalCount.length; x++) {
-          if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
-        }
         const requestOptions = {
-          method: 'post',
+          method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sex: `${newSex}`,
-            microchipId: `${microchipId}`,
+            microchipId: `${newMicrochipId}`,
             alterationStatus: `${newAlterationStatus}`,
             breeds: `${breeds.selected.join(',')}`,
           })
@@ -53,9 +50,9 @@ const EditAnimalModal = (props) => {
           .then((Response) => Response.json())
           .then((result) => {
             if (!result.petId) {
-              toaster.warning('Error with adding pet :( ')
+              toaster.warning('Error when updating pet :( ')
             } else {
-              toaster.success('Successfully added pet')
+              toaster.success('Successfully updated pet')
               router.push('/animalDashboard')
             }
           })
