@@ -43,7 +43,7 @@ const AddAnimalModal = (props) => {
     var countList = []
     for(var x = 0; x<result.length;x++){
         newList[x] = result[x].name
-        countList[x] = {species: result[x].name, maxPerShelter: result[x].maxPerShelter, countWaitingAdoption: result[x].countWaitingAdoption}
+        countList[x] = {species: result[x].name, maxPerShelter: result[x].maxPerShelter, countWaitingAdoption: result[x].countWaitingAdoption, countNotReadyForAdoption: result[x].countNotReadyForAdoption}
     }
     let list = newList.map(name => {return {label: name, value: name}});
     setSpeciesList(list);
@@ -63,7 +63,7 @@ const AddAnimalModal = (props) => {
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         for(var x = 0; x< animalCount.length; x++ ){
-          if(species == animalCount[x].name && animalCount[x].maxPerShelter < animalCount[x].countWaitingAdoption) return setShowModal(false)
+          if(species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
         }
         const requestOptions = {
           method: 'post',

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Select, Button, Pane,Spinner, Tooltip, Position, toaster, TextInput, SearchInput, Badge } from 'evergreen-ui'
+import { Select, Button, Pane,Spinner, Tooltip, Position, toaster, TextInput, SearchInput, Badge, Link } from 'evergreen-ui'
 import PropTypes from 'prop-types'
 import AddAnimalModal from './AddAnimalModal'
 import AddNewAdoptionApplication from './AddNewAdoptionApplication'
@@ -26,7 +26,7 @@ const AnimalDashboardFilters = (props) => {
     for(var x = 0; x<result.length;x++){
         newList[x] = result[x].name
         if(result[x].maxPerShelter > result[x].countWaitingAdoption){
-          countList[x] = (result[x].name + " Space Left: " + (result[x].maxPerShelter - result[x].countWaitingAdoption))
+          countList[x] = (result[x].name + " Space Left: " + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
         }
     }
     let list = newList.map(name => {return {label: name, value: name}});
@@ -35,6 +35,7 @@ const AnimalDashboardFilters = (props) => {
     setInShelterCount(count);
   }
   useEffect(() => {
+    if(localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
     getSpecies()
   }, [])
 
@@ -67,7 +68,7 @@ const AnimalDashboardFilters = (props) => {
         {userType == 'Admin' ? 
           inShelterCount.map(({ label, value }) => value ? <Badge color="green">{value}</Badge>: "") : ""
         }
-        <Button display={userType == 'Admin' ? 'block': 'none'} is="a" href="/reports">Reports</Button>
+        <Link href="/reports" as={`/reports`}><Button display={userType == 'Admin' ? 'block': 'none'}>Reports</Button></Link>
       </Pane>
     </Pane>
   )

@@ -37,7 +37,6 @@ const Reports = (props) => {
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
   const [showVolunteerLookup, setShowVolunteerLookup] = useState(false)
   const [showVaccineReminderReport, setShowVaccineReminderReport] = useState(false)
-  const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
   const fetchAnimalControl = async () => {
     const response = await fetch(`http://localhost:4000/viewAnimalControlReportLists`, {method: 'get'})
@@ -75,26 +74,34 @@ const Reports = (props) => {
   }
 
   useEffect(() => {
+    fetchAnimalControl()
     fetchVaccineReminderReport()
     fetchMonthlyAdopt()
   }, [])
 
   function renderRowAnimalControl(data){
     return data.map((student, index) => {
-        const { id, name, age, email } = student //destructuring
+        const { yearMonth, surrenderByAnimalControlCount, rescueOver60Count} = student //destructuring
         return (
-           <tr key={id}>
-              <td>{id}</td>
-              <td>{name}</td>
-              <td>{age}</td>
-              <td>{email}</td>
-           </tr>
+           <Table.Row key={yearMonth}>
+              <Table.TextCell>{yearMonth}</Table.TextCell>
+              <Table.TextCell>{surrenderByAnimalControlCount}</Table.TextCell>
+              <Table.TextCell>{rescueOver60Count}</Table.TextCell>
+           </Table.Row>
         )
      })
   }
-  function renderVaccine(data){
-    renderRowVaccine(data)
-  }
+
+  function renderHeaderAnimalControl(){
+    return(
+      <Table.Head>
+          <Table.TextHeaderCell>Year Month</Table.TextHeaderCell>
+          <Table.TextHeaderCell>Surrender By Animal Control Count</Table.TextHeaderCell>
+          <Table.TextHeaderCell>Rescue Over 60 Count</Table.TextHeaderCell>
+      </Table.Head>
+    )
+}
+
   function renderHeaderVaccine(){
       return(
         <Table.Head>
@@ -218,6 +225,8 @@ function whenClicked(boolean){
                     {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
                     {showMonthlyAdopt && renderHeaderAdoption()}
                     {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
+                    {showAnimalsContol && renderHeaderAnimalControl()}
+                    {showAnimalsContol && renderRowAnimalControl(animalsContol)}
                 </Table.Body>
             </Table>
         }
