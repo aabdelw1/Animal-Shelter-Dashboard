@@ -33,7 +33,7 @@ const EditAnimalModal = (props) => {
   return (
     <Dialog
       isShown={visible}
-      title="🐶 Add New Animal"
+      title="🐶 Edit Animal"
       onCloseComplete={() => setVisible(false)}
       onConfirm={() => {
         const requestOptions = {
@@ -47,13 +47,11 @@ const EditAnimalModal = (props) => {
           })
         }
         fetch(`http://localhost:4000/updateAnimalInformation/${petId}`, requestOptions)
-          .then((Response) => Response.json())
           .then((result) => {
-            if (!result.petId) {
+            if (result.status != '200') {
               toaster.warning('Error when updating pet :( ')
             } else {
               toaster.success('Successfully updated pet')
-              router.push('/animalDashboard')
             }
           })
         setVisible(false)
