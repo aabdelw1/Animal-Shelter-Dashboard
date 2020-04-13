@@ -20,6 +20,13 @@
       "static/runtime/polyfills.js",
       "static/runtime/polyfills.js.map"
     ],
+<<<<<<< HEAD
+=======
+    "/animalDashboard": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+>>>>>>> 1380d363aec574d2c1a82b45398a6d3cc68acda1
     "/reports": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
