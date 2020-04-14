@@ -159,6 +159,9 @@ ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Surrender_Submitter_Users_Username
   FOREIGN KEY (Surrender_Submitter) REFERENCES Users(Username);
 
+ALTER TABLE Animal
+  ADD CONSTRAINT UC_Microchip_ID UNIQUE (Microchip_ID);
+
 ALTER TABLE Admin
   ADD CONSTRAINT fk_Admin_Username_Users_Username
   FOREIGN KEY (Username) REFERENCES Users(Username);
