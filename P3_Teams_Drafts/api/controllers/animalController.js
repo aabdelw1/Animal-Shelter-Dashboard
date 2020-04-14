@@ -271,9 +271,14 @@ exports.put_animal_adoption_information = function(req, res) {
   params.push(req.params.PetID);
 
   db.query(q, params, (err, results) => {
-     if(err) throw err;
-     console.log(results); 
-     res.send('Animal Adoption Information Updated');
+      if (err==null){
+        console.log(results); 
+        res.send('Animal Adoption Information Updated');
+      } else {
+        res.status(500);
+        console.log(err);
+        res.end(JSON.stringify(err, null, 2));
+      }
   });
 };
 
@@ -320,15 +325,21 @@ exports.put_update_animal_information = function(req, res) {
    }
     
    db.query(q, params, (err, results) => {
-     if(err) throw err;
-     if (req.body.breeds != null) {
-       res.status(200);
-       var breeds = req.body.breeds.split(',');
-       updateBreeds(req.params.PetID, breeds);
-       res.status(200);
-     }
-     console.log(results); 
-     res.send('Animal Information Updated');
+    if (err==null){
+      if (req.body.breeds != null) {
+        res.status(200);
+        var breeds = req.body.breeds.split(',');
+        updateBreeds(req.params.PetID, breeds);
+        res.status(200);
+      }
+      console.log(results); 
+      res.send('Animal Information Updated');
+    } else {
+      res.status(500);
+      console.log(err);
+      res.end(JSON.stringify(err, null, 2));
+    }
+
   });
  }
 

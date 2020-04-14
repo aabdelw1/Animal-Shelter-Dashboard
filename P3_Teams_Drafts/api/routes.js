@@ -71,10 +71,10 @@ module.exports = function(app) {
   //23 Works
   app.route('/viewAnimalControlReportLists').get(animalsController.get_animal_control_report);
 
-  //24 Works - but needs more data for testing
+  //24
   app.route('/viewAnimalControlSurrenders/:YearMonth').get(animalsController.get_report_animal_control_surrenders);
 
-  //25 Works - but needs more data for testing
+  //25
   app.route('/viewAnimalAdoptedOver60Days/:YearMonth').get(animalsController.get_report_animal_adopted_over_60_days);
 
   //26 Works
