@@ -16,12 +16,12 @@ const AddAnimalModal = (props) => {
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
   const [microchipId, setMicrochipId] = useState('')
-  const [surrenderDate, setSurrenderDate] = useState('')
+  const [surrenderDate, setSurrenderDate] = useState(getTodaysDate())
   const [surrenderReason, setSurrenderReason] = useState('')
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
   const [loading, setLoading] = useState(true)
   const [alterationStatus, setAlterationStatus] = useState('')
-  const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('')
+  const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('false')
   const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
 
@@ -51,6 +51,11 @@ const AddAnimalModal = (props) => {
     getSpecies()
     getBreeds()
   }, [species])
+
+  function getTodaysDate(){
+    var d = new Date()
+    return d.getFullYear() +"-"+ (d.getMonth()+1) + "-"+d.getDate();
+  }
 
   return (
     <Dialog

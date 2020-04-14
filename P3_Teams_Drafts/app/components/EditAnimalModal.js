@@ -17,6 +17,7 @@ const EditAnimalModal = (props) => {
   let [showSex, setShowSex] = useState(false)
   let [showMicroID, setShowMicroID] = useState(false)
   let [showAlteration, setShowAlteration] = useState(false)
+  let [showBreed, setShowBreed] = useState(false)
 
   const getBreeds = async () => {
     const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
@@ -29,6 +30,7 @@ const EditAnimalModal = (props) => {
     if(sex == 'Unknown') setShowSex(true)
     if(microchipId == '') setShowMicroID(true)
     if(alterationStatus == 'false' || alterationStatus == '') setShowAlteration(true)
+    if(breeds == 'Mixed' || breeds == 'Unknown') setShowBreed(true)
     getBreeds()
   }, [])
 
@@ -76,7 +78,7 @@ const EditAnimalModal = (props) => {
             </Pane>
           </Pane>
           }
-
+          { showBreed &&
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">Breed *</Heading>
@@ -137,6 +139,7 @@ const EditAnimalModal = (props) => {
               </Pane>
             </Pane>
           </Pane>
+        }
         </Pane>
         <Pane display="flex">
         { showAlteration &&
