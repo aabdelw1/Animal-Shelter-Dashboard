@@ -56,7 +56,7 @@ const Profile = (props) => {
             </Pane>
             <Pane marginY="0.75rem"><Icon icon="circle" color="#425A70" marginY='-0.2rem' marginRight="1rem"/><Text size={500}>{animal.sex}</Text></Pane>
             <Pane marginY="0.75rem"><Icon icon="git-merge" color="#425A70" marginRight="1rem"/><Text size={500}>{animal.breeds}</Text></Pane>
-            <Pane marginY="0.75rem"><Icon icon="calendar" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>Age: {animal.age}</Text></Pane>
+            <Pane marginY="0.75rem"><Icon icon="calendar" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>Age: {(animal.age/12).toFixed(1)}</Text></Pane>
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>

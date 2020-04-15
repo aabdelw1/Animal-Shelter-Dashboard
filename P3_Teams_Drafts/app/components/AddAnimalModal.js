@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button } from 'evergreen-ui'
+import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert } from 'evergreen-ui'
 import Component from '@reactions/component'
 import { useRouter } from 'next/router'
 
@@ -12,7 +12,7 @@ const AddAnimalModal = (props) => {
   const [breeds, setBreeds] = useState([])
   const [breedsList, setBreedsList] = useState([])
   const [speciesList, setSpeciesList] = useState([])
-  const [sex, setSex] = useState('Male')
+  const [sex, setSex] = useState('Unknown')
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
   const [microchipId, setMicrochipId] = useState('')
@@ -20,10 +20,14 @@ const AddAnimalModal = (props) => {
   const [surrenderReason, setSurrenderReason] = useState('')
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
   const [loading, setLoading] = useState(true)
-  const [alterationStatus, setAlterationStatus] = useState('')
-  const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('false')
+  const [alterationStatus, setAlterationStatus] = useState('0')
+  const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('0')
   const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
+  const [errors, setErrors] = useState({date: 'Must have valid date',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason'})
+
+  
+
 
   const getBreeds = async () => {
     const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
@@ -57,15 +61,71 @@ const AddAnimalModal = (props) => {
     return d.getFullYear() +"-"+ (d.getMonth()+1) + "-"+d.getDate();
   }
 
+  function HandleChange(event){
+    event.preventDefault();
+    const { name, value } = event.target;
+    switch (name) {
+      case 'surrenderDate': 
+        errors.date = 
+          !dateRegex(value)
+            ? 'Must have valid date'
+            : '';
+        break;
+      case 'age': 
+        errors.age = 
+          !ageRegex(value)
+            ? 'Enter valid age'
+            : '';
+        break;
+      case 'name': 
+        errors.name = 
+          value.length <= 1
+            ? 'Enter Name'
+            : '';
+        break;
+      case 'surrenderReason': 
+        errors.surrenderReason = 
+          value.length <= 1
+            ? 'Need Surrender Reason'
+            : '';
+        break;
+      default:
+        break;
+    }
+  }
+
+  function dateRegex(date){
+    var re = /^\d{4}-\d{1,2}-\d{1,2}$/;
+    return re.test(date);
+  }
+
+  function ageRegex(age){
+    var re = /^\d{1,4}$/;
+    return re.test(age);
+  }
+
+  const validateForm = (errors) => {
+    let valid = true;
+    Object.values(errors).forEach(
+      (val) => val.length > 0 && (valid = false)
+    );
+    return valid
+
+  }
+
   return (
     <Dialog
       isShown={showModal}
       title="🐶 Add New Animal"
+      isConfirmDisabled = {!validateForm(errors)}
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         for (var x = 0; x < animalCount.length; x++) {
           if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
         }
+
+        var newBreeds = (breeds.length == 0) ? ['Unknown'] : breeds.selected
+
         const requestOptions = {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
@@ -80,7 +140,7 @@ const AddAnimalModal = (props) => {
             surrenderReason: `${surrenderReason}`,
             surrenderByAnimalControl: `${surrenderByAnimalControl}`,
             alterationStatus: `${alterationStatus}`,
-            breeds: `${breeds.selected.join(',')}`,
+            breeds: `${newBreeds.join(',')}`,
             species: `${species}`
           })
         }
@@ -91,7 +151,7 @@ const AddAnimalModal = (props) => {
               toaster.warning('Error with adding pet :( ')
             } else {
               toaster.success('Successfully added pet')
-              router.push('/animalDashboard')
+              window.location.reload();
             }
           })
         setShowModal(false)
@@ -100,51 +160,52 @@ const AddAnimalModal = (props) => {
       <Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Enter Animal Name *</Heading>
             <TextInputField
               autoFocus
-              label=""
+              label="Enter Animal Name"
+              required
+              name="name"
               marginRight="2rem"
               value={animalName}
               placeholder="Sol"
-              onChange={e => setAnimalName(e.target.value)}
+              onChange={e => {HandleChange(e); setAnimalName(e.target.value)}}
             />
+            {errors.name && <InlineAlert intent="danger">{errors.name}</InlineAlert>}
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Species *</Heading>
             <Pane>
-              <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
+              <SelectField label="Species" marginRight="2rem" required value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
                 {speciesList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
-              </Select>
+              </SelectField>
             </Pane>
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Sex *</Heading>
             <Pane>
-              <Select marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
-                <option value="Male" defaultValue>Male</option>
+              <SelectField label="Sex" marginRight="2rem" value={sex} width={100} onChange={e => setSex(e.target.value)}>
+                <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Unknown">Unknown</option>
-              </Select>
+                <option value="Unknown" defaultValue>Unknown</option>
+              </SelectField>
             </Pane>
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Age *</Heading>
             <TextInputField
               width={50}
               autoFocus
+              name="age"
               placeholder={1}
-              label=""
+              label="Age"
               marginRight="2rem"
               value={age}
-              onChange={e => Number(setAge(e.target.value))}
+              onChange={e => {HandleChange(e); Number(setAge(e.target.value)); }}
             />
+            {errors.age && <InlineAlert intent="danger">{errors.age}</InlineAlert>}
           </Pane>
         </Pane>
         <Pane display="flex">
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">Breed *</Heading>
+              <Heading size={400} marginY="0.5rem">Breed *</Heading>
               <Pane marginRight="2rem">
                 <Component
                   initialState={{
@@ -154,7 +215,6 @@ const AddAnimalModal = (props) => {
                 >
                   {({ state, setState }) => (
                     <SelectMenu
-
                       isMultiSelect
                       title="Select multiple Breeds"
                       options={breedsList.map(label => ({ label, value: label }))}
@@ -209,27 +269,27 @@ const AddAnimalModal = (props) => {
           </Pane>
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">Alteration Status *</Heading>
+              <Heading size={400} marginY="0.5rem">Alteration Status *</Heading>
               <Combobox
                 width={150}
                 openOnFocus
                 marginRight="2rem"
                 items={['true', 'false']}
                 autocompleteProps={{ title: 'Alteration Status' }}
-                initialSelectedItem={alterationStatus || ''}
-                onChange={selected => setAlterationStatus(selected == 'true' ? 1 : 0)}
+                initialSelectedItem={''}
+                onChange={selected =>  setAlterationStatus(selected == 'true' ? 1 : 0)}
                 value={alterationStatus}
               />
+              {errors.alterationStatus && <InlineAlert intent="danger">{errors.alterationStatus}</InlineAlert>}
             </Pane>
           </Pane>
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={500} marginY="0.5rem">MicrochipID</Heading>
               <TextInputField
                 width={70}
                 autoFocus
                 placeholder={7089353147}
-                label=""
+                label="MicrochipID"
                 marginRight="2rem"
                 value={microchipId}
                 onChange={e => Number(setMicrochipId(e.target.value))}
@@ -239,10 +299,9 @@ const AddAnimalModal = (props) => {
         </Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Enter Description</Heading>
             <TextInputField
               autoFocus
-              label=""
+              label="Enter Description"
               marginRight="2rem"
               value={description}
               placeholder="Enter Description"
@@ -250,38 +309,41 @@ const AddAnimalModal = (props) => {
             />
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrender Date</Heading>
             <TextInputField
-              autoFocus
-              label=""
+              label="Surrender Date"
+              required
+              name="surrenderDate"
               marginRight="2rem"
               value={surrenderDate}
               placeholder="YYYY-DD-MM"
-              onChange={e => setSurrenderDate(e.target.value)}
+              onChange={e => {HandleChange(e);  setSurrenderDate(e.target.value)}}
             />
+            {errors.surrenderDate && <InlineAlert intent="danger">{errors.surrenderDate}</InlineAlert>}
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrender Reason</Heading>
             <TextInputField
+              required
               autoFocus
-              label=""
+              name="surrenderReason"
+              label="Surrender Reason"
               marginRight="2rem"
               value={surrenderReason}
               placeholder="Surrender Reason"
-              onChange={e => setSurrenderReason(e.target.value)}
+              onChange={e =>  {HandleChange(e);  setSurrenderReason(e.target.value)}}
             />
+            {errors.surrenderReason && <InlineAlert intent="danger">{errors.surrenderReason}</InlineAlert>}
           </Pane>
         </Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Surrendered by Animal control</Heading>
+            <Heading size={400} marginY="0.5rem">Surrendered by Animal control</Heading>
             <Combobox
               width={150}
               openOnFocus
               marginRight="2rem"
               items={['true', 'false']}
               autocompleteProps={{ title: 'Surrendered by animal control' }}
-              initialSelectedItem={surrenderByAnimalControl || ''}
+              initialSelectedItem={''}
               onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
               value={surrenderByAnimalControl}
             />

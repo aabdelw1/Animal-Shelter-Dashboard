@@ -21,7 +21,7 @@ const AnimalCard = (props) => {
             { (adoptability == 'Adopted' || adoptability == 'Ready') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={adoptability == 'Adopted' ? 'purple' : 'green'}>{adoptability}</Badge> }
             { (adoptability == 'Pending' || adoptability == null) && <Badge marginLeft={'1rem'} marginY="0.5rem" color='blue'>Pending</Badge> }
           </Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{ breeds } - {age} - {alterationStatus == '1' ? 'Spayed/neutured' : 'Not spayed/neutered'} </Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem">{ breeds } - {(age/12).toFixed(1)} - {alterationStatus == '1' ? 'Spayed/neutured' : 'Not spayed/neutered'} </Text></Pane>
         </Pane>
       </Pane>
       <Pane display="flex" flexDirection="row">

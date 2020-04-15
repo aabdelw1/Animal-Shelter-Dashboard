@@ -25,7 +25,7 @@ const AnimalDashboardFilters = () => {
     for (var x = 0; x < result.length; x++) {
       newList[x] = result[x].name
       if (result[x].maxPerShelter > result[x].countWaitingAdoption) {
-        animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption)]
+        animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption), result[x].maxPerShelter]
         countList[x] = (result[x].name + ' Space Left: ' + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
       }
     }
@@ -68,7 +68,7 @@ const AnimalDashboardFilters = () => {
           inShelterCount.map((label, value) => {
             return <Pane display="flex" flexDirection="row">
               <Avatar src={label[0] == 'Dog' ? '/static/dog-face.png' : '/static/cat-face.png'} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
-              <Text>: {100 - label[1]} / 100</Text>
+              <Text>: { (label[1] <= 0) ? "No Space" : label[1] / label[2]}</Text>
             </Pane>
           })
         }
