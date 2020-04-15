@@ -90,7 +90,7 @@ exports.get_animal = function(req, res) {
               GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
               Animal.Sex, 
               Animal.Alteration_Status, 
-              Animal.Age,
+              (Animal.Age + (TIMESTAMPDIFF(MONTH,Animal.Surrender_Date, CURDATE())))  AS Age,
               Animal.Description,
               Animal.Microchip_ID,
               Animal.Surrender_Reason,
