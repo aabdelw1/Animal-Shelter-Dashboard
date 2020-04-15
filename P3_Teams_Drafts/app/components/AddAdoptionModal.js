@@ -57,8 +57,13 @@ const AddAdoptionModal = (props) => {
   }
 
   function moneyRegex(date){
-    var re = /^\$?[\d,]+(\.\d*)?$/;
-    return re.test(date);
+    var re = /^\d+(?:\.\d\d)*$/;
+
+    if(Number(date) > 0 && re.test(date)){
+      return true
+    }else{
+      return false
+    }
   }
 
   const validateForm = (errors) => {
@@ -137,7 +142,7 @@ const AddAdoptionModal = (props) => {
               autoFocus
               required
               name="adoptionFee"
-              placeholder="$20"
+              placeholder="20"
               label="Adoption Fee"
               marginRight="2rem"
               value={adoptionFee}
