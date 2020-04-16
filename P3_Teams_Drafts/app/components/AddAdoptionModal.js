@@ -141,7 +141,7 @@ const AddAdoptionModal = (props) => {
         <Pane display="flex">
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
-              width={50}
+              width={100}
               autoFocus
               required
               name="adoptionFee"
@@ -151,7 +151,6 @@ const AddAdoptionModal = (props) => {
               value={adoptionFee}
               onChange={e => {HandleChange(e); setAdoptionFee(e.target.value)}}
               validationMessage={errors.adoptionFee ? errors.adoptionFee : false}
-
             />
             {/* {errors.adoptionFee && <InlineAlert intent="danger">{errors.adoptionFee}</InlineAlert>} */}
           </Pane>
