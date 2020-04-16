@@ -150,8 +150,10 @@ const AddAdoptionModal = (props) => {
               marginRight="2rem"
               value={adoptionFee}
               onChange={e => {HandleChange(e); setAdoptionFee(e.target.value)}}
+              validationMessage={errors.adoptionFee ? errors.adoptionFee : false}
+
             />
-            {errors.adoptionFee && <InlineAlert intent="danger">{errors.adoptionFee}</InlineAlert>}
+            {/* {errors.adoptionFee && <InlineAlert intent="danger">{errors.adoptionFee}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField
@@ -164,8 +166,10 @@ const AddAdoptionModal = (props) => {
               marginRight="2rem"
               value={adoptionDate}
               onChange={e => {HandleChange(e); setAdoptionDate(e.target.value)}}
+              validationMessage={errors.adoptionDate ? errors.adoptionDate : false}
+
             />
-            {errors.adoptionDate && <InlineAlert intent="danger">{errors.adoptionDate}</InlineAlert>}
+            {/* {errors.adoptionDate && <InlineAlert intent="danger">{errors.adoptionDate}</InlineAlert>} */}
           </Pane>
         </Pane>
       }

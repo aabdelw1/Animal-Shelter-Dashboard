@@ -142,7 +142,7 @@ const AddNewAdoptionApplication = (props) => {
   return (
     <Dialog
       isShown={showModal}
-      title="🐶 Add New Adoption Info"
+      title="📝 Add New Adoption Info"
       isConfirmDisabled = {!validateForm(errors)}
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
@@ -207,8 +207,10 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={emailAddress}
               onChange={e => {HandleChange(e);  setEmailAddress(e.target.value)}}
+              validationMessage={errors.emailAddress ? errors.emailAddress : false}
+
             />
-            {errors.emailAddress && <InlineAlert intent="danger">{errors.emailAddress}</InlineAlert>}
+            {/* {errors.emailAddress && <InlineAlert intent="danger">{errors.emailAddress}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
@@ -221,8 +223,10 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={dateOfApplication}
               onChange={e => {HandleChange(e); setDateOfApplication(e.target.value)}}
+              validationMessage={errors.dateOfApplication ? errors.dateOfApplication : false}
+
             />
-            {errors.dateOfApplication && <InlineAlert intent="danger">{errors.dateOfApplication}</InlineAlert>}
+            {/* {errors.dateOfApplication && <InlineAlert intent="danger">{errors.dateOfApplication}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
@@ -234,14 +238,16 @@ const AddNewAdoptionApplication = (props) => {
               name="phoneNumber"
               value={phoneNumber}
               onChange={e => {HandleChange(e); setPhoneNumber(e.target.value)}}
+              validationMessage={errors.phoneNumber ? errors.phoneNumber : false}
+
             />
-            {errors.phoneNumber && <InlineAlert intent="danger">{errors.phoneNumber}</InlineAlert>}
+            {/* {errors.phoneNumber && <InlineAlert intent="danger">{errors.phoneNumber}</InlineAlert>} */}
           </Pane>
         </Pane>
-        <Pane display="flex">
+        <Pane display="flex" justifyContent="space-between">
           <Pane display="flex" flexDirection="column" marginRight="2em">
             <TextInputField
-              width={100}
+              // width={'25%'}
               autoFocus
               placeholder="123 Main st"
               label="Street"
@@ -249,12 +255,14 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={street}
               onChange={e => {HandleChange(e); setStreet(e.target.value)}}
+              validationMessage={errors.street ? errors.street : false}
+
             />
-            {errors.street && <InlineAlert intent="danger">{errors.street}</InlineAlert>}
+            {/* {errors.street && <InlineAlert intent="danger">{errors.street}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
-              width={100}
+              // width={'25%'}
               autoFocus
               placeholder="Dallas"
               label="City"
@@ -262,12 +270,14 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={city}
               onChange={e => {HandleChange(e); setCity(e.target.value)}}
+              validationMessage={errors.city ? errors.city : false}
+
             />
-            {errors.city && <InlineAlert intent="danger">{errors.city}</InlineAlert>}
+            {/* {errors.city && <InlineAlert intent="danger">{errors.city}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
-              width={100}
+              // width={'25%'}
               autoFocus
               placeholder="TX"
               label="State"
@@ -275,12 +285,14 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={state}
               onChange={e => {HandleChange(e); setState(e.target.value)}}
+              validationMessage={errors.state ? errors.state : false}
+
             />
-            {errors.state && <InlineAlert intent="danger">{errors.state}</InlineAlert>}
+            {/* {errors.state && <InlineAlert intent="danger">{errors.state}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
-              width={100}
+              // width={'25%'}
               autoFocus
               placeholder="75007"
               label="Zip Code"
@@ -288,8 +300,10 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={zipCode}
               onChange={e => {HandleChange(e); setZipCode(e.target.value)}}
+              validationMessage={errors.zipCode ? errors.zipCode : false}
+
             />
-            {errors.zipCode && <InlineAlert intent="danger">{errors.zipCode}</InlineAlert>}
+            {/* {errors.zipCode && <InlineAlert intent="danger">{errors.zipCode}</InlineAlert>} */}
           </Pane>
         </Pane>
         <Pane display="flex">
@@ -302,8 +316,10 @@ const AddNewAdoptionApplication = (props) => {
               name="firstName"
               value={firstName}
               onChange={e => {HandleChange(e); setFirstName(e.target.value)}}
+              validationMessage={errors.firstName ? errors.firstName : false}
+
             />
-            {errors.firstName && <InlineAlert intent="danger">{errors.firstName}</InlineAlert>}
+            {/* {errors.firstName && <InlineAlert intent="danger">{errors.firstName}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
@@ -314,8 +330,10 @@ const AddNewAdoptionApplication = (props) => {
               name="lastName"
               value={lastName}
               onChange={e => {HandleChange(e); setLastName(e.target.value)}}
+              validationMessage={errors.lastName ? errors.lastName : false}
+
             />
-            {errors.lastName && <InlineAlert intent="danger">{errors.lastName}</InlineAlert>}
+            {/* {errors.lastName && <InlineAlert intent="danger">{errors.lastName}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
@@ -325,6 +343,7 @@ const AddNewAdoptionApplication = (props) => {
               marginRight="2rem"
               value={cofirstName}
               onChange={e => setCoFirstName(e.target.value)}
+              
             />
           </Pane>
           <Pane display="flex" flexDirection="column" marginRight="2rem">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert } from 'evergreen-ui'
+import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert, Text } from 'evergreen-ui'
 import Component from '@reactions/component'
 import { useRouter } from 'next/router'
 
@@ -235,8 +235,9 @@ const AddAnimalModal = (props) => {
               value={animalName}
               placeholder="Sol"
               onChange={e => {HandleChange(e); setAnimalName(e.target.value)}}
+              validationMessage={errors.name ? errors.name : false}
             />
-            {errors.name && <InlineAlert intent="danger">{errors.name}</InlineAlert>}
+            {/* {errors.name && <InlineAlert intent="danger">{errors.name}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <Pane>
@@ -256,7 +257,7 @@ const AddAnimalModal = (props) => {
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField
-              width={50}
+              // width={50}
               autoFocus
               name="age"
               placeholder={1}
@@ -264,14 +265,15 @@ const AddAnimalModal = (props) => {
               marginRight="2rem"
               value={age}
               onChange={e => {HandleChange(e); Number(setAge(e.target.value)); }}
+              validationMessage={errors.age ? errors.age : false}
             />
-            {errors.age && <InlineAlert intent="danger">{errors.age}</InlineAlert>}
+            {/* {errors.age && <InlineAlert intent="danger">{errors.age}</InlineAlert>} */}
           </Pane>
         </Pane>
         <Pane display="flex">
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={400} marginY="0.5rem">Breed *</Heading>
+              <Text size={400} marginY="0.5rem">Breed *</Text>
               <Pane marginRight="2rem">
                 <Component
                   initialState={{
@@ -335,7 +337,7 @@ const AddAnimalModal = (props) => {
           </Pane>
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
-              <Heading size={400} marginY="0.5rem">Alteration Status *</Heading>
+              <Text size={400} marginY="0.5rem">Alteration Status *</Text>
               <Combobox
                 width={150}
                 openOnFocus
@@ -345,8 +347,10 @@ const AddAnimalModal = (props) => {
                 initialSelectedItem={''}
                 onChange={selected =>  setAlterationStatus(selected == 'true' ? 1 : 0)}
                 value={alterationStatus}
+                validationMessage={errors.alterationStatus ? errors.alterationStatus : false}
+
               />
-              {errors.alterationStatus && <InlineAlert intent="danger">{errors.alterationStatus}</InlineAlert>}
+              {/* {errors.alterationStatus && <InlineAlert intent="danger">{errors.alterationStatus}</InlineAlert>} */}
             </Pane>
           </Pane>
           <Pane display="flex" marginBottom="3rem">
@@ -356,6 +360,7 @@ const AddAnimalModal = (props) => {
                 autoFocus
                 placeholder={7089353147}
                 label="MicrochipID"
+                marginY="0.5rem"
                 marginRight="2rem"
                 value={microchipId}
                 onChange={e => setMicrochipId(e.target.value)}
@@ -383,8 +388,10 @@ const AddAnimalModal = (props) => {
               value={surrenderDate}
               placeholder="YYYY-DD-MM"
               onChange={e => {HandleChange(e);  setSurrenderDate(e.target.value)}}
+              validationMessage={errors.surrenderDate ? errors.surrenderDate : false}
+
             />
-            {errors.surrenderDate && <InlineAlert intent="danger">{errors.surrenderDate}</InlineAlert>}
+            {/* {errors.surrenderDate && <InlineAlert intent="danger">{errors.surrenderDate}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField
@@ -396,19 +403,21 @@ const AddAnimalModal = (props) => {
               value={surrenderReason}
               placeholder="Surrender Reason"
               onChange={e =>  {HandleChange(e);  setSurrenderReason(e.target.value)}}
+              validationMessage={errors.surrenderReason ? errors.surrenderReason : false}
+
             />
-            {errors.surrenderReason && <InlineAlert intent="danger">{errors.surrenderReason}</InlineAlert>}
+            {/* {errors.surrenderReason && <InlineAlert intent="danger">{errors.surrenderReason}</InlineAlert>} */}
           </Pane>
         </Pane>
         <Pane display="flex">
-          <Pane display="flex" flexDirection="column">
-            <Heading size={400} marginY="0.5rem">Surrendered by Animal control</Heading>
+          <Pane display="flex" flexDirection="column" marginY="-0.5rem">
+            <Text size={400} marginY=".5rem">Animal Cntrol Surrender</Text>
             <Combobox
               width={150}
               openOnFocus
               marginRight="2rem"
               items={['true', 'false']}
-              autocompleteProps={{ title: 'Surrendered by animal control' }}
+              autocompleteProps={{ title: 'Animal Cntrol Surrender' }}
               initialSelectedItem={''}
               onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
               value={surrenderByAnimalControl}
@@ -432,8 +441,10 @@ const AddAnimalModal = (props) => {
               value={vaccinationDate}
               placeholder="YYYY-DD-MM"
               onChange={e => {HandleChange(e); setVaccinationDate(e.target.value)}}
+              validationMessage={errors.vaccinationDate ? errors.vaccinationDate : false}
+
             />
-            {errors.vaccinationDate && <InlineAlert intent="danger">{errors.vaccinationDate}</InlineAlert>}
+            {/* {errors.vaccinationDate && <InlineAlert intent="danger">{errors.vaccinationDate}</InlineAlert>} */}
           </Pane>
         </Pane>
         <Pane display="flex">
@@ -448,8 +459,10 @@ const AddAnimalModal = (props) => {
               value={nextDate}
               placeholder="YYYY-DD-MM"
               onChange={e => {HandleChange(e); setNextDate(e.target.value)}}
+              validationMessage={errors.nextDate ? errors.nextDate : false}
+
             />
-             {errors.nextDate && <InlineAlert intent="danger">{errors.nextDate}</InlineAlert>}
+             {/* {errors.nextDate && <InlineAlert intent="danger">{errors.nextDate}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField

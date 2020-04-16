@@ -4,9 +4,12 @@ import PropTypes from 'prop-types'
 import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab, TextInputField } from 'evergreen-ui'
 import { Context } from './Context'
 import Router, { useRouter } from 'next/router'
+import axios from 'axios'
 
 import Component from '@reactions/component'
-
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+]
 const Container = styled.div`
   display: flex;
   flex-direction:column;
@@ -23,6 +26,8 @@ const Reports = (props) => {
   const [monthlyAdopt, setMonthlyAdopt] = useState([])
   const [volunteerLookup, setVolunteerLookup] = useState([])
   const [vaccineReminderReport, setVaccineReminderReport] = useState([])
+  const [surrenders, setSurrenders] = useState([])
+  const [rescuesOver60, setRescuesOver60] = useState([])
 
   const [showAnimalsContol, setShowAnimalsContol] = useState(true)
   const [showVolunteerMonth, setShowVolunteerMonth] = useState(false)
@@ -33,7 +38,37 @@ const Reports = (props) => {
   const [volFirstName, setVolFirstName] = useState('')
   const [yearMonth, setYearMonth] = useState('')
 
+
   const whenClickedArray = ['animalControl', 'MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup']
+
+  async function fetchControlinfo () {
+    const promises = animalsContol.map( async info => {
+      const fetchAnimalControlInfo = await axios({
+        method: 'GET',
+        url: `http://localhost:4000/viewAnimalControlSurrenders/${info.yearMonth}`})   
+        return fetchAnimalControlInfo.data
+
+    })
+    const surrenderResults = await Promise.all(promises)
+    setSurrenders(surrenderResults)
+  }
+  
+  async function fetch60info () {
+    const promises = animalsContol.map( async info => {
+      const fetchAnimalControlInfo = await axios({
+        method: 'GET',
+        url: `http://localhost:4000/viewAnimalAdoptedOver60Days/${info.yearMonth}`})   
+        return fetchAnimalControlInfo.data
+    })
+    const rescureOver60Results = await Promise.all(promises)
+    setRescuesOver60(rescureOver60Results)
+  }
+
+
+  useEffect(() => {
+    fetchControlinfo()
+    fetch60info()
+  }, [animalsContol])
 
   const fetchAnimalControl = async () => {
     const response = await fetch('http://localhost:4000/viewAnimalControlReportLists', { method: 'get' })
@@ -41,6 +76,7 @@ const Reports = (props) => {
     setLoading(false)
     setAnimalsContol(result)
   }
+
 
   const fetchVolunteerMonth = async () => {
     const response = await fetch(`http://localhost:4000/volunteeroftheMonth/${yearMonth}`, { method: 'get' })
@@ -76,23 +112,32 @@ const Reports = (props) => {
     fetchMonthlyAdopt()
   }, [])
 
+
+  const stringDate = function (date) {
+    const year = date.substring(0,4)
+    const month = date.substring(4,6)
+    const stringDate = monthNames[Number(month)-1]
+
+    return `${stringDate}, ${year}`
+  }
+  
   function renderRowAnimalControl (data) {
-    return data.map((student, index) => {
-      const { yearMonth, surrenderByAnimalControlCount, rescueOver60Count } = student // destructuring
-      return (
-        <Table.Row key={yearMonth}>
-          <Table.TextCell>{yearMonth}</Table.TextCell>
-          <Table.TextCell>{surrenderByAnimalControlCount}</Table.TextCell>
-          <Table.TextCell>{rescueOver60Count}</Table.TextCell>
-        </Table.Row>
-      )
-    })
+      return data.map((student, index) => {
+        const { yearMonth } = student 
+        return (
+          <Table.Row>
+            <Table.TextCell>{stringDate(yearMonth.toString())}</Table.TextCell>
+            <Table.TextCell marginLeft="12rem">{surrenders.length > 0 && surrenders[index].length}</Table.TextCell>
+            <Table.TextCell marginLeft="7rem">{rescuesOver60.length > 0 && rescuesOver60[index].length}</Table.TextCell>
+          </Table.Row>
+        )
+      })
   }
 
   function renderHeaderAnimalControl () {
     return (
       <Table.Head>
-        <Table.TextHeaderCell>Year Month</Table.TextHeaderCell>
+        <Table.TextHeaderCell>Date</Table.TextHeaderCell>
         <Table.TextHeaderCell>Surrender By Animal Control Count</Table.TextHeaderCell>
         <Table.TextHeaderCell>Rescue Over 60 Count</Table.TextHeaderCell>
       </Table.Head>
@@ -118,9 +163,9 @@ const Reports = (props) => {
 
   function renderRowVaccine (data) {
     return data.map((student, index) => {
-      const { petID, speciesName, vaccineType, dateAdministired, vaccineSubmitter, breedName, alterationStatus, surrenderDate, microchipID, sex } = student // destructuring
+      const { petID, speciesName, vaccineType, dateAdministired, vaccineSubmitter, breedName, alterationStatus, surrenderDate, microchipID, sex } = student 
       return (
-        <Table.Row key={petID}>
+        <Table.Row key={index}>
           <Table.TextCell>{petID}</Table.TextCell>
           <Table.TextCell>{speciesName}</Table.TextCell>
           <Table.TextCell>{vaccineType}</Table.TextCell>
@@ -150,9 +195,9 @@ const Reports = (props) => {
 
   function renderRowAdoption (data) {
     return data.map((student, index) => {
-      const { yrMonth, species, breedName, adoptionCount, surrenderCount } = student // destructuring
+      const { yrMonth, species, breedName, adoptionCount, surrenderCount } = student 
       return (
-        <Table.Row key={yrMonth}>
+        <Table.Row key={index}>
           <Table.TextCell>{yrMonth}</Table.TextCell>
           <Table.TextCell>{species}</Table.TextCell>
           <Table.TextCell>{breedName}</Table.TextCell>
@@ -176,7 +221,7 @@ const Reports = (props) => {
 
   function renderRowVolunteerLookup (data) {
     return data.map((volunteer, index) => {
-      const { firstName, lastName, emailAddress, phoneNumber } = volunteer // destructuring
+      const { firstName, lastName, emailAddress, phoneNumber } = volunteer 
       return (
         <Table.Row>
           <Table.TextCell>{firstName}</Table.TextCell>
@@ -201,7 +246,7 @@ const Reports = (props) => {
 
   function renderRowVolunteerMonth (data) {
     return data.map((volunteer, index) => {
-      const { firstName, lastName, emailAddress, hours } = volunteer // destructuring
+      const { firstName, lastName, emailAddress, hours } = volunteer 
       return (
         <Table.Row>
           <Table.TextCell>{firstName}</Table.TextCell>
@@ -355,33 +400,6 @@ const Reports = (props) => {
           </Pane>
         )}
       </Component>
-
-      {/* <Pane>
-        <Button marginRight="2rem" onClick={() => whenClicked('animalControl')}>Animal Control Report</Button>
-        <Button marginRight="2rem" onClick={() => whenClicked('VolunteerMonth')}>Volunteer of the Month</Button>
-        <Button marginRight="2rem" onClick={() => whenClicked('MonthlyAdopt')}>Monthly Adoption</Button>
-        <Button marginRight="2rem" onClick={() => whenClicked('VolunteerLookup')}>Volunteer lookup</Button>
-        <Button marginRight="2rem" onClick={() => whenClicked('default')}>Vaccine Reminder Report</Button>
-     </Pane>
-     <Pane marginY='2rem'>
-        {loading &&
-            <Table>
-                <Table.Body>
-                </Table.Body>
-            </Table>
-        }{
-            <Table>
-                <Table.Body>
-                    {showVaccineReminderReport && renderHeaderVaccine()}
-                    {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
-                    {showMonthlyAdopt && renderHeaderAdoption()}
-                    {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
-                    {showAnimalsContol && renderHeaderAnimalControl()}
-                    {showAnimalsContol && renderRowAnimalControl(animalsContol)}
-                </Table.Body>
-            </Table>
-        }
-     </Pane> */}
     </Pane>
   )
 }
