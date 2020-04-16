@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react'
+import React, { useState, useContext, useEffect, Fragment, useCounter } from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { toaster, Spinner, Pane, BackButton, Button, Table, Tablist, Paragraph, Tab, TextInputField } from 'evergreen-ui'
@@ -28,7 +28,9 @@ const Reports = (props) => {
   const [vaccineReminderReport, setVaccineReminderReport] = useState([])
   const [surrenders, setSurrenders] = useState([])
   const [rescuesOver60, setRescuesOver60] = useState([])
-
+  
+  const [drillDownData, setDrillDowndata] = useState(null)
+  const [showDrillDown, setShowDrillDown] = useState(false)
   const [showAnimalsContol, setShowAnimalsContol] = useState(true)
   const [showVolunteerMonth, setShowVolunteerMonth] = useState(false)
   const [showMonthlyAdopt, setShowMonthlyAdopt] = useState(false)
@@ -37,8 +39,7 @@ const Reports = (props) => {
   const [volLastName, setVolLastName] = useState('')
   const [volFirstName, setVolFirstName] = useState('')
   const [yearMonth, setYearMonth] = useState('')
-
-
+  const [activeIndex, setActiveIndex] = useState(0)
   const whenClickedArray = ['animalControl', 'MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup']
 
   async function fetchControlinfo () {
@@ -127,11 +128,60 @@ const Reports = (props) => {
         return (
           <Table.Row>
             <Table.TextCell>{stringDate(yearMonth.toString())}</Table.TextCell>
-            <Table.TextCell marginLeft="12rem">{surrenders.length > 0 && surrenders[index].length}</Table.TextCell>
-            <Table.TextCell marginLeft="7rem">{rescuesOver60.length > 0 && rescuesOver60[index].length}</Table.TextCell>
+            <Table.TextCell><Button appearance="minimal" onClick={() => setFunction(index, 'surrender')}>{surrenders.length > 0 && surrenders[index].length}</Button></Table.TextCell>
+            <Table.TextCell><Button appearance="minimal" onClick={() => setFunction(index, '60')}>{rescuesOver60.length > 0 && rescuesOver60[index].length}</Button></Table.TextCell>
           </Table.Row>
         )
       })
+  }
+
+  function setFunction (index, operation) {
+    renderDrillDownInfo(index, operation) 
+    setActiveIndex([index, operation])
+  }
+
+  function renderDrillDownInfo (index, operation) {
+    let data = null
+    if(operation === 'surrender'){
+      data = surrenders
+    } else {
+      data = rescuesOver60
+    }
+    console.log(rescuesOver60[0])
+
+    setShowDrillDown(true)
+    // console.log('surrenders',surrenders)
+    return (
+      <Table>
+        <Table.Body>
+          <Table.Head>
+            <Table.TextHeaderCell>Pet ID</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Species</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Breed Name</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Alteration Status</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Microchip ID</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Sex</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Surrender Date</Table.TextHeaderCell>
+            {operation === '60' && <Table.TextCell>Days to Rescue</Table.TextCell>}
+          </Table.Head>
+          {
+              data[index].map(data => {
+              return (
+                <Table.Row>
+                  <Table.TextCell>{data.petID}</Table.TextCell>
+                  <Table.TextCell isSelectable>{data.species}</Table.TextCell>
+                  <Table.TextCell>{data.breedName}</Table.TextCell>
+                  <Table.TextCell>{data.alterationStatus}</Table.TextCell>
+                  <Table.TextCell>{data.microchipID}</Table.TextCell>
+                  <Table.TextCell>{data.sex}</Table.TextCell>
+                  <Table.TextCell>{data.surrenderDate}</Table.TextCell>
+                  {operation === '60' && <Table.TextCell>{data.daysToRescue}</Table.TextCell>}
+                </Table.Row>
+            )})
+          }
+          </Table.Body>
+      </Table>
+    )
   }
 
   function renderHeaderAnimalControl () {
@@ -140,6 +190,7 @@ const Reports = (props) => {
         <Table.TextHeaderCell>Date</Table.TextHeaderCell>
         <Table.TextHeaderCell>Surrender By Animal Control Count</Table.TextHeaderCell>
         <Table.TextHeaderCell>Rescue Over 60 Count</Table.TextHeaderCell>
+        <Button appearance='minimal' disabled={!showDrillDown} onClick={() => setShowDrillDown(false)}>Clear Drop Down</Button>
       </Table.Head>
     )
   }
@@ -379,23 +430,34 @@ const Reports = (props) => {
 
                         </Pane>
                     }
-                    <Table>
-                      <Table.Body>
-                        {showVaccineReminderReport && renderHeaderVaccine()}
-                        {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
-                        {showMonthlyAdopt && renderHeaderAdoption()}
-                        {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
-                        {showAnimalsContol && renderHeaderAnimalControl()}
-                        {showAnimalsContol && renderRowAnimalControl(animalsContol)}
-                        {showVolunteerLookup && renderHeaderVolunteerLookup()}
-                        {showVolunteerLookup && renderRowVolunteerLookup(volunteerLookup)}
-                        {showVolunteerMonth && renderHeaderVolunteerMonth()}
-                        {showVolunteerMonth && renderRowVolunteerMonth(volunteerMonth)}
-                      </Table.Body>
-                    </Table>
+                    <Pane>
+                      <Pane>
+                        <Table>
+                          <Table.Body>
+                            {showVaccineReminderReport && renderHeaderVaccine()}
+                            {showVaccineReminderReport && renderRowVaccine(vaccineReminderReport)}
+                            {showMonthlyAdopt && renderHeaderAdoption()}
+                            {showMonthlyAdopt && renderRowAdoption(monthlyAdopt)}
+                            {showAnimalsContol && renderHeaderAnimalControl()}
+                            {showAnimalsContol && renderRowAnimalControl(animalsContol)}
+                            {showVolunteerLookup && renderHeaderVolunteerLookup()}
+                            {showVolunteerLookup && renderRowVolunteerLookup(volunteerLookup)}
+                            {showVolunteerMonth && renderHeaderVolunteerMonth()}
+                            {showVolunteerMonth && renderRowVolunteerMonth(volunteerMonth)}
+                          </Table.Body>
+                        </Table>
+                      </Pane>
+                      {/* <Pane></Pane> */}
+                      {/* <Pane marginY="5rem">
+                        {showDrillDown && renderDrillDownInfo(activeIndex[0], activeIndex[1])}
+                      </Pane> */}
+                    </Pane>
                   </Pane>
                 </Pane>
               ))}
+            </Pane>
+            <Pane marginY="5rem">
+              {showDrillDown && renderDrillDownInfo(activeIndex[0], activeIndex[1])}
             </Pane>
           </Pane>
         )}
