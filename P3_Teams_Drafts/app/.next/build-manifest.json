@@ -24,7 +24,11 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
+<<<<<<< HEAD
     "/reports": [
+=======
+    "/animalDashboard": [
+>>>>>>> cc1f5f1c8422e475496d47f79d87cc9fdbaff00e
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]

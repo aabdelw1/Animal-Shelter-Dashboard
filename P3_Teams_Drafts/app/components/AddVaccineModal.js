@@ -15,7 +15,7 @@ const AddVaccineModal = (props) => {
   const [nextDate, setNextDate] = useState('')
   const [vaccineTagNumber, setVaccineTagNumber] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [errors, setErrors] = useState({vaccinationDate: 'Must have valid date',nextDate: 'Must have valid date'})
+  const [errors, setErrors] = useState({vaccinationDate: 'Must have valid date',nextDate: 'Must have valid date', vaccine: 'Must select Vaccine'})
 
 
   const getVaccine = async () => {
@@ -48,6 +48,12 @@ const AddVaccineModal = (props) => {
         errors.nextDate = 
           !dateRegex(value)
             ? 'Must have valid date'
+            : '';
+        break;
+      case 'vaccine': 
+        errors.vaccine = 
+          value == 'select'
+            ? 'Must select vaccine'
             : '';
         break;
       default:
@@ -106,7 +112,8 @@ const AddVaccineModal = (props) => {
         <Pane display="flex">
           <Pane display="flex" flexDirection="column">
             <Pane>
-              <SelectField label="Choose Vaccine" marginRight="2rem" value={vaccine} disabled={loading} onChange={e => setVaccine(e.target.value)}>
+              <SelectField validationMessage={errors.vaccine ? errors.vaccine : false} label="Choose Vaccine" marginRight="2rem" name="vaccine" value={vaccine} disabled={loading} onChange={e => {HandleChange(e); setVaccine(e.target.value)}}>
+                <option key='select' value='select'>Select vaccine</option>
                 {vaccineList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
               </SelectField>
             </Pane>
@@ -121,9 +128,10 @@ const AddVaccineModal = (props) => {
               marginRight="1rem"
               value={vaccinationDate}
               placeholder="YYYY-DD-MM"
+              validationMessage={errors.vaccinationDate ? errors.vaccinationDate : false}
               onChange={e => {HandleChange(e); setVaccinationDate(e.target.value)}}
             />
-            {errors.vaccinationDate && <InlineAlert intent="danger">{errors.vaccinationDate}</InlineAlert>}
+            {/*errors.vaccinationDate && <InlineAlert intent="danger">{errors.vaccinationDate}</InlineAlert>*/}
           </Pane>
         </Pane>
         <Pane display="flex">
@@ -137,9 +145,10 @@ const AddVaccineModal = (props) => {
               name="nextDate"
               value={nextDate}
               placeholder="YYYY-DD-MM"
+              validationMessage={errors.nextDate ? errors.nextDate : false}
               onChange={e => {HandleChange(e); setNextDate(e.target.value)}}
             />
-             {errors.nextDate && <InlineAlert intent="danger">{errors.nextDate}</InlineAlert>}
+             {/*errors.nextDate && <InlineAlert intent="danger">{errors.nextDate}</InlineAlert>*/}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField

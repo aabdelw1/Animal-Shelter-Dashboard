@@ -95,9 +95,10 @@ const AddAdoptionModal = (props) => {
         fetch(`http://localhost:4000/updateAnimalAdoptionInformation/${id}`, requestOptions)
           .then((result) => {
             if (result.status != '200') {
-              toaster.warning('Error with adding pet adoption info :(')
+              toaster.warning('Error with adding pet adoption info :( ')
             } else {
               toaster.success('Successfully added pet adoption info')
+              window.location.reload();
             }
           })
         setShowModal(false)
@@ -141,7 +142,7 @@ const AddAdoptionModal = (props) => {
         <Pane display="flex">
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
-              width={50}
+              width={100}
               autoFocus
               required
               name="adoptionFee"
@@ -151,7 +152,6 @@ const AddAdoptionModal = (props) => {
               value={adoptionFee}
               onChange={e => {HandleChange(e); setAdoptionFee(e.target.value)}}
               validationMessage={errors.adoptionFee ? errors.adoptionFee : false}
-
             />
             {/* {errors.adoptionFee && <InlineAlert intent="danger">{errors.adoptionFee}</InlineAlert>} */}
           </Pane>

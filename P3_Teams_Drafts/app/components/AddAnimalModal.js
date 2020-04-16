@@ -25,7 +25,7 @@ const AddAnimalModal = (props) => {
   const [sex, setSex] = useState('Unknown')
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
-  const [microchipId, setMicrochipId] = useState('')
+  const [microchipId, setMicrochipId] = useState(null)
   const [surrenderDate, setSurrenderDate] = useState(getTodaysDate())
   const [surrenderReason, setSurrenderReason] = useState('')
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
@@ -34,7 +34,7 @@ const AddAnimalModal = (props) => {
   const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('0')
   const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
-  const [errors, setErrors] = useState({date: '',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason', vaccinationDate: 'Must have valid date', nextDate: 'Must have valid date'})
+  const [errors, setErrors] = useState({date: '',vaccine: 'Must select Vaccine',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason', vaccinationDate: 'Must have valid date', nextDate: 'Must have valid date'})
 
   
 
@@ -130,6 +130,12 @@ const AddAnimalModal = (props) => {
             ? 'Must have valid date'
             : '';
         break;
+      case 'vaccine': 
+        errors.vaccine = 
+          value == 'select'
+            ? 'Must select vaccine'
+            : '';
+        break;
       default:
         break;
     }
@@ -161,62 +167,70 @@ const AddAnimalModal = (props) => {
       isConfirmDisabled = {!validateForm(errors)}
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
+        var isEnough = true
         for (var x = 0; x < animalCount.length; x++) {
-          if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
+          if (species == animalCount[x].species && animalCount[x].maxPerShelter <= (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)){
+            isEnough = false
+            toaster.warning('Too many ' + species + ' in shelter. Cannot add animal')
+          } 
         }
 
-        var newBreeds = (breeds.length == 0) ? ['Unknown'] : breeds.selected
+        if(isEnough) {
+          var numID = (microchipId == null) ? null : microchipId
+          var newBreeds = (breeds.length == 0) ? ['Unknown'] : breeds.selected
 
-        const requestOptions = {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: `${animalName}`,
-            description: `${description}`,
-            age: `${age}`,
-            sex: `${sex}`,
-            microchipId: `${microchipId}`,
-            surrenderDate: `${surrenderDate}`,
-            surrenderSubmitter: `${localStorage.getItem('UserName')}`,
-            surrenderReason: `${surrenderReason}`,
-            surrenderByAnimalControl: `${surrenderByAnimalControl}`,
-            alterationStatus: `${alterationStatus}`,
-            breeds: `${newBreeds.join(',')}`,
-            species: `${species}`
+          const requestOptions = {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: `${animalName}`,
+              description: `${description}`,
+              age: `${age}`,
+              sex: `${sex}`,
+              microchipId: numID,
+              surrenderDate: `${surrenderDate}`,
+              surrenderSubmitter: `${localStorage.getItem('UserName')}`,
+              surrenderReason: `${surrenderReason}`,
+              surrenderByAnimalControl: `${surrenderByAnimalControl}`,
+              alterationStatus: `${alterationStatus}`,
+              breeds: `${newBreeds.join(',')}`,
+              species: `${species}`
+            })
+          }
+          fetch('http://localhost:4000/animal/add', requestOptions)
+            .then((Response) => Response.json())
+            .then((result) => {
+              if (!result.petId) {
+                console.log(result)
+                toaster.warning('Error with adding pet :(. Error message: ' + result.sqlMessage)
+              } else {
+                var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
+                const requestOptions = {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      speciesName: `${species}`,
+                      vaccineType: `${vaccine}`,
+                      vaccinationNumber: num,
+                      dateAdministered: `${vaccinationDate}`,
+                      expirationDate: `${nextDate}`,
+                      vaccineSubmitter: `${localStorage.getItem('UserName')}`
+                    })
+                  }
+                  fetch(`http://localhost:4000/animal/${result.petId}/vaccines/add`, requestOptions)
+                    .then((Response) => Response.json())
+                    .then((result) => {
+                      if (result.status != 'success') {
+                        toaster.warning('Error with adding pet :( ')
+                      } else {
+                        toaster.success('Successfully added pet')
+                        window.location.reload();
+                      }
+                    })
+                      
+              }
           })
         }
-        fetch('http://localhost:4000/animal/add', requestOptions)
-          .then((Response) => Response.json())
-          .then((result) => {
-            if (!result.petId) {
-              toaster.warning('Error with adding pet :( ')
-            } else {
-              var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
-              const requestOptions = {
-                  method: 'post',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    speciesName: `${species}`,
-                    vaccineType: `${vaccine}`,
-                    vaccinationNumber: num,
-                    dateAdministered: `${vaccinationDate}`,
-                    expirationDate: `${nextDate}`,
-                    vaccineSubmitter: `${localStorage.getItem('UserName')}`
-                  })
-                }
-                fetch(`http://localhost:4000/animal/${result.petId}/vaccines/add`, requestOptions)
-                  .then((Response) => Response.json())
-                  .then((result) => {
-                    if (result.status != 'success') {
-                      toaster.warning('Error with adding pet :( ')
-                    } else {
-                      toaster.success('Successfully added pet')
-                      window.location.reload();
-                    }
-                  })
-                    
-            }
-        })
 
         setShowModal(false)
       }}
@@ -226,6 +240,7 @@ const AddAnimalModal = (props) => {
           <Pane display="flex" flexDirection="column">
             <TextInputField
               autoFocus
+              width={150}
               label="Enter Animal Name"
               required
               name="name"
@@ -255,7 +270,7 @@ const AddAnimalModal = (props) => {
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField
-              // width={50}
+              width={120}
               autoFocus
               name="age"
               placeholder={1}
@@ -361,7 +376,7 @@ const AddAnimalModal = (props) => {
                 marginY="0.5rem"
                 marginRight="2rem"
                 value={microchipId}
-                onChange={e => Number(setMicrochipId(e.target.value))}
+                onChange={e => setMicrochipId(e.target.value)}
               />
             </Pane>
           </Pane>
@@ -409,13 +424,13 @@ const AddAnimalModal = (props) => {
         </Pane>
         <Pane display="flex">
           <Pane display="flex" flexDirection="column" marginY="-0.5rem">
-            <Text size={400} marginY=".5rem">Animal Cntrol Surrender</Text>
+            <Text size={400} marginY=".5rem">Animal Control Surrender</Text>
             <Combobox
               width={150}
               openOnFocus
               marginRight="2rem"
               items={['true', 'false']}
-              autocompleteProps={{ title: 'Animal Cntrol Surrender' }}
+              autocompleteProps={{ title: 'Animal Control Surrender' }}
               initialSelectedItem={''}
               onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
               value={surrenderByAnimalControl}
@@ -423,7 +438,8 @@ const AddAnimalModal = (props) => {
           </Pane>
           <Pane display="flex" flexDirection="column">
             <Pane>
-              <SelectField label="Choose Vaccine" marginRight="2rem" value={vaccine} disabled={loading} onChange={e => setVaccine(e.target.value)}>
+              <SelectField label="Choose Vaccine" validationMessage={errors.vaccine ? errors.vaccine : false} marginRight="2rem" name='vaccine' value={vaccine} disabled={loading} onChange={e => {HandleChange(e); setVaccine(e.target.value)}}>
+                <option key='select' value='select'>Select vaccine</option>
                 {vaccineList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
               </SelectField>
             </Pane>

@@ -51,7 +51,7 @@ const Profile = (props) => {
         <Pane flex="1">
           {animal && <Pane display="flex" flexDirection="column" flex="1">
             <Pane marginY="0.75rem">
-              { (animal.adoptability == 'Approved' || animal.adoptability == 'Rejected') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={animal.adoptability == 'Approved' ? 'green' : 'red'}>{animal.adoptability}</Badge> }
+              { (animal.adoptability == 'Ready' || animal.adoptability == 'Adopted') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={animal.adoptability == 'Adopted' ? 'green' : 'blue'}>{animal.adoptability}</Badge> }
               { (animal.adoptability == 'Pending' || animal.adoptability == null) && <Badge marginLeft={'1rem'} marginY="0.5rem" color='blue'>Pending</Badge> }
             </Pane>
             <Pane marginY="0.75rem"><Icon icon="circle" color="#425A70" marginY='-0.2rem' marginRight="1rem"/><Text size={500}>{animal.sex}</Text></Pane>
@@ -60,7 +60,11 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>
+<<<<<<< HEAD
               <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+=======
+              <Button marginRight="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending' || animal.adoptability == 'Adopted'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+>>>>>>> cc1f5f1c8422e475496d47f79d87cc9fdbaff00e
               <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
