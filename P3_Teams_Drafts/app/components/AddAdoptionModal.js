@@ -95,7 +95,7 @@ const AddAdoptionModal = (props) => {
         fetch(`http://localhost:4000/updateAnimalAdoptionInformation/${id}`, requestOptions)
           .then((result) => {
             if (result.status != '200') {
-              toaster.warning('Error with adding pet adoption info :(')
+              toaster.warning('Error with adding pet adoption info :( ')
             } else {
               toaster.success('Successfully added pet adoption info')
             }

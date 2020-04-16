@@ -25,7 +25,7 @@ const AddAnimalModal = (props) => {
   const [sex, setSex] = useState('Unknown')
   const [age, setAge] = useState('')
   const [description, setDescription] = useState('')
-  const [microchipId, setMicrochipId] = useState('')
+  const [microchipId, setMicrochipId] = useState(null)
   const [surrenderDate, setSurrenderDate] = useState(getTodaysDate())
   const [surrenderReason, setSurrenderReason] = useState('')
   const [surrenderSubmitter, setSurrenderSubmitter] = useState('')
@@ -162,9 +162,10 @@ const AddAnimalModal = (props) => {
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         for (var x = 0; x < animalCount.length; x++) {
-          if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) return setShowModal(false)
+          if (species == animalCount[x].name && animalCount[x].maxPerShelter < (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)) setShowModal(false)
         }
 
+        var numID = (microchipId == null) ? null : microchipId
         var newBreeds = (breeds.length == 0) ? ['Unknown'] : breeds.selected
 
         const requestOptions = {
@@ -175,7 +176,7 @@ const AddAnimalModal = (props) => {
             description: `${description}`,
             age: `${age}`,
             sex: `${sex}`,
-            microchipId: `${microchipId}`,
+            microchipId: numID,
             surrenderDate: `${surrenderDate}`,
             surrenderSubmitter: `${localStorage.getItem('UserName')}`,
             surrenderReason: `${surrenderReason}`,
@@ -189,7 +190,8 @@ const AddAnimalModal = (props) => {
           .then((Response) => Response.json())
           .then((result) => {
             if (!result.petId) {
-              toaster.warning('Error with adding pet :( ')
+              console.log(result)
+              toaster.warning('Error with adding pet :(. Error message: ' + result.sqlMessage)
             } else {
               var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
               const requestOptions = {
@@ -356,7 +358,7 @@ const AddAnimalModal = (props) => {
                 label="MicrochipID"
                 marginRight="2rem"
                 value={microchipId}
-                onChange={e => Number(setMicrochipId(e.target.value))}
+                onChange={e => setMicrochipId(e.target.value)}
               />
             </Pane>
           </Pane>
