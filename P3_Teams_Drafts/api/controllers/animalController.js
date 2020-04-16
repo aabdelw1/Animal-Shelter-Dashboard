@@ -211,13 +211,32 @@ exports.add_animal = function(req, res) {
 
 async function addBreeds(petId,breeds)
 {
-  for (let i=0; i<breeds.length; i++)
+  var mixedUnknown=false;
+
+  for (let j=0; j<breeds.length; j++)
   {
-    var breed=breeds[i];
-    var params=[];
-    params.push(petId);
-    params.push(breed);
-    await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+    {
+      mixedUnknown=true;
+      var breed=breeds[j];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+      break;
+    }
+  }
+
+  if(mixedUnknown==false)
+  {
+    for (let i=0; i<breeds.length; i++)
+    {
+      var breed=breeds[i];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    }
   }
 }
 
@@ -317,11 +336,25 @@ exports.put_update_animal_information = function(req, res) {
    if (req.body.breeds != null) {
      var breeds = req.body.breeds.split(',');
      var breed=breeds[0];
-     q = q +`  UPDATE AnimalBreeds
-               SET Breed_Name = ?
-               WHERE Pet_ID = ? ; `;
-     params.push(breed);
-     params.push(req.params.PetID);
+
+     var mixedUnknown=false;
+
+     for (let j=0; j<breeds.length; j++)
+     {
+       if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+       {
+         mixedUnknown=true;
+       }
+     }
+
+     if(mixedUnknown==false)
+      {
+        q = q +`  UPDATE AnimalBreeds
+        SET Breed_Name = ?
+        WHERE Pet_ID = ? ; `;
+        params.push(breed);
+        params.push(req.params.PetID);
+     }
    }
     
    db.query(q, params, (err, results) => {
@@ -345,12 +378,27 @@ exports.put_update_animal_information = function(req, res) {
 
 async function updateBreeds(petId,breeds)
 {
-  for (let i=1; i<breeds.length; i++)
+
+  var mixedUnknown=false;
+
+  for (let j=0; j<breeds.length; j++)
   {
-    var breed=breeds[i];
-    var params=[];
-    params.push(petId);
-    params.push(breed);
-    await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+    {
+      mixedUnknown=true;
+      break;
+    }
+  }
+
+  if(mixedUnknown==false)
+  {
+    for (let i=1; i<breeds.length; i++)
+    {
+      var breed=breeds[i];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    }
   }
 }
