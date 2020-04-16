@@ -9,6 +9,7 @@ const AddAdoptionModal = (props) => {
   const [adopter, setAdopter] = useState('')
   const [adoptionDate, setAdoptionDate] = useState('')
   const [adoptionFee, setAdoptionFee] = useState('')
+  const [selectedAdopt, setSelectedAdopt] = useState(false)
 
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState({adoptionFee: 'Must have valid Money value',adoptionDate: 'Must have valid date'})
@@ -126,6 +127,7 @@ const AddAdoptionModal = (props) => {
                   onSelect={item => {
                     setState({ selected: (item.value).split(' | ')[1] })
                     setAdopter(item.value.split(' | ')[0])
+                    setSelectedAdopt(true)
                   }}
                   closeOnSelect={true}
                 >
@@ -135,6 +137,7 @@ const AddAdoptionModal = (props) => {
             </Component>
           </Pane>
         </Pane>
+        { selectedAdopt &&
         <Pane display="flex">
           <Pane display="flex" flexDirection="column" marginRight="2rem">
             <TextInputField
@@ -165,6 +168,7 @@ const AddAdoptionModal = (props) => {
             {errors.adoptionDate && <InlineAlert intent="danger">{errors.adoptionDate}</InlineAlert>}
           </Pane>
         </Pane>
+      }
       </Pane>
     </Dialog>
   )

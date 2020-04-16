@@ -68,7 +68,7 @@ const AnimalDashboardFilters = () => {
           inShelterCount.map((label, value) => {
             return <Pane display="flex" flexDirection="row">
               <Avatar src={label[0] == 'Dog' ? '/static/dog-face.png' : '/static/cat-face.png'} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
-              <Text>: { (label[1] <= 0) ? "No Space" : label[1] / label[2]}</Text>
+              <Text>: { (label[1] <= 0) ? "No Space" : label[1] +'/'+label[2] }</Text>
             </Pane>
           })
         }

@@ -7,6 +7,16 @@ import { useRouter } from 'next/router'
 const AddAnimalModal = (props) => {
   const { showModal, setShowModal } = props
   const router = useRouter()
+
+  //Vaccine values
+  const [vaccine, setVaccine] = useState('')
+  const [vaccineList, setVaccineList] = useState([])
+  const [vaccinationDate, setVaccinationDate] = useState('')
+  const [nextDate, setNextDate] = useState('')
+  const [vaccineTagNumber, setVaccineTagNumber] = useState(null)
+
+
+  //normal animal values
   const [animalName, setAnimalName] = useState('')
   const [species, setSpecies] = useState('Dog')
   const [breeds, setBreeds] = useState([])
@@ -24,7 +34,7 @@ const AddAnimalModal = (props) => {
   const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('0')
   const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
-  const [errors, setErrors] = useState({date: 'Must have valid date',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason'})
+  const [errors, setErrors] = useState({date: '',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason', vaccinationDate: 'Must have valid date', nextDate: 'Must have valid date'})
 
   
 
@@ -32,6 +42,8 @@ const AddAnimalModal = (props) => {
   const getBreeds = async () => {
     const response = await fetch(`http://localhost:4000/breeds/${species}`, { method: 'get' })
     const result = await response.json()
+    result.push('Unknown')
+    result.push('Mixed')
     setLoading(false)
     setBreedsList(result)
   }
@@ -51,14 +63,31 @@ const AddAnimalModal = (props) => {
     setAnimalCount(countList)
   }
 
+  const getVaccine = async () => {
+    const response = await fetch(`http://localhost:4000/species/${species}/vaccines`, { method: 'get' })
+    const result = await response.json()
+    setLoading(false)
+    var newList = []
+    for (var x = 0; x < result.length; x++) {
+      newList[x] = result[x].vaccineType
+    }
+    const list = newList.map(name => { return { label: name, value: name } })
+    setVaccineList(list)
+  }
+
   useEffect(() => {
     getSpecies()
     getBreeds()
+    getVaccine()
   }, [species])
 
   function getTodaysDate(){
-    var d = new Date()
-    return d.getFullYear() +"-"+ (d.getMonth()+1) + "-"+d.getDate();
+  var dateObj = new Date();
+  var month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+  var date = ('0' + dateObj.getDate()).slice(-2);
+  var year = dateObj.getFullYear();
+  var shortDate = year + '-' + month + '-' + date;
+  return shortDate
   }
 
   function HandleChange(event){
@@ -87,6 +116,18 @@ const AddAnimalModal = (props) => {
         errors.surrenderReason = 
           value.length <= 1
             ? 'Need Surrender Reason'
+            : '';
+        break;
+      case 'vaccinationDate': 
+        errors.vaccinationDate = 
+          !dateRegex(value)
+            ? 'Must have valid date'
+            : '';
+        break;
+      case 'nextDate': 
+        errors.nextDate = 
+          !dateRegex(value)
+            ? 'Must have valid date'
             : '';
         break;
       default:
@@ -150,10 +191,33 @@ const AddAnimalModal = (props) => {
             if (!result.petId) {
               toaster.warning('Error with adding pet :( ')
             } else {
-              toaster.success('Successfully added pet')
-              window.location.reload();
+              var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
+              const requestOptions = {
+                  method: 'post',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    speciesName: `${species}`,
+                    vaccineType: `${vaccine}`,
+                    vaccinationNumber: num,
+                    dateAdministered: `${vaccinationDate}`,
+                    expirationDate: `${nextDate}`,
+                    vaccineSubmitter: `${localStorage.getItem('UserName')}`
+                  })
+                }
+                fetch(`http://localhost:4000/animal/${result.petId}/vaccines/add`, requestOptions)
+                  .then((Response) => Response.json())
+                  .then((result) => {
+                    if (result.status != 'success') {
+                      toaster.warning('Error with adding pet :( ')
+                    } else {
+                      toaster.success('Successfully added pet')
+                      window.location.reload();
+                    }
+                  })
+                    
             }
-          })
+        })
+
         setShowModal(false)
       }}
     >
@@ -346,6 +410,53 @@ const AddAnimalModal = (props) => {
               initialSelectedItem={''}
               onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
               value={surrenderByAnimalControl}
+            />
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <Pane>
+              <SelectField label="Choose Vaccine" marginRight="2rem" value={vaccine} disabled={loading} onChange={e => setVaccine(e.target.value)}>
+                {vaccineList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
+              </SelectField>
+            </Pane>
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <TextInputField
+              required
+              autoFocus
+              name="vaccinationDate"
+              label="Vaccination Date"
+              required={true}
+              marginRight="1rem"
+              value={vaccinationDate}
+              placeholder="YYYY-DD-MM"
+              onChange={e => {HandleChange(e); setVaccinationDate(e.target.value)}}
+            />
+            {errors.vaccinationDate && <InlineAlert intent="danger">{errors.vaccinationDate}</InlineAlert>}
+          </Pane>
+        </Pane>
+        <Pane display="flex">
+          <Pane display="flex" flexDirection="column">
+            <TextInputField
+              autoFocus
+              required
+              label="Next Dose Date"
+              required={true}
+              marginRight="1rem"
+              name="nextDate"
+              value={nextDate}
+              placeholder="YYYY-DD-MM"
+              onChange={e => {HandleChange(e); setNextDate(e.target.value)}}
+            />
+             {errors.nextDate && <InlineAlert intent="danger">{errors.nextDate}</InlineAlert>}
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <TextInputField
+              autoFocus
+              label="Vaccine Tag number"
+              marginRight="2rem"
+              value={vaccineTagNumber}
+              placeholder=""
+              onChange={e => setVaccineTagNumber(e.target.value)}
             />
           </Pane>
         </Pane>

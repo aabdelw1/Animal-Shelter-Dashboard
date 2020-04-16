@@ -152,7 +152,7 @@ const EditAnimalModal = (props) => {
                 openOnFocus
                 marginRight="2rem"
                 items={['Yes', 'No']}
-                autocompleteProps={{ title: 'Alteration Status' }}
+                autocompleteProps={{ title: 'Change Alteration Status' }}
                 initialSelectedItem={alterationStatus || ''}
                 onChange={selected => setNewAlterationStatus(selected)}
                 value={newAlterationStatus}

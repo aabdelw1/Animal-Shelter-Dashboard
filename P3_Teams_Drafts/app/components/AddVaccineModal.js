@@ -89,7 +89,6 @@ const AddVaccineModal = (props) => {
             vaccineSubmitter: `${localStorage.getItem('UserName')}`
           })
         }
-        console.log(requestOptions)
         fetch(`http://localhost:4000/animal/${id}/vaccines/add`, requestOptions)
           .then((Response) => Response.json())
           .then((result) => {
