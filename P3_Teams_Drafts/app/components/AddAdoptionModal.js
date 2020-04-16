@@ -98,6 +98,7 @@ const AddAdoptionModal = (props) => {
               toaster.warning('Error with adding pet adoption info :( ')
             } else {
               toaster.success('Successfully added pet adoption info')
+              window.location.reload();
             }
           })
         setShowModal(false)

@@ -224,7 +224,7 @@ const AddAnimalModal = (props) => {
                         toaster.warning('Error with adding pet :( ')
                       } else {
                         toaster.success('Successfully added pet')
-                        //window.location.reload();
+                        window.location.reload();
                       }
                     })
                       
