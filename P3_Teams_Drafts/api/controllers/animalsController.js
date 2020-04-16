@@ -135,34 +135,35 @@ exports.list_all_animals = function(req, res) {
 
     var params = [];
     var q = ` SELECT 
-              dates.Yr_Month,
-              SUM(CASE 
-                          WHEN Surrender_By_Animal_Control=1 AND 
-                              EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
-                          ELSE 0 END) as Surrender_By_Animal_Control_Count,
-              SUM(CASE 
-                          WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
-                          ELSE 0 END) as Rescue_Over_60_Count       
-            FROM 
-            (
-              WITH RECURSIVE dates as (
-                SELECT date_add(CURDATE(), interval -6 month) as dt
-                UNION ALL
-                SELECT date_add(dt, interval 1 month) as dt
-                FROM dates
-                WHERE dt < CURDATE() 
-            ) 
-            SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
-            FROM dates
-            WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
-            ) dates
-            inner join Animal a on 
-              (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
-                    a.Surrender_By_Animal_Control=1) 
-                OR
-              (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
-              DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
-            group by dates.Yr_Month;`
+                dates.Yr_Month,
+                SUM(CASE 
+                            WHEN Surrender_By_Animal_Control=1 AND 
+                                EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
+                            ELSE 0 END) as Surrender_By_Animal_Control_Count,
+                SUM(CASE 
+                            WHEN (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month
+                            AND DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60) THEN 1
+                            ELSE 0 END) as Rescue_Over_60_Count       
+              FROM 
+              (
+                WITH RECURSIVE dates as (
+                  SELECT date_add(CURDATE(), interval -6 month) as dt
+                  UNION ALL
+                  SELECT date_add(dt, interval 1 month) as dt
+                  FROM dates
+                  WHERE dt < CURDATE() 
+              ) 
+              SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
+              FROM dates
+              WHERE dt between date_add(CURDATE(), interval -6 month) and CURDATE()
+              ) dates
+              left outer join Animal a on 
+                (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
+                      a.Surrender_By_Animal_Control=1) 
+                  OR
+                (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
+                DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
+              group by dates.Yr_Month;`
     
     //params.push(req.params.YearMonth);            
   
