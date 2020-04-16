@@ -10,7 +10,7 @@ const EditAnimalModal = (props) => {
   const { petId, name, species, breeds, sex, alterationStatus, age, adoptability, microchipId } = animal
   const [newBreeds, setNewBreeds] = useState(breeds.split('/'))
   const [breedsList, setBreedsList] = useState([])
-  let [newSex, setNewSex] = useState('')
+  let [newSex, setNewSex] = useState('Male')
   let [newMicrochipId, setNewMicrochipId] = useState('')
   const [loading, setLoading] = useState(true)
   let [newAlterationStatus, setNewAlterationStatus] = useState('')
@@ -28,7 +28,7 @@ const EditAnimalModal = (props) => {
 
   useEffect(() => {
     if(sex == 'Unknown') setShowSex(true)
-    if(microchipId == '') setShowMicroID(true)
+    if(microchipId == '' || microchipId == null) setShowMicroID(true)
     if(alterationStatus == 'false' || alterationStatus == '') setShowAlteration(true)
     if(breeds == 'Mixed' || breeds == 'Unknown') setShowBreed(true)
     getBreeds()
@@ -43,12 +43,13 @@ const EditAnimalModal = (props) => {
         var tempAlterationStatus = (newAlterationStatus == 'Yes') ? !alterationStatus : alterationStatus
         tempAlterationStatus = (tempAlterationStatus == true) ? 1 : 0
         var newBreedArr = (newBreeds.length == 1) ? newBreeds[0] : newBreeds.selected.join(',')
+        console.log(newMicrochipId)
         const requestOptions = {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sex: `${(newSex == '') ? sex: newSex}`,
-            microchipId: `${(newMicrochipId == '') ? microchipId: newMicrochipId}`,
+            microchipID: `${(newMicrochipId == '') ? microchipId: newMicrochipId}`,
             alterationStatus: `${tempAlterationStatus}`,
             breeds: `${newBreedArr}`,
           })
@@ -59,7 +60,7 @@ const EditAnimalModal = (props) => {
               toaster.warning('Error when updating pet :( ')
             } else {
               toaster.success('Successfully updated pet')
-              router.push('/animalDashboard')
+              window.location.reload();
             }
           })
         setVisible(false)
@@ -151,7 +152,7 @@ const EditAnimalModal = (props) => {
                 openOnFocus
                 marginRight="2rem"
                 items={['Yes', 'No']}
-                autocompleteProps={{ title: 'Alteration Status' }}
+                autocompleteProps={{ title: 'Change Alteration Status' }}
                 initialSelectedItem={alterationStatus || ''}
                 onChange={selected => setNewAlterationStatus(selected)}
                 value={newAlterationStatus}

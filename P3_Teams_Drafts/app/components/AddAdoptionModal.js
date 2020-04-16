@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button } from 'evergreen-ui'
+import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button, InlineAlert } from 'evergreen-ui'
 import Component from '@reactions/component'
 
 const AddAdoptionModal = (props) => {
@@ -9,8 +9,11 @@ const AddAdoptionModal = (props) => {
   const [adopter, setAdopter] = useState('')
   const [adoptionDate, setAdoptionDate] = useState('')
   const [adoptionFee, setAdoptionFee] = useState('')
+  const [selectedAdopt, setSelectedAdopt] = useState(false)
 
   const [loading, setLoading] = useState(true)
+  const [errors, setErrors] = useState({adoptionFee: 'Must have valid Money value',adoptionDate: 'Must have valid date'})
+
 
   const getAdopters = async () => {
     const response = await fetch('http://localhost:4000/adoptionApplications?applicantLastName=&coApplicantLastName=', { method: 'get' })
@@ -28,10 +31,56 @@ const AddAdoptionModal = (props) => {
     getAdopters()
   }, [])
 
+  function HandleChange(event){
+    event.preventDefault();
+    const { name, value } = event.target;
+    switch (name) {
+      case 'adoptionDate': 
+        errors.adoptionDate = 
+          !dateRegex(value)
+            ? 'Must have valid date'
+            : '';
+        break;
+      case 'adoptionFee': 
+        errors.adoptionFee = 
+          !moneyRegex(value)
+            ? 'Must have valid Money value'
+            : '';
+        break;
+      default:
+        break;
+    }
+  }
+
+  function dateRegex(date){
+    var re = /^\d{4}-\d{1,2}-\d{1,2}$/;
+    return re.test(date);
+  }
+
+  function moneyRegex(date){
+    var re = /^\d+(?:\.\d\d)*$/;
+
+    if(Number(date) > 0 && re.test(date)){
+      return true
+    }else{
+      return false
+    }
+  }
+
+  const validateForm = (errors) => {
+    let valid = true;
+    Object.values(errors).forEach(
+      (val) => val.length > 0 && (valid = false)
+    );
+    return valid
+
+  }
+
   return (
     <Dialog
       isShown={showModal}
       title="🐶 Add Adoption"
+      isConfirmDisabled = {!validateForm(errors)}
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         const requestOptions = {
@@ -56,7 +105,7 @@ const AddAdoptionModal = (props) => {
     >
       <Pane>
         <Pane display="flex">
-          <Heading size={500} marginY="0.5rem">Select Adopter</Heading>
+          <Heading size={400} marginY="0.5rem">Select Adopter</Heading>
           <Pane marginLeft="2rem">
             <Component
               initialState={{
@@ -78,6 +127,7 @@ const AddAdoptionModal = (props) => {
                   onSelect={item => {
                     setState({ selected: (item.value).split(' | ')[1] })
                     setAdopter(item.value.split(' | ')[0])
+                    setSelectedAdopt(true)
                   }}
                   closeOnSelect={true}
                 >
@@ -87,34 +137,38 @@ const AddAdoptionModal = (props) => {
             </Component>
           </Pane>
         </Pane>
+        { selectedAdopt &&
         <Pane display="flex">
           <Pane display="flex" flexDirection="column" marginRight="2rem">
-            <Heading size={500} marginY="0.5rem">Adoption Fee</Heading>
             <TextInputField
               width={50}
               autoFocus
-              required={true}
-              placeholder="$20"
-              label=""
+              required
+              name="adoptionFee"
+              placeholder="20"
+              label="Adoption Fee"
               marginRight="2rem"
               value={adoptionFee}
-              onChange={e => setAdoptionFee(e.target.value)}
+              onChange={e => {HandleChange(e); setAdoptionFee(e.target.value)}}
             />
+            {errors.adoptionFee && <InlineAlert intent="danger">{errors.adoptionFee}</InlineAlert>}
           </Pane>
           <Pane display="flex" flexDirection="column">
-            <Heading size={500} marginY="0.5rem">Adoption Date</Heading>
             <TextInputField
               width={100}
               autoFocus
-              required={true}
+              required
+              name="adoptionDate"
               placeholder="YYYY-DD-MM"
-              label=""
+              label="Adoption Date"
               marginRight="2rem"
               value={adoptionDate}
-              onChange={e => setAdoptionDate(e.target.value)}
+              onChange={e => {HandleChange(e); setAdoptionDate(e.target.value)}}
             />
+            {errors.adoptionDate && <InlineAlert intent="danger">{errors.adoptionDate}</InlineAlert>}
           </Pane>
         </Pane>
+      }
       </Pane>
     </Dialog>
   )

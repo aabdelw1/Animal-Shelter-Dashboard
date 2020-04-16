@@ -11,14 +11,15 @@ GROUP BY va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.
 ORDER BY va.Expiration_Date, va.Pet_ID
 */
 
-    var q = `SELECT va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, va.Vaccine_Submitter, 
-                GROUP_CONCAT(ab.Breed_Name ORDER BY ab.Breed_Name SEPARATOR '/') as Breed_Name, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
-            FROM VaccineAdministration AS va
-            INNER JOIN Animal AS a on va.Pet_ID = a.Pet_ID
-            INNER JOIN AnimalBreeds AS ab ON a.Pet_ID=ab.Pet_ID
-            WHERE  (EXTRACT(YEAR_MONTH FROM va.Expiration_Date) <= ((EXTRACT(YEAR_MONTH FROM DATE_ADD(NOW(), INTERVAL 3 MONTH))))) AND (EXTRACT(YEAR_MONTH FROM va.Expiration_Date) >= EXTRACT(YEAR_MONTH FROM NOW())) 
-            GROUP BY va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, va.Vaccine_Submitter, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
-            ORDER BY va.Expiration_Date ASC, va.Pet_ID ASC;`
+    var q = `   SELECT va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, DATE_ADD(va.Expiration_Date, INTERVAL 1 DAY) AS Due_Date, CONCAT(U.First_Name, " ", U.Last_Name) AS Vaccine_Submitter,
+                    GROUP_CONCAT(ab.Breed_Name ORDER BY ab.Breed_Name SEPARATOR '/') as Breed_Name, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+                FROM VaccineAdministration AS va
+                INNER JOIN Animal AS a on va.Pet_ID = a.Pet_ID
+                INNER JOIN AnimalBreeds AS ab ON a.Pet_ID=ab.Pet_ID
+                INNER JOIN Users AS U ON U.Username = va.Vaccine_Submitter 
+                WHERE a.Adoption_Date is null AND (EXTRACT(YEAR_MONTH FROM DATE_ADD(va.Expiration_Date, INTERVAL 1 DAY)) <= ((EXTRACT(YEAR_MONTH FROM DATE_ADD(NOW(), INTERVAL 3 MONTH))))) AND (DATE_ADD(va.Expiration_Date, INTERVAL 1 DAY) > NOW())
+                GROUP BY va.Pet_ID, va.Species_Name, va.Vaccine_Type, va.Vaccination_Number, va.Date_Administired, va.Expiration_Date, va.Vaccine_Submitter, a.Name, a.Description, a.Age, a.Microchip_ID, a.Sex, a.Alteration_Status, a.Surrender_Reason, a.Surrender_By_Animal_Control, a.Surrender_Date, a.Adoption_Date, a.Adoption_Fee, a.Adoption_Application_Number, a.Species
+                ORDER BY va.Expiration_Date ASC, va.Pet_ID ASC;`
     
     db.query(q, params, (err, results) => {
         var report=[];
@@ -30,7 +31,7 @@ ORDER BY va.Expiration_Date, va.Pet_ID
                     speciesName: a.Species_Name,
                     vaccineType: a.Vaccine_Type,
                     vaccinationNumber: a.Vaccination_Number,
-                    dateAdministired: a.Date_Administired,
+                    dateAdministired: a.Due_Date,
                     vaccineSubmitter: a.Vaccine_Submitter,
                     breedName: a.Breed_Name,
                     name: a.Name,

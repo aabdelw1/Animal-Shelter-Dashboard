@@ -26,7 +26,7 @@ const CardPopoverAdopt = (props) => {
           toaster.success('Successfully approved the adoption application')
         }
       })
-    router.push('/animalDashboard')
+      window.location.reload();
   }
 
   function RejectAdoption () {
@@ -42,7 +42,7 @@ const CardPopoverAdopt = (props) => {
           toaster.success('Successfully rejected the adoption application')
         }
       })
-    router.push('/animalDashboard')
+      window.location.reload();
   }
 
   return (
