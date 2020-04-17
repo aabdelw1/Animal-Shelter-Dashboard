@@ -64,7 +64,7 @@ exports.post_new_adoption_application = function(req, res) {
 exports.post_new_adopter = function(req, res) {
 
     var params = [];
-    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
+    var q = `INSERT IGNORE INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     
     params.push(req.body.emailAddress);
