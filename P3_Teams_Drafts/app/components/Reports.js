@@ -41,6 +41,8 @@ const Reports = (props) => {
   const [yearMonth, setYearMonth] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
   const whenClickedArray = ['animalControl', 'MonthlyAdopt', 'default', 'VolunteerMonth', 'VolunteerLookup']
+  const [errors, setErrors] = useState({date: 'Must have valid date'})
+
 
   async function fetchControlinfo () {
     const promises = animalsContol.map( async info => {
@@ -112,6 +114,27 @@ const Reports = (props) => {
     fetchVaccineReminderReport()
     fetchMonthlyAdopt()
   }, [])
+
+  function HandleChange(event){
+    event.preventDefault();
+    const { name, value } = event.target;
+    switch (name) {
+      case 'date': 
+        errors.date = 
+          !dateRegex(value)
+            ? 'Must have valid date'
+            : '';
+        break;
+      default:
+        break;
+    }
+  }
+
+  
+  function dateRegex(date){
+      var re = /^\d{6}$/;
+      return re.test(date);
+  }
 
 
   const stringDate = function (date) {
@@ -419,12 +442,14 @@ const Reports = (props) => {
                           <TextInputField
                             autoFocus
                             label=""
+                            name="date"
                             marginRight="2rem"
                             value={yearMonth}
                             placeholder="yearMonth = 202002"
-                            onChange={e => setYearMonth(e.target.value)}
+                            validationMessage={errors.date ? errors.date : false}
+                            onChange={e => {HandleChange(e); setYearMonth(e.target.value)}}
                           />
-                          <Button marginRight="2rem" marginY={'0.4rem'} onClick={() => {
+                          <Button disabled={errors.date ? errors.date : false} marginRight="2rem" marginY={'0.4rem'} onClick={() => {
                             fetchVolunteerMonth()
                           }} iconBefore="search">Search</Button>
 
