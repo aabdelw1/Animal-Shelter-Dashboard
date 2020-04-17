@@ -55,7 +55,7 @@ const AnimalDashboardFilters = () => {
         </Select>
       </Pane>
       <Pane>
-        <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Animal</Button>
+        { userType != 'Volunteer' && <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Animal</Button> }
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
       </Pane>
       <Pane>
