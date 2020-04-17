@@ -43,7 +43,6 @@ const EditAnimalModal = (props) => {
         var tempAlterationStatus = (newAlterationStatus == 'Yes') ? !alterationStatus : alterationStatus
         tempAlterationStatus = (tempAlterationStatus == true) ? 1 : 0
         var newBreedArr = (newBreeds.length == 1) ? newBreeds[0] : newBreeds.selected.join(',')
-        console.log(newMicrochipId)
         const requestOptions = {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
