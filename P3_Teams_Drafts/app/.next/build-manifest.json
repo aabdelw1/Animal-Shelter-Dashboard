@@ -20,10 +20,6 @@
       "static/runtime/polyfills.js",
       "static/runtime/polyfills.js.map"
     ],
-    "/animal/[id]": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
     "/animalDashboard": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"

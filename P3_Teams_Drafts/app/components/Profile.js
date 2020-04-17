@@ -129,7 +129,7 @@ const Profile = (props) => {
               <Heading size={600}>Vaccinations</Heading>
               {animal &&
              <Pane>
-              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
               <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
             </Pane>
             }
