@@ -21,15 +21,18 @@ const AnimalCard = (props) => {
             { (adoptability == 'Adopted' || adoptability == 'Ready') && <Badge marginLeft={'1rem'} marginY="0.5rem" color={adoptability == 'Adopted' ? 'purple' : 'green'}>{adoptability}</Badge> }
             { (adoptability == 'Pending' || adoptability == null) && <Badge marginLeft={'1rem'} marginY="0.5rem" color='blue'>Pending</Badge> }
           </Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{ breeds } - {(age/12).toFixed(1)} - {alterationStatus == '1' ? 'Spayed/neutured' : 'Not spayed/neutered'} </Text></Pane>
+          <Pane><Text size={300}>{ breeds } - {(age/12).toFixed(1)}</Text></Pane>
         </Pane>
       </Pane>
       <Pane display="flex" flexDirection="row">
-        <Pane display="flex" flexDirection="row" marginRight={'2rem'} marginY='auto'>
+        <Pane display="flex" flexDirection="column" marginRight={'2rem'} marginY='auto' textAlign="right">
           {/* <Text size={500}>Sex:</Text> */}
           { (sex == 'Male' || sex == 'Female') && <Text marginLeft=".5rem" size={500} fontWeight='bold'color={sex == 'Male' ? '#1070CA' : '#735DD0'}> {sex}</Text> }
           { sex == 'Unknown' && <Text marginLeft=".5rem" size={500} fontWeight='bold'color={'neutral'}> {sex}</Text> }
+          <Pane><Text size={300} marginLeft=".5rem">{alterationStatus == '1' ? ( sex == 'Female' ? 'Spayed' : 'Neutured') : 'Not Altered'} </Text></Pane>
+
         </Pane>
+        
         <Pane marginY='0.1rem' marginRight='0.5rem'>
           <CardPopover animal={data}/>
         </Pane>
