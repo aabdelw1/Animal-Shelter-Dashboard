@@ -2,10 +2,23 @@ import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Heading, BackButton, Pane, Button, Tooltip, Position, Icon, Link, Badge, Text, Table, Avatar } from 'evergreen-ui'
 import Router from 'next/router'
+import styled from 'styled-components'
 import AddAdoptionModal from './AddAdoptionModal'
 import { Context } from './Context'
 import AddVaccineModal from './AddVaccineModal'
 import VaccineCard from './VaccineCard'
+import EditAnimalModal from './EditAnimalModal'
+
+
+const Container = styled.div`
+  max-height: 70vh;
+`
+
+const VaccineColumn = styled.div`
+  max-height: 70vh;
+  overflow: auto;
+  
+`
 
 const Profile = (props) => {
   const { _id } = props
@@ -13,6 +26,7 @@ const Profile = (props) => {
   const [vaccines, setVaccines] = useState([])
   const [visible, setVisible] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [editVisible, setEditVisible] = useState(false)
   const [showModalVacc, setShowModalVacc] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -39,6 +53,8 @@ const Profile = (props) => {
 
   return (
     <>
+    <Container>
+
       <Pane display="flex" flex="1" flexDirection="row">
         <BackButton intent="none" height={40} onClick={() => Router.back() }/>
       </Pane>
@@ -60,14 +76,16 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>
+              <Button marginRight="2rem" marginY="2rem" onClick={() => { setEditVisible(true) }}>Edit Animal</Button>
               <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+              <EditAnimalModal animal={animal} visible={editVisible} setVisible={setEditVisible}/>
               <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
           </Pane>}
         </Pane>
         {animal && <Pane flex="3">
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1" marginX="3rem">
-            <Heading size={700}>Animal Detail</Heading>
+            <Heading size={700}>Animal Details</Heading>
             <Text marginY="1rem" size={500}>Surrender Information</Text>
             <Table.Row isSelectable>
               <Table.TextCell>Surrender Reason: <b>{animal.surrenderReason == null ? 'None' : animal.surrenderReason}</b></Table.TextCell>
@@ -103,23 +121,34 @@ const Profile = (props) => {
 
           </Pane>
         </Pane>}
+        
         <Pane flex="1">
+        
           <Pane marginTop="-8rem" display="flex" flexDirection="column" flex="1">
-            <Heading size={600}>Vaccinations</Heading>
-            <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
-            {animal && <Pane>
-              <Button marginRight="2rem" onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+            <Pane display="flex" flexDirection="row">
+              <Heading size={600}>Vaccinations</Heading>
+              {animal &&
+             <Pane>
+              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
               <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
             </Pane>
             }
+            </Pane>
+            <Text marginY="1rem" size={500}>Last Updated: {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+            <VaccineColumn>
             {
               vaccines.map((vaccines, index) => {
                 return <VaccineCard index={index} data={vaccines}/>
               })
             }
+            </VaccineColumn>
           </Pane>
+          
         </Pane>
+        
       </Pane>
+      </Container>
+
     </>
   )
 }

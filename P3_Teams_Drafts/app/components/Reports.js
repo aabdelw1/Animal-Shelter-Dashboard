@@ -16,6 +16,8 @@ const Container = styled.div`
   justify-content:flex-start;
   flex: 1;
   min-height: 70vh;
+  max-height: 70vh;
+  overflow: auto;
 `
 
 const Reports = (props) => {
@@ -367,6 +369,7 @@ const Reports = (props) => {
   }
 
   return (
+    <Container>
     <Pane display="flex" flexDirection="column" marginY='2rem'>
       <Component
         initialState={{
@@ -488,6 +491,7 @@ const Reports = (props) => {
         )}
       </Component>
     </Pane>
+    </Container>
   )
 }
 

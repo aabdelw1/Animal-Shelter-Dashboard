@@ -11,18 +11,25 @@ const VaccineCard = (props) => {
   const { type, number, dateAdministered, expDate, submitter } = data
   const [visible, setVisible] = useState(false)
 
+  const stringDate = function (date) {
+    const year = date.split('T')[0].split('-')[0]
+    const month = months[Number(date.split('T')[0].split('-')[1])-1]
+    const day = date.split('T')[0].split('-')[2]
+
+    return `${month} ${day}, ${year}`
+  }
+  
   return (
-    <Pane border="default" marginBottom="1rem" display="flex" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1} width="70%">
-      <Pane display="flex" flexDirection="row" paddingY="0.5rem" margin="1rem">
-        <Pane marginY="auto">
-          <Pane display="flex" flexDirection="row">
-            {/* <Heading size={600} marginLeft=".5rem" color={sex == 'Male' ? '#1070CA' : '#735DD0'}>{name}</Heading> */}
-            <Heading size={600}>{type}</Heading>
+    <Pane border="default" marginBottom="1rem" display="flex" justifyContent='space-between' flexDirection="row" borderRadius={6} hoverElevation={1}>
+      <Pane display="flex" flexDirection="row" margin="1rem">
+        <Pane>
+          <Pane display="flex" paddingY="0.5rem">
+            <Heading size={500}>{type}</Heading>
           </Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{'Vacc # : '} <b>{(number == null ? 'None' : number)}</b></Text></Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{'Date admin: '} <b>{dateAdministered.split('T')[0]}</b></Text></Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{'Ex Date: '} <b>{expDate.split('T')[0]}</b></Text></Pane>
-          <Pane><Text size={300} marginLeft=".5rem">{'Submitter: '} <b>{submitter}</b></Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem"> <b>{'Vacc # : '}</b>{(number == null ? 'None' : number)}</Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem"><b>{'Date admin: '}</b> {stringDate(dateAdministered)}</Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem"><b>{'Ex Date: '} </b>{stringDate(expDate)}</Text></Pane>
+          <Pane><Text size={300} marginLeft=".5rem"><b>{'Submitter: '}</b> {submitter}</Text></Pane>
         </Pane>
       </Pane>
     </Pane>
