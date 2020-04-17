@@ -8,6 +8,10 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
+    "/": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
     "/_app": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
@@ -20,15 +24,11 @@
       "static/runtime/polyfills.js",
       "static/runtime/polyfills.js.map"
     ],
-    "/animal/[id]": [
+    "/animalDashboard": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-<<<<<<< HEAD
-    "/reports": [
-=======
-    "/animalDashboard": [
->>>>>>> cc1f5f1c8422e475496d47f79d87cc9fdbaff00e
+    "/index": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]
