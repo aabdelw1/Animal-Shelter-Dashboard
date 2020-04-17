@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert, Text } from 'evergreen-ui'
+import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert, Text, Table, SelectedPropType } from 'evergreen-ui'
 import Component from '@reactions/component'
 import { useRouter } from 'next/router'
 
@@ -14,7 +14,7 @@ const AddAnimalModal = (props) => {
   const [vaccinationDate, setVaccinationDate] = useState('')
   const [nextDate, setNextDate] = useState('')
   const [vaccineTagNumber, setVaccineTagNumber] = useState(null)
-
+  const [showRenderVaccineList, setShowRenderVaccineList] = useState(false)
 
   //normal animal values
   const [animalName, setAnimalName] = useState('')
@@ -34,6 +34,7 @@ const AddAnimalModal = (props) => {
   const [surrenderByAnimalControl, setSurrenderByAnimalControl] = useState('0')
   const [animalCount, setAnimalCount] = useState([{ species: '', maxPerShelter: '', countWaitingAdoption: '' }])
   const [adoptability, setAdoptability] = useState('true')
+  const [submitVaccine, setSubmitVaccine] = useState([])
   const [errors, setErrors] = useState({date: '',vaccine: 'Must select Vaccine',age: 'Enter valid age', name: 'Enter Name', surrenderReason: 'Need Surrender Reason', vaccinationDate: 'Must have valid date', nextDate: 'Must have valid date'})
 
   
@@ -160,6 +161,32 @@ const AddAnimalModal = (props) => {
 
   }
 
+  function addVaccine(){
+    var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
+    var listOfVaccine = {
+      speciesName: `${species}`,
+      vaccineType: `${vaccine}`,
+      vaccinationNumber: num,
+      dateAdministered: `${vaccinationDate}`,
+      expirationDate: `${nextDate}`,
+      vaccineSubmitter: `${localStorage.getItem('UserName')}`
+    }
+    submitVaccine.push(listOfVaccine)
+    setShowRenderVaccineList(false)
+    setShowRenderVaccineList(true)
+  }
+
+  function renderVaccineList () {
+    console.log(submitVaccine)
+    return submitVaccine.map((student, index) => {
+      const { vaccineType } = student 
+      return (
+        <Table.Row>
+          <Table.TextCell>Added: {vaccineType}</Table.TextCell>
+        </Table.Row>
+      )
+    })
+  }
   return (
     <Dialog
       isShown={showModal}
@@ -168,12 +195,12 @@ const AddAnimalModal = (props) => {
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         var isEnough = true
-        for (var x = 0; x < animalCount.length; x++) {
-          if (species == animalCount[x].species && animalCount[x].maxPerShelter <= (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)){
-            isEnough = false
-            toaster.warning('Too many ' + species + ' in shelter. Cannot add animal')
-          } 
-        }
+        // for (var x = 0; x < animalCount.length; x++) {
+        //   if (species == animalCount[x].species && animalCount[x].maxPerShelter <= (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)){
+        //     isEnough = false
+        //     toaster.warning('Too many ' + species + ' in shelter. Cannot add animal')
+        //   } 
+        // }
 
         if(isEnough) {
           var numID = (microchipId == null) ? null : microchipId
@@ -201,37 +228,33 @@ const AddAnimalModal = (props) => {
             .then((Response) => Response.json())
             .then((result) => {
               if (!result.petId) {
-                console.log(result)
                 toaster.warning('Error with adding pet :(. Error message: ' + result.sqlMessage)
               } else {
-                var num = (vaccineTagNumber == null) ? null : vaccineTagNumber
-                const requestOptions = {
+                for(let x = 0; x<submitVaccine.length; x++){
+                  const requestOptions = {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      speciesName: `${species}`,
-                      vaccineType: `${vaccine}`,
-                      vaccinationNumber: num,
-                      dateAdministered: `${vaccinationDate}`,
-                      expirationDate: `${nextDate}`,
-                      vaccineSubmitter: `${localStorage.getItem('UserName')}`
-                    })
+                    body: JSON.stringify(submitVaccine[x])
                   }
-                  fetch(`http://localhost:4000/animal/${result.petId}/vaccines/add`, requestOptions)
-                    .then((Response) => Response.json())
-                    .then((result) => {
-                      if (result.status != 'success') {
-                        toaster.warning('Error with adding pet :( ')
-                      } else {
-                        toaster.success('Successfully added pet')
-                        window.location.reload();
-                      }
-                    })
-                      
+                  console.log(requestOptions, result.petId)
+                    fetch(`http://localhost:4000/animal/${result.petId}/vaccines/add`, requestOptions)
+                      .then((Response) => Response.json())
+                      .then((result) => {
+                        if (result.status != 'success') {
+                          wait(100)
+                        } else {
+                          wait(100)
+                        }
+                      }).catch((e) => {
+                        console.log("sad")
+                      })
+                  }
+                  toaster.success('Successfully added pet adoption info')
+                  //window.location.reload();    
               }
           })
         }
-
+        setSubmitVaccine([])
         setShowModal(false)
       }}
     >
@@ -489,7 +512,15 @@ const AddAnimalModal = (props) => {
             />
           </Pane>
         </Pane>
+        <Button marginRight="2rem" onClick={() => addVaccine()}>Add vaccine</Button>
+        <Table>
+        <Table.Body>
+              {showRenderVaccineList && renderVaccineList()}
+        </Table.Body>
+        </Table>
       </Pane>
+        
+
     </Dialog>
   )
 }

@@ -60,7 +60,7 @@ const AnimalDashboardFilters = () => {
       </Pane>
       <Pane>
         <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption Application</Button>
-        <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
+        <AddNewAdoptionApplication showModalApp={showModalApp} setShowModalApp={setShowModalApp}/>
       </Pane>
       <Pane marginLeft="auto" display="flex">
         {
