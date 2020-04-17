@@ -28,7 +28,7 @@ const EditAnimalModal = (props) => {
 
   useEffect(() => {
     if(sex == 'Unknown') setShowSex(true)
-    if(microchipId == '' || microchipId == null) setShowMicroID(true)
+    //if(microchipId == '' || microchipId == null) setShowMicroID(true)
     if(alterationStatus == 'false' || alterationStatus == '') setShowAlteration(true)
     if(breeds == 'Mixed' || breeds == 'Unknown') setShowBreed(true)
     getBreeds()
@@ -159,7 +159,6 @@ const EditAnimalModal = (props) => {
             </Pane>
           </Pane>
         }
-        { showMicroID &&
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
               <Heading size={500} marginY="0.5rem">MicrochipID</Heading>
@@ -174,7 +173,6 @@ const EditAnimalModal = (props) => {
               />
             </Pane>
           </Pane>
-        }
         </Pane>
       </Pane>
     </Dialog>

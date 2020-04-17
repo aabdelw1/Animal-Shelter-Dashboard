@@ -19,13 +19,13 @@ const CardPopover = (props) => {
 
   useEffect(() => {
     if(animal.sex == 'Unknown') setShowSex(true)
-    if(animal.microchipId == '' || animal.microchipId == null) setShowMicroID(true)
+    //if(animal.microchipId == '' || animal.microchipId == null) setShowMicroID(true)
     if(animal.alterationStatus == 'false' || animal.alterationStatus == '') setShowAlteration(true)
     if(animal.breeds == 'Mixed' || animal.breeds == 'Unknown') setShowBreed(true)
   }, [])
 
   function showEdit(){
-    if(showSex || showMicroID || showAlteration || showBreed){
+    if(showSex || showAlteration || showBreed){
       return true
     }else{
       return false
@@ -39,9 +39,7 @@ const CardPopover = (props) => {
         content={
           <Menu>
             <Menu.Group>
-              { showEdit() && 
               <Menu.Item onSelect={() => { setEditVisible(true) }} icon="edit" intent="none">Edit <Strong>{animal.name}</Strong>...</Menu.Item>
-              }
               <Link href="/animal/[id]" as={`/animal/${animal.petId}`}><Menu.Item icon="person" intent="none">View Details...</Menu.Item></Link>
             </Menu.Group>
           </Menu>

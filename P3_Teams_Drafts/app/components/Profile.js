@@ -77,7 +77,7 @@ const Profile = (props) => {
 
             <Pane>
               <Button marginRight="2rem" marginY="2rem" onClick={() => { setEditVisible(true) }}>Edit Animal</Button>
-              <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+              <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending' || animal.adoptability == 'Adopted'} onClick={() => setShowModal(true)}>Add Adoption</Button>
               <EditAnimalModal animal={animal} visible={editVisible} setVisible={setEditVisible}/>
               <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
@@ -129,7 +129,7 @@ const Profile = (props) => {
               <Heading size={600}>Vaccinations</Heading>
               {animal &&
              <Pane>
-              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={animal.adoptability == 'Adopted'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
               <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
             </Pane>
             }
