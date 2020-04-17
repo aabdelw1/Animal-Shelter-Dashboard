@@ -54,7 +54,6 @@ const Profile = (props) => {
   return (
     <>
     <Container>
-
       <Pane display="flex" flex="1" flexDirection="row">
         <BackButton intent="none" height={40} onClick={() => Router.back() }/>
       </Pane>
@@ -76,8 +75,10 @@ const Profile = (props) => {
             <Pane marginY="0.75rem"><Icon icon="barcode" color="#425A70" marginY='-0.3rem' marginRight="1rem"/><Text size={500}>{animal.microchipId == '' ? 'None' : animal.microchipId}</Text></Pane>
 
             <Pane>
-              <Button marginRight="2rem" marginY="2rem" onClick={() => { setEditVisible(true) }}>Edit Animal</Button>
-              <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModal(true)}>Add Adoption</Button>
+              <Tooltip content="Editing is restricted after Adoption" position={Position.TOP} isShown={animal.adoptability == 'Adopted' ? null : false}>
+                <Button marginRight="2rem" marginY="2rem" disabled={animal.adoptability == 'Adopted'} onClick={() => { setEditVisible(true) }}>Edit Animal</Button>
+              </Tooltip>
+              <Button marginRight="2rem" marginY="2rem" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending' || animal.adoptability == 'Adopted'} onClick={() => setShowModal(true)}>Add Adoption</Button>
               <EditAnimalModal animal={animal} visible={editVisible} setVisible={setEditVisible}/>
               <AddAdoptionModal showModal={showModal} setShowModal={setShowModal} id={_id}/>
             </Pane>
@@ -129,7 +130,9 @@ const Profile = (props) => {
               <Heading size={600}>Vaccinations</Heading>
               {animal &&
              <Pane>
-              <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={userType == 'Volunteer' || animal.adoptability == 'Pending'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+               <Tooltip content="Can't Add Vaccine if Adopted" position={Position.TOP} isShown={animal.adoptability == 'Adopted' ? null : false}>
+                <Button marginLeft="2rem" marginY="-.3rem" appearance="minimal" disabled={animal.adoptability == 'Adopted'} onClick={() => setShowModalVacc(true)}>Add Vaccine</Button>
+              </Tooltip> 
               <AddVaccineModal showModal={showModalVacc} setShowModal={setShowModalVacc} id={_id} species={animal.species}/>
             </Pane>
             }

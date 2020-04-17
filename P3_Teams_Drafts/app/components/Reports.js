@@ -153,8 +153,8 @@ const Reports = (props) => {
         return (
           <Table.Row>
             <Table.TextCell>{stringDate(yearMonth.toString())}</Table.TextCell>
-            <Table.TextCell><Button appearance="minimal" onClick={() => setFunction(index, 'surrender')}>{surrenders.length > 0 && surrenders[index].length}</Button></Table.TextCell>
-            <Table.TextCell><Button appearance="minimal" onClick={() => setFunction(index, '60')}>{rescuesOver60.length > 0 && rescuesOver60[index].length}</Button></Table.TextCell>
+            <Table.TextCell><Button appearance="minimal" disabled={surrenders.length > 0 && surrenders[index].length === 0} onClick={() => setFunction(index, 'surrender')}>{surrenders.length > 0 && surrenders[index].length}</Button></Table.TextCell>
+            <Table.TextCell><Button appearance="minimal" disabled={rescuesOver60.length > 0 && rescuesOver60[index].length === 0} onClick={() => setFunction(index, '60')}>{rescuesOver60.length > 0 && rescuesOver60[index].length}</Button></Table.TextCell>
           </Table.Row>
         )
       })
@@ -388,6 +388,7 @@ const Reports = (props) => {
                     onSelect={() => {
                       setState({ selectedIndex: index })
                       whenClicked(whenClickedArray[index])
+                      setShowDrillDown(false)
                     }
                     }
                     isSelected={index === state.selectedIndex}
