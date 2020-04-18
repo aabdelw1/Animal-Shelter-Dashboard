@@ -274,7 +274,7 @@ const Reports = (props) => {
       const { yrMonth, species, breedName, adoptionCount, surrenderCount } = student 
       return (
         <Table.Row key={index}>
-          <Table.TextCell>{yrMonth}</Table.TextCell>
+          <Table.TextCell>{yrMonth && stringDate(yrMonth.toString())}</Table.TextCell>
           <Table.TextCell>{species}</Table.TextCell>
           <Table.TextCell>{breedName}</Table.TextCell>
           <Table.TextCell>{adoptionCount}</Table.TextCell>
