@@ -172,9 +172,18 @@ const AddAnimalModal = (props) => {
       vaccineSubmitter: `${localStorage.getItem('UserName')}`
     }
     submitVaccine.push(listOfVaccine)
-    setShowRenderVaccineList(false)
     setShowRenderVaccineList(true)
+    // setShowRenderVaccineList(false)
+    // setShowRenderVaccineList(true)
+    setVaccinationDate('')
+    setNextDate('')
+    setVaccine('')
+    // setVaccineList([])
+    setVaccineTagNumber('')
+
+
   }
+
 
   function renderVaccineList () {
     console.log(submitVaccine)
@@ -371,10 +380,13 @@ const AddAnimalModal = (props) => {
               </Select> */}
             </Pane>
           </Pane>
-          <Pane display="flex" marginBottom="3rem">
-            <Pane display="flex" flexDirection="column">
-              <Text size={400} marginY="0.5rem">Alteration Status *</Text>
-              <Combobox
+            <Pane>
+              {/* <Text size={400} marginY="0.5rem">Alteration Status *</Text> */}
+              <SelectField label="Alteration *" width={70} marginRight="2rem" marginY="0.6rem" value={alterationStatus} onChange={selected =>  setAlterationStatus(selected == 'true' ? 1 : 0)} validationMessage={errors.alterationStatus ? errors.alterationStatus : false}>
+                <option value="Male">True</option>
+                <option value="Female">False</option>
+              </SelectField>
+              {/* <Combobox
                 width={150}
                 openOnFocus
                 marginRight="2rem"
@@ -385,10 +397,9 @@ const AddAnimalModal = (props) => {
                 value={alterationStatus}
                 validationMessage={errors.alterationStatus ? errors.alterationStatus : false}
 
-              />
+              /> */}
               {/* {errors.alterationStatus && <InlineAlert intent="danger">{errors.alterationStatus}</InlineAlert>} */}
             </Pane>
-          </Pane>
           <Pane display="flex" marginBottom="3rem">
             <Pane display="flex" flexDirection="column">
               <TextInputField
@@ -403,18 +414,18 @@ const AddAnimalModal = (props) => {
               />
             </Pane>
           </Pane>
-        </Pane>
-        <Pane display="flex">
-          <Pane display="flex" flexDirection="column">
+          <Pane display="flex" flexDirection="column" marginY="0.5rem">
             <TextInputField
               autoFocus
-              label="Enter Description"
+              label="Description"
               marginRight="2rem"
               value={description}
-              placeholder="Enter Description"
+              placeholder="Animal Description"
               onChange={e => setDescription(e.target.value)}
             />
           </Pane>
+        </Pane>
+        <Pane display="flex">
           <Pane display="flex" flexDirection="column">
             <TextInputField
               label="Surrender Date"
@@ -425,12 +436,11 @@ const AddAnimalModal = (props) => {
               placeholder="YYYY-DD-MM"
               onChange={e => {HandleChange(e);  setSurrenderDate(e.target.value)}}
               validationMessage={errors.surrenderDate ? errors.surrenderDate : false}
-
             />
-            {/* {errors.surrenderDate && <InlineAlert intent="danger">{errors.surrenderDate}</InlineAlert>} */}
           </Pane>
           <Pane display="flex" flexDirection="column">
             <TextInputField
+              width={170}
               required
               autoFocus
               name="surrenderReason"
@@ -440,13 +450,19 @@ const AddAnimalModal = (props) => {
               placeholder="Surrender Reason"
               onChange={e =>  {HandleChange(e);  setSurrenderReason(e.target.value)}}
               validationMessage={errors.surrenderReason ? errors.surrenderReason : false}
-
             />
             {/* {errors.surrenderReason && <InlineAlert intent="danger">{errors.surrenderReason}</InlineAlert>} */}
           </Pane>
+          <Pane marginRight="-12rem">
+            <Text size={400} marginY=".5rem">Animal Control Surrender</Text>
+            <Select width={170} marginY="0.6rem" value={surrenderByAnimalControl} onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}>
+                  <option value="Male">True</option>
+                  <option value="Female">False</option>
+            </Select>
+          </Pane>
         </Pane>
         <Pane display="flex">
-          <Pane display="flex" flexDirection="column" marginY="-0.5rem">
+          {/* <Pane display="flex" flexDirection="column" marginY="-0.5rem">
             <Text size={400} marginY=".5rem">Animal Control Surrender</Text>
             <Combobox
               width={150}
@@ -458,7 +474,7 @@ const AddAnimalModal = (props) => {
               onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}
               value={surrenderByAnimalControl}
             />
-          </Pane>
+          </Pane> */}
           <Pane display="flex" flexDirection="column">
             <Pane>
               <SelectField label="Choose Vaccine" validationMessage={errors.vaccine ? errors.vaccine : false} marginRight="2rem" name='vaccine' value={vaccine} disabled={loading} onChange={e => {HandleChange(e); setVaccine(e.target.value)}}>
@@ -511,13 +527,31 @@ const AddAnimalModal = (props) => {
               onChange={e => setVaccineTagNumber(e.target.value)}
             />
           </Pane>
+          <Button marginRight="2rem" marginY="2.5rem" appearance='minimal' onClick={() => addVaccine()}>Add vaccine</Button>
         </Pane>
-        <Button marginRight="2rem" onClick={() => addVaccine()}>Add vaccine</Button>
-        <Table>
-        <Table.Body>
+        <Pane>
+          <Table>
+            <Table.Body>
+  {/* 
+            { 
+                submitVaccine.length > 0 && 
+                submitVaccine.map((student, index) => {
+                  useEffect(()=> {
+                  return(
+                    <Pane><Text>{student.vaccineType}</Text></Pane>
+                    // <Table.Row>
+                    //   <Table.TextCell>Added: {student.vaccineType}</Table.TextCell>
+                    // </Table.Row>
+                  )
+                }, [showRenderVaccineList, submitVaccine])
+              })
+          } */}
+
               {showRenderVaccineList && renderVaccineList()}
-        </Table.Body>
-        </Table>
+
+          </Table.Body>
+          </Table>
+        </Pane>
       </Pane>
         
 
