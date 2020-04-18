@@ -2,31 +2,33 @@ exports.get_user = function(req, res) {
 
   var params = [];
   var q = `SELECT 
+              u.Username,
+              u.Email_Address,
               u.First_Name,
-              u.Last_Name,
-            FROM Users u
-            WHERE u.Username = ? `
+              u.Last_Name, (CASE 
+              WHEN A.Username = U.Username THEN "Admin"
+              WHEN E.Username = U.Username THEN "Employee"
+              WHEN V.Username = U.Username THEN "Volunteer"
+            END) AS UserType
+            FROM Users AS U JOIN Employees AS E JOIN Admin AS A JOIN Volunteer AS V
+                WHERE U.Username=? AND (E.Username=U.Username OR A.Username=U.Username OR V.Username=U.Username)`
 
   params.push(req.params.username);
 
   db.query(q, params, (err, result) => {
     var users=[];
-
-    if (result!=null) {
-
-      result.forEach(u => {
-        users.push({
-          firstName: u.First_Name,
-          lastName: u.Last_Name
-        });
-      });
-
-      if (users.length!=0) {
-        return res.json(users[0]);
-      }
-
+    console.log(result);
+    if (result!=null && result.length!=0) {
+      return res.json({ 
+        firstName: result[0].First_Name, 
+        lastName: result[0].Last_Name, 
+        userType: result[0].UserType,
+        emailAddress: result[0].Email_Address
+       } );
     }
-    return res.json({});
+    else {
+      return res.json({});
+    }
   });
 };
 
@@ -56,7 +58,7 @@ exports.get_volunteer_hours = function(req, res) {
 exports.get_volunteers = function(req, res) {
 
   var params = [];
-  var q = `SELECT u.First_Name, u.Last_Name, u.Email_Address, v.Phone_Number
+  var q = `SELECT u.Username, u.First_Name, u.Last_Name, u.Email_Address, v.Phone_Number
   FROM Volunteer AS v
   INNER JOIN Users AS u on v.Username = u.Username
   WHERE (1=1) `;
@@ -79,6 +81,7 @@ exports.get_volunteers = function(req, res) {
 
       result.forEach(v => {
         volunteers.push({
+          username: v.Username,
           firstName: v.First_Name,
           lastName: v.Last_Name,
           emailAddress: v.Email_Address,
@@ -90,13 +93,12 @@ exports.get_volunteers = function(req, res) {
   });
 };
 
-
-
 exports.get_password = function(req, res) {
 
   var query = [];
-  var q = ` SELECT Password, (CASE WHEN E.Username = U.Username THEN "Employee"
+  var q = ` SELECT Password, (CASE 
               WHEN A.Username = U.Username THEN "Admin"
+              WHEN E.Username = U.Username THEN "Employee"
               WHEN V.Username = U.Username THEN "Volunteer"
             END) AS UserType
             FROM Users AS U JOIN Employees AS E JOIN Admin AS A JOIN Volunteer AS V
@@ -119,7 +121,7 @@ exports.get_password = function(req, res) {
         return res.json(password);
       }
     }
-    return res.json({});
+    return res.json('User not found');
   });
 };
 

@@ -9,9 +9,10 @@ const db = mysql.createConnection ({
     host: 'localhost',
     user: 'gatechUser',
     password: 'gatech123',
-    database: 'cs6400_sp20_team054'
+    database: 'cs6400_sp20_team054',
+    multipleStatements: true
 });
-
+ 
 // connect to database
 db.connect((err) => {
     if (err) {
@@ -28,6 +29,6 @@ app.use(cors())
 var routes = require('./routes'); //importing route
 routes(app); //register the routes
 
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
+app.listen(4000, () => { 
+    console.log("Server running on port 4000");
 });

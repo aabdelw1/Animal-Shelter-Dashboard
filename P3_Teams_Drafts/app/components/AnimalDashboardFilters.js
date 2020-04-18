@@ -1,39 +1,77 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Select, Button, Pane, Tooltip, Position, toaster, TextInput, SearchInput } from 'evergreen-ui'
+import { Select, Button, Pane, Spinner, Tooltip, Position, toaster, TextInput, SearchInput, Badge, Link, Avatar, Text } from 'evergreen-ui'
 import PropTypes from 'prop-types'
 import AddAnimalModal from './AddAnimalModal'
+import AddNewAdoptionApplication from './AddNewAdoptionApplication'
 import { Context } from './Context'
+import { useRouter } from 'next/router'
 
-const AnimalDashboardFilters = (props) => {
-  const { scheduleButton } = props
+const AnimalDashboardFilters = () => {
+  const router = useRouter()
   const [showModal, setShowModal] = useState(false)
-  const [,,,,,, date, setDate, specialty, setSpecialty, acceptance, setAcceptance, duration, setDuration, , setReset, candidate, setCandidate, position, setPosition] = useContext(Context)
-  // const debouncedCandidate = useDebounce(candidate, 0.0001)
+  const [showModalApp, setShowModalApp] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [speciesList, setSpeciesList] = useState([{ label: 'Loading ...', value: '' }])
+  const [inShelterCount, setInShelterCount] = useState([{ label: 'Loading ...', value: '' }])
+  const [userType, setUserType, species, setSpecies, adoptionStatus, setAdoptionStatus] = useContext(Context)
 
+  const getSpecies = async () => {
+    const response = await fetch('http://localhost:4000/species', { method: 'get' })
+    const result = await response.json()
+    setLoading(false)
+    var newList = []
+    var countList = []
+    var animalList = []
+    for (var x = 0; x < result.length; x++) {
+      newList[x] = result[x].name
+      if (result[x].maxPerShelter > result[x].countWaitingAdoption) {
+        animalList[x] = [result[x].name, (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption), result[x].maxPerShelter]
+        countList[x] = (result[x].name + ' Space Left: ' + (result[x].maxPerShelter - result[x].countWaitingAdoption - result[x].countNotReadyForAdoption))
+      }
+    }
+    const list = newList.map(name => { return { label: name, value: name } })
+    const count = countList.map(name => { return { label: name, value: name } })
+    setSpeciesList(list)
+    setInShelterCount(animalList)
+  }
   useEffect(() => {
-    setReset(true)
-  }, [date, specialty, acceptance, duration])
+    if (localStorage.getItem('userType') != userType) setUserType(localStorage.getItem('userType'))
+    getSpecies()
+  }, [])
 
   return (
     <Pane display="flex" marginY='2rem'>
       <Pane>
-        <SearchInput width="20rem" marginRight="2rem" placeholder="Search for an Animal..." />
-      </Pane>
-      <Pane>
-        <Select marginRight="2rem" value={specialty} onChange={e => setSpecialty(e.target.value)}>
-          <option value="Dogs" defaultValue>Dogs</option>
-          <option value="Cats">Cats</option>
+        <Select marginRight="2rem" value={species} disabled={loading} onChange={e => setSpecies(e.target.value)}>
+          <option value="All" defaultValue>{loading ? 'Loading' : 'All Species'}</option>
+          {speciesList.map(({ label, value }) => <option key={value} value={value}>{label}</option>)}
         </Select>
       </Pane>
       <Pane>
-        <Select marginRight="2rem" value={acceptance} onChange={e => setAcceptance(e.target.value)}>
-          <option value="All Breeds" defaultValue>All Breeds</option>
-          <option value="Some Other Breeds">Some Other Breeds</option>
+        <Select marginRight="2rem" value={adoptionStatus} onChange={e => setAdoptionStatus(e.target.value)}>
+          <option value="All" defaultValue>All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Ready">Ready</option>
         </Select>
       </Pane>
       <Pane>
-        <Button marginRight="2rem" onClick={() => setShowModal(true)}>Add Animal</Button>
+        { userType != 'Volunteer' && <Button marginRight="2rem" disabled={userType == 'Volunteer'} onClick={() => setShowModal(true)}>Add Animal</Button> }
         <AddAnimalModal showModal={showModal} setShowModal={setShowModal}/>
+      </Pane>
+      <Pane>
+        <Button marginRight="2rem" onClick={() => setShowModalApp(true)}>New Adoption Application</Button>
+        <AddNewAdoptionApplication showModal={showModalApp} setShowModal={setShowModalApp}/>
+      </Pane>
+      <Pane marginLeft="auto" display="flex">
+        {
+          userType == 'Admin' &&
+          inShelterCount.map((label, value) => {
+            return <Pane display="flex" flexDirection="row">
+              <Avatar src={label[0] == 'Dog' ? '/static/dog-face.png' : '/static/cat-face.png'} size={20} marginRight={'0.5rem'} marginLeft={'1rem'}/>
+              <Text>: { (label[1] <= 0) ? "No Space" : label[1] +'/'+label[2] }</Text>
+            </Pane>
+          })
+        }
       </Pane>
     </Pane>
   )
@@ -48,23 +86,6 @@ AnimalDashboardFilters.propTypes = {
   scheduleButton: PropTypes.bool,
   duration: PropTypes.string,
   setDuration: PropTypes.string
-}
-
-function useDebounce (value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value)
-
-  useEffect(
-    () => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value)
-      }, delay)
-      return () => {
-        clearTimeout(handler)
-      }
-    },
-    [value]
-  )
-  return debouncedValue
 }
 
 export default AnimalDashboardFilters

@@ -1,27 +1,20 @@
-DROP DATABASE -- IF EXISTS 
-cs6400_sp20_team054;
-SET default_storage_engine=InnoDB;
-SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-CREATE DATABASE IF NOT EXISTS cs6400_sp20_team054
-   DEFAULT CHARACTER SET utf8mb4
-   DEFAULT COLLATE utf8mb4_unicode_ci;
-USE cs6400_sp20_team054;
-
-/*
-DROP USER gatechUser@localhost;
-CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED WITH mysql_native_password BY 'gatech123';
-GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO 'gatechUser'@'localhost';
-GRANT ALL PRIVILEGES ON `gatechuser`.* TO 'gatechUser'@'localhost';
-GRANT ALL PRIVILEGES ON `cs6400_fa17_team001`.* TO 'gatechUser'@'localhost';
-FLUSH PRIVILEGES;
-*/
-
--- Tables
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS VaccineAdministration;
+DROP TABLE IF EXISTS AnimalBreeds;
+DROP TABLE IF EXISTS Animal;
+DROP TABLE IF EXISTS AdoptionApplication;
+DROP TABLE IF EXISTS Adopter;
+DROP TABLE IF EXISTS Breed;
+DROP TABLE IF EXISTS Employees;
+DROP TABLE IF EXISTS Vaccine;
+DROP TABLE IF EXISTS VolunteerHours;
+DROP TABLE IF EXISTS Volunteer;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Species;
 
 CREATE TABLE Adopter (
   Email_Address VARCHAR(250) NOT NULL,
-  Phone_Number INT NOT NULL,
+  Phone_Number VARCHAR(20) NOT NULL,
   Street VARCHAR(50) NOT NULL,
   City VARCHAR(50) NOT NULL,
   State VARCHAR(50) NOT NULL,
@@ -83,7 +76,7 @@ CREATE TABLE Animal (
   Microchip_ID VARCHAR(15) DEFAULT NULL,
   Sex ENUM ('Male','Female','Unknown') NOT NULL,
   Alteration_Status BOOLEAN NOT NULL,
-  Surrender_Reason VARCHAR(45) NOT NULL,
+  Surrender_Reason VARCHAR(200) NOT NULL,
   Surrender_By_Animal_Control BOOLEAN DEFAULT (0),
   Surrender_Date DATE NOT NULL,
   Surrender_Submitter VARCHAR(250) NOT NULL,
@@ -130,8 +123,6 @@ CREATE TABLE Vaccine (
    PRIMARY KEY (Species_Name,Vaccine_Type)
 );
 
--- Constraints   Foreign Keys: FK_ChildTable_childColumn_ParentTable_parentColumn
-
 ALTER TABLE VolunteerHours
   ADD CONSTRAINT fk_VolunteerHours_Username_Volunteer_Username
   FOREIGN KEY (Username) REFERENCES Volunteer(Username);
@@ -167,6 +158,9 @@ ALTER TABLE Animal
 ALTER TABLE Animal
   ADD CONSTRAINT fk_Animal_Surrender_Submitter_Users_Username
   FOREIGN KEY (Surrender_Submitter) REFERENCES Users(Username);
+
+ALTER TABLE Animal
+  ADD CONSTRAINT UC_Microchip_ID UNIQUE (Microchip_ID);
 
 ALTER TABLE Admin
   ADD CONSTRAINT fk_Admin_Username_Users_Username

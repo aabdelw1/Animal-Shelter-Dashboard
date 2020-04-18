@@ -1,0 +1,148 @@
+##TEAM 054 - SQL
+
+*sql/team054_p3_schema.sql - Contains all create statements for the team054_p3_schema
+
+*api/adopterController.js
+
+    //Get approved adoption applications from specific applicants
+        exports.get_approved_applications
+
+    //Insert new adoption application
+        exports.post_new_adoption_application
+
+    //Insert new adopter
+        exports.post_new_adopter
+
+    //Get if adopter exists in DB
+        exports.get_adopter 
+
+    //Get application number from recently entered application
+        exports.get_applications_number
+
+    //Get applications pending approval
+        exports.get_applications_pending_approval
+
+    //Update adoption application status as 'Approve'
+        exports.put_application_status_approve
+
+    //Update adoption application status as 'Reject'
+        exports.put_application_status_reject
+
+*api/adoptionReportController
+
+    //Get monthly adoption report
+        exports.get_adoption_report
+
+*api/animalController
+
+    //Get all breeds from a selected pet
+        exports.get_breeds 
+
+    //Get all administired vaccines from a selected pet
+        exports.get_vaccines
+
+    //Get Information from a vaccine administered to a selected pet
+        exports.get_vaccine 
+
+    //Get all information for animal details from a selected pet
+        exports.get_animal
+
+    //Add Animal to Shelter
+        exports.add_animal
+
+    //Add Breed(s) to new animal in the Shelter
+        async function addBreeds(petId,breeds)
+
+    //Add Vaccine Administration to an animal
+        exports.add_vaccine
+
+    //Update animal information with adoption information
+    exports.put_animal_adoption_information 
+
+    //Update Animal information: Alteration Status, Sex, Microchip Id, or Breeds
+        exports.put_update_animal_information
+
+    //Update Breeds for already existing animals 
+        async function updateBreeds
+
+*api/AnimalsController
+
+    //List all animals in the shelter for Animal Dashboard, accepting filtering criteria
+        exports.list_all_animals
+
+    //Get animal control report
+        exports.get_animal_control_report
+
+    //Get listing of animals surrendered by Animal Control
+        exports.get_report_animal_control_surrenders 
+
+    //Get listing of animals adopted over 60 days
+        exports.get_report_animal_adopted_over_60_days
+
+*api/breedController
+
+    //Get List of Breeds for selected species to fill dropdown
+        exports.list_breeds 
+
+*api/initController
+
+    //Load Data for Demo
+        exports.load_data 
+
+    //Execute SQL files to load Data
+        async function executeSqlFile(filename)
+
+    //Load Vaccine Data
+        async function loadVaccines()
+
+    //Load Volunteer Hours Data
+        async function loadVolunteerHours()
+
+    //Load Animal Data
+        async function loadAnimals()
+
+    //Load Adopters Data
+        async function loadAdopters() 
+
+    //Load Adoption Information
+        async function loadAdoptions() 
+
+    //Load Adoption Application Data
+        async function loadApplications()
+
+    //Load Users Data
+        async function loadUsers()
+
+*api/speciesController
+    //Get all species, max per shelter, number currently in the shelter, and number of those already adopted
+        exports.list_species 
+
+    //Gets list of all vaccines for a specific species
+        exports.list_species_vaccines
+
+*api/userController
+
+    //Gets specific user's information, including type of user
+        exports.get_user
+
+    //Get number of hours and date from specific Volunteer
+        exports.get_volunteer_hours
+
+    //Get volunteer list based on search input 
+        exports.get_volunteers
+
+    //Get credentials to validate, along with user type
+        exports.get_password
+
+    //Get Year and Month containing volunteer hours
+        exports.get_months_with_volunteer_hours
+
+    //Get top 5 volunteers of the month 
+        exports.get_volunteer_of_the_month
+
+*api/vaccineController
+    //Get Vaccine Reminder report
+        exports.get_vaccine_reminder_report
+
+    //Get list of vaccines a specific pet can be administired at that moment 
+        exports.get_eligible_vaccines_for_Pet

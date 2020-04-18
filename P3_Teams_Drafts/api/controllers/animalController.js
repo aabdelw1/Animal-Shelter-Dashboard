@@ -1,72 +1,3 @@
-exports.list_all_animals = function(req, res) {
-
-  var params = [];
-  var q = `SELECT
-              Animal.Pet_ID, 
-              Animal.Name, 
-              Animal.Species, 
-              GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
-              Animal.Sex, 
-              Animal.Alteration_Status, 
-              Animal.Age
-            FROM Animal NATURAL JOIN AnimalBreeds 
-            LEFT JOIN AdoptionApplication ON 
-              Animal.Adoption_Application_Number=AdoptionApplication.Application_Number
-            WHERE Adoption_Date IS NULL `
-
-  if (req.query.species != null) {
-    q = q + ' AND Animal.Species = ? ';
-    params.push(req.query.species);
-  }
-  if (req.query.adoptability != null) {
-    if(req.query.adoptability == 'Ready'){
-      q = q + ' AND Alteration_Status = 1 ';
-    }
-    else if(req.query.adoptability == 'Pending'){
-      q = q + ' AND Alteration_Status = 0 ';
-    }
-  }
-  q = q + ` GROUP BY   
-              Animal.Pet_ID, 
-              Animal.Name, 
-              Animal.Species, 
-              Animal.Sex, 
-              Animal.Alteration_Status, 
-              Animal.Age,
-              AdoptionApplication.State;`;
-
-  db.query(q, params, (err, result) => {
-    var animals=[];
-
-    if (result!=null) {
-
-      result.forEach(a => {
-        animals.push({
-          petId: a.Pet_ID,
-          name: a.Name,
-          description: a.Description,
-          species: a.Species,
-          breeds: a.Breed_Name,
-          sex: a.Sex,
-          alterationStatus: a.Alteration_Status,
-          age: a.Age,
-          adoptability: a.Adoptability_Status
-          //surrenderDate: a.Surrender_Date,
-          //surrenderReason: a.Surrender_Reason,
-          //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
-          //adoptionDate: a.Adoption_Date,
-          //adoptionFee: a.Adoption_Fee,
-          //adoptionApplicationNumber: a.Adoption_Application_Number
-        });
-      });
-
-    }
-
-    return res.json(animals);
-  });
-};
-
-
 exports.get_breeds = function(req, res) {
 
   var params = [];
@@ -152,40 +83,67 @@ exports.get_vaccine = function(req, res) {
 exports.get_animal = function(req, res) {
 
   var params = [];
-  var q = `SELECT
+  var q = ` SELECT
               Animal.Pet_ID, 
               Animal.Name, 
               Animal.Species, 
               GROUP_CONCAT(AnimalBreeds.Breed_Name ORDER BY AnimalBreeds.Breed_Name SEPARATOR '/') as Breed_Name,
               Animal.Sex, 
               Animal.Alteration_Status, 
-              Animal.Age,
-              AdoptionApplication.State as Adoptability_Status
-            FROM Animal 
-            INNER JOIN AnimalBreeds ON Animal.Pet_ID = AnimalBreeds.Pet_ID
-            LEFT JOIN AdoptionApplication ON Animal.Adoption_Application_Number = AdoptionApplication.Application_Number
-            WHERE Animal.Pet_ID = ? `
+              (Animal.Age + (TIMESTAMPDIFF(MONTH,Animal.Surrender_Date, CURDATE())))  AS Age,
+              Animal.Description,
+              Animal.Microchip_ID,
+              Animal.Surrender_Reason,
+              Animal.Surrender_By_Animal_Control,
+              Animal.Surrender_Date,
+              Animal.Surrender_Submitter,
+              Animal.Adoption_Date,
+              Animal.Adoption_Fee,
+              Animal.Adoption_Application_Number,
+              Adoptability.Adoptability_Status 
+            FROM 
+            Animal
+            NATURAL JOIN (
+              select a.Pet_ID,
+                case
+                when ((count(v.vaccine_type) =sum(case when va.pet_id is null then 0 else 1 end)) and 
+                a.alteration_status=1 and
+                a.adoption_application_number is null) then 'Ready'
+                when a.adoption_application_number then 'Adopted'
+                else 'Pending'
+              end as Adoptability_Status
+              from animal a
+              inner join vaccine v on 
+              v.species_name=a.species and require_for_adoption=1
+              left join vaccineadministration va on 
+              va.vaccine_type=v.vaccine_type and a.pet_id=va.pet_id
+              group by a.pet_id 
+            ) Adoptability 
+            NATURAL JOIN AnimalBreeds
+          WHERE Animal.Pet_ID = ? `
   params.push(req.params.animalId);
 
   db.query(q, params, (err, result) => {
     if (result!=null && result.length>0) {
       var a = result[0];
       return res.json({
-          petId: a.Pet_ID,
-          name: a.Name,
-          description: a.Description,
-          species: a.Species,
-          breeds: a.Breed_Name,
-          sex: a.Sex,
-          alterationStatus: a.Alteration_Status,
-          age: a.Age,
-          adoptability: a.Adoptability_Status
-          //surrenderDate: a.Surrender_Date,
-          //surrenderReason: a.Surrender_Reason,
-          //surrenderByAnimalControl: a.Surrender_By_Animal_Control,
-          //adoptionDate: a.Adoption_Date,
-          //adoptionFee: a.Adoption_Fee,
-          //adoptionApplicationNumber: a.Adoption_Application_Number
+            petId: a.Pet_ID,
+            name: a.Name,
+            species: a.Species,
+            breeds: a.Breed_Name,  
+            sex: a.Sex,
+            alterationStatus: a.Alteration_Status,
+            age: a.Age,
+            adoptability: a.Adoptability_Status,
+            microchipId: a.Microchip_ID,
+            description: a.Description,
+            surrenderReason: a.Surrender_Reason,
+            surrenderByAnimalControl: a.Surrender_By_Animal_Control,
+            surrenderDate: a.Surrender_Date,
+            surrenderSubmitter: a.Surrender_Submitter,
+            adoptionDate: a.Adoption_Date,
+            adoptionFee: a.Adoption_Fee,
+            adoptionApplicationNumber: a.Adoption_Application_Number
         });
     }
     
@@ -233,7 +191,6 @@ exports.add_animal = function(req, res) {
     {
       db.query('SELECT LAST_INSERT_ID() as id;', null, (err, result) => {
         var response = { petId:result[0].id };
-        console.log("petId: "+response.petId);
         if (req.body.breeds!=null) {
           var breeds = req.body.breeds.split(',');
           addBreeds(response.petId, breeds);
@@ -254,14 +211,71 @@ exports.add_animal = function(req, res) {
 
 async function addBreeds(petId,breeds)
 {
-  for (let i=0; i<breeds.length; i++)
+  var mixedUnknown=false;
+
+  for (let j=0; j<breeds.length; j++)
   {
-    var breed=breeds[i];
-    var params=[];
-    params.push(petId);
-    params.push(breed);
-    await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+    {
+      mixedUnknown=true;
+      var breed=breeds[j];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+      break;
+    }
   }
+
+  if(mixedUnknown==false)
+  {
+    for (let i=0; i<breeds.length; i++)
+    {
+      var breed=breeds[i];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    }
+  }
+}
+
+exports.add_vaccine = function(req, res) {
+  console.log("add_vaccine:");
+  console.log(req.body);
+  res.setHeader('Content-Type', 'application/json');
+
+  var params = [];
+  var q = `INSERT INTO VaccineAdministration
+          (Pet_ID,
+          Species_Name,
+          Vaccine_Type,
+          Vaccination_Number,
+          Date_Administired,
+          Expiration_Date,
+          Vaccine_Submitter)
+          VALUES
+            (?,?,?,?,?,?,?);`;
+
+  params.push(req.params.animalId);
+  params.push(req.body.speciesName);
+  params.push(req.body.vaccineType);
+  params.push(req.body.vaccinationNumber);
+  params.push(req.body.dateAdministered);
+  params.push(req.body.expirationDate);
+  params.push(req.body.vaccineSubmitter);
+
+  db.query(q, params, (err, result) => {
+    if (err==null)
+    {
+      console.log("vaccine administration added");
+      res.json({status:"success"})
+    } else {
+      res.status(500);
+      console.log(err);
+      res.end(JSON.stringify(err, null, 2));
+    }
+  });  
 }
 
 exports.put_animal_adoption_information = function(req, res) {
@@ -273,178 +287,118 @@ exports.put_animal_adoption_information = function(req, res) {
   params.push(req.body.applicationNumber);
   params.push(req.body.adoptionDate);
   params.push(req.body.adoptionFee);
-  params.push(req.params.petID);
+  params.push(req.params.PetID);
 
   db.query(q, params, (err, results) => {
-     if(err) throw err;
-    //console.log("1 record inserted"); 
-     res.send('Animal Adoption Information Updated');
-  });
-};
-
-/*
-
-
-SELECT 
-    dates.Yr_Month,
-    SUM(CASE 
-                 WHEN Surrender_By_Animal_Control=1 AND 
-                     EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
-                 ELSE 0 END) as Surrender_By_Animal_Control_Count,
-    SUM(CASE 
-                 WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
-                 ELSE 0 END) as Rescue_Over_60_Count       
-FROM 
-(
-	-- Based on concepts from:
-	-- https://stevestedman.com/2013/06/recursive-cte-for-dates-in-a-year/
-	WITH RECURSIVE dates as (
-		SELECT date_add(CURDATE(), interval -6 month) as dt -- start
-		UNION ALL
-		SELECT date_add(dt, interval 1 month) as dt
-		FROM dates
-		WHERE dt < CURDATE() -- end
-	) 
-	SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
-	FROM dates
-	WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
-) dates
-inner join Animal a on 
-    (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
-           a.Surrender_By_Animal_Control=1) 
-       OR
-    (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
-    DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
-group by dates.Yr_Month;
-
-*/
-
-exports.get_animal_control_report = function(req, res) {
-
-  var params = [];
-  var q = ` SELECT 
-            dates.Yr_Month,
-            SUM(CASE 
-                        WHEN Surrender_By_Animal_Control=1 AND 
-                            EXTRACT(YEAR_MONTH FROM a.Surrender_Date)=dates.yr_month THEN 1
-                        ELSE 0 END) as Surrender_By_Animal_Control_Count,
-            SUM(CASE 
-                        WHEN EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month THEN 1
-                        ELSE 0 END) as Rescue_Over_60_Count       
-          FROM 
-          (
-            WITH RECURSIVE dates as (
-              SELECT date_add(CURDATE(), interval -6 month) as dt
-              UNION ALL
-              SELECT date_add(dt, interval 1 month) as dt
-              FROM dates
-              WHERE dt < CURDATE() 
-          ) 
-          SELECT EXTRACT(YEAR_MONTH FROM dt) as yr_month
-          FROM dates
-          WHERE dt between date_add(CURDATE(), interval -5 month) and CURDATE()
-          ) dates
-          inner join Animal a on 
-            (EXTRACT(YEAR_MONTH FROM a.Surrender_date)=dates.yr_month AND 
-                  a.Surrender_By_Animal_Control=1) 
-              OR
-            (EXTRACT(YEAR_MONTH FROM a.Adoption_Date)=dates.yr_month AND
-            DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60)
-          group by dates.Yr_Month;`
-  
-  //params.push(req.params.YearMonth);            
-
-  db.query(q, params, (err, results) => {
-      var yearMonth=[];
-
-      if(results!=null) {
-          results.forEach(a => {
-            yearMonth.push({
-                  yearMonth: a.yr_month,
-              });
-          });
+      if (err==null){
+        console.log(results); 
+        res.send('Animal Adoption Information Updated');
+      } else {
+        res.status(500);
+        console.log(err);
+        res.end(JSON.stringify(err, null, 2));
       }
-      return res.json(yearMonth);
   });
 };
 
-
-  //24
-exports.get_report_animal_control_surrenders = function(req, res) {
-
-  var params = [];
-  var q = ` SELECT 
-              a.Pet_ID, Species, 
-              GROUP_CONCAT(Breed_Name ORDER BY Breed_Name SEPARATOR '/') as Breed_Name,
-              Alteration_Status, Microchip_ID, Sex, Surrender_Date
-            FROM Animal AS a
-            INNER JOIN AnimalBreeds AS breeds on a.Pet_ID=breeds.Pet_ID
-            WHERE 
-            Surrender_By_Animal_Control=1 AND 
-            EXTRACT(YEAR_MONTH FROM a.Surrender_Date)= ?
-            group by a.Pet_ID, Species, Alteration_Status, Microchip_ID, Sex, Surrender_Date
-            order by a.Pet_ID;`
+exports.put_update_animal_information = function(req, res) {
+  // console.log("update_animal:");
+  // console.log(req.body);
+  // res.setHeader('Content-Type', 'application/json');
+ 
+   var params = [];
+   var q = ` `; 
+ 
+   if (req.body.sex != null) {
+     q = q +`UPDATE IGNORE Animal
+     SET   Sex = ?
+     WHERE Pet_ID = ? ; `;
+     params.push(req.body.sex);
+     params.push(req.params.PetID);
+   }
+ 
+   if (req.body.alterationStatus != null) {
+     q = q +`UPDATE  IGNORE  Animal
+     SET   Alteration_Status = ?
+     WHERE Pet_ID = ? ; `;
+     params.push(req.body.alterationStatus);
+     params.push(req.params.PetID);
+   }
   
-  params.push(req.params.YearMonth);            
+   if (req.body.microchipID != null) {
+     q = q +`UPDATE IGNORE  Animal
+     SET   Microchip_ID = ?
+     WHERE Pet_ID = ? ; `;
+     params.push(req.body.microchipID);
+     params.push(req.params.PetID);
+   }
+ 
+   if (req.body.breeds != null) {
+     var breeds = req.body.breeds.split(',');
+     var breed=breeds[0];
 
-  db.query(q, params, (err, results) => {
-      var controlSurrenders=[];
+     var mixedUnknown=false;
 
-      if(results!=null) {
-          results.forEach(a => {
-            controlSurrenders.push({
-              petID: a.Pet_ID,
-              species: a.Species,
-              breedName: a.Breed_Name,
-              alterationStatus: a.Alteration_Status,
-              microchipID: a.Microchip_ID,
-              sex: a.Sex,
-              surrenderDate: a.Surrender_Date
-              });
-          });
+     for (let j=0; j<breeds.length; j++)
+     {
+       if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+       {
+         mixedUnknown=true;
+       }
+     }
+
+     if(mixedUnknown==false)
+      {
+        q = q +`  UPDATE IGNORE AnimalBreeds
+        SET Breed_Name = ?
+        WHERE Pet_ID = ? ; `;
+        params.push(breed);
+        params.push(req.params.PetID);
+     }
+   }
+    
+   db.query(q, params, (err, results) => {
+    if (err==null){
+      if (req.body.breeds != null) {
+        res.status(200);
+        var breeds = req.body.breeds.split(',');
+        updateBreeds(req.params.PetID, breeds);
+        res.status(200);
       }
-      return res.json(controlSurrenders);
+      console.log(results); 
+      res.send('Animal Information Updated');
+    } else {
+      res.status(500);
+      console.log(err);
+      res.end(JSON.stringify(err, null, 2));
+    }
+
   });
-};
+ }
 
-//25
-exports.get_report_animal_adopted_over_60_days = function(req, res) {
-  var params = [];
-  var q = ` SELECT 
-              a.Pet_ID, Species, 
-              GROUP_CONCAT(Breed_Name ORDER BY Breed_Name SEPARATOR '/') as Breed_Name,
-              Alteration_Status, Microchip_ID, Sex, Surrender_Date, Adoption_Date,
-              DATEDIFF(a.Adoption_Date,a.Surrender_Date) as Days_To_Rescue
-            FROM Animal AS a
-            INNER JOIN AnimalBreeds AS breeds on a.Pet_ID=breeds.Pet_ID
-            WHERE 
-              DATEDIFF(a.Adoption_Date,a.Surrender_Date)>=60 AND
-              EXTRACT(YEAR_MONTH FROM a.Adoption_Date)= ?
-            GROUP BY 
-              a.Pet_ID, Species, Alteration_Status, Microchip_ID, Sex, 
-              Surrender_Date, Adoption_Date
-            ORDER BY DATEDIFF(a.Adoption_Date,a.Surrender_Date) DESC;`
-  
-  params.push(req.params.YearMonth);            
+async function updateBreeds(petId,breeds)
+{
 
-  db.query(q, params, (err, results) => {
-      var animalsList=[];
+  var mixedUnknown=false;
 
-      if(results!=null) {
-          results.forEach(a => {
-            animalsList.push({
-              petID: a.Pet_ID,
-              species: a.Species,
-              breedName: a.Breed_Name,
-              alterationStatus: a.Alteration_Status,
-              microchipID: a.Microchip_ID,
-              sex: a.Sex,
-              surrenderDate: a.Surrender_Date,
-              adoptionDate: a.Adoption_Date,
-              daysToRescue: a.Days_To_Rescue
-              });
-          });
-      }
-      return res.json(animalsList);
-  });
-};
+  for (let j=0; j<breeds.length; j++)
+  {
+    if(breeds[j] == 'Mixed' || breeds[j] == 'Unknown')
+    {
+      mixedUnknown=true;
+      break;
+    }
+  }
+
+  if(mixedUnknown==false)
+  {
+    for (let i=1; i<breeds.length; i++)
+    {
+      var breed=breeds[i];
+      var params=[];
+      params.push(petId);
+      params.push(breed);
+      await db.query("INSERT IGNORE INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+    }
+  }
+}

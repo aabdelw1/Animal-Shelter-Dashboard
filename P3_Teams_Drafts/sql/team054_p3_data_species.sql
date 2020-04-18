@@ -1,0 +1,1 @@
+INSERT INTO Species(Name,Max_Per_Shelter) VALUES ('Cat',30),('Dog',15);

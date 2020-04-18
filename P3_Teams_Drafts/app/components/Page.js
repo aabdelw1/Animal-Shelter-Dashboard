@@ -4,6 +4,7 @@ import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
 import Header from './Header'
 import Meta from './Meta'
 import Footer from './Footer'
+import { ContextProvider } from '../components/Context'
 
 const theme = {
   blue: '#009FDB',
@@ -40,17 +41,19 @@ const GlobalStyle = createGlobalStyle`
 class Page extends Component {
   render () {
     return (
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <StyledPage>
-          <Meta />
-          <Header />
-          <Content>
-            {this.props.children}
-          </Content>
-          <Footer />
-        </StyledPage>
-      </ThemeProvider>
+      <ContextProvider>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <StyledPage>
+            <Meta />
+            <Header />
+            <Content>
+              {this.props.children}
+            </Content>
+            <Footer />
+          </StyledPage>
+        </ThemeProvider>
+      </ContextProvider>
     )
   }
 }

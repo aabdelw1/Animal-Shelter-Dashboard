@@ -4,13 +4,14 @@ exports.get_approved_applications = function(req, res) {
     var q = `SELECT Application_Number, Applicant_First_Name, Applicant_Last_Name, Street,
     City, Adopter.State, ZIPCode, Phone_Number, Adopter.Email_Address, CoApplicant_First_Name, CoApplicant_Last_Name
     FROM Adopter INNER JOIN AdoptionApplication ON Adopter.Email_Address = AdoptionApplication.Email_Address
-    WHERE AdoptionApplication.State= 'Approved' AND (Applicant_Last_Name LIKE  ?) AND (CoApplicant_Last_Name LIKE ?) AND Application_Number NOT IN
+    WHERE AdoptionApplication.State= 'Approved' AND ((Applicant_Last_Name LIKE  ?) OR (CoApplicant_Last_Name LIKE ?)) AND Application_Number NOT IN
               (SELECT Adoption_Application_Number
               FROM Animal
               WHERE Adoption_Application_Number IS NOT NULL)`
     
     params.push('%' + req.query.applicantLastName + '%');
-    params.push('%' + req.query.coApplicantLastName + '%');
+    params.push('%' + req.query.applicantLastName + '%');
+    //params.push('%' + req.query.coApplicantLastName + '%');
  
     db.query(q, params, (err, results) => {
         var approvedApplications=[];
@@ -48,9 +49,14 @@ exports.post_new_adoption_application = function(req, res) {
     params.push(req.body.coApplicantLastName);
 
     db.query(q, params, (err, results) => {
-       if(err) throw err;
+        if (err==null){
+            res.send('Success!');
+        } else {
+            res.status(500);
+            console.log(err);
+            res.end(JSON.stringify(err, null, 2));
+          }
       //console.log("1 record inserted"); 
-       res.send('Success!');
     });
 
 };
@@ -58,7 +64,7 @@ exports.post_new_adoption_application = function(req, res) {
 exports.post_new_adopter = function(req, res) {
 
     var params = [];
-    var q = `INSERT INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
+    var q = `INSERT IGNORE INTO Adopter (Email_Address, Phone_Number, Street, City, State, ZIPCode, Applicant_First_Name, Applicant_Last_Name)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     
     params.push(req.body.emailAddress);
@@ -71,9 +77,14 @@ exports.post_new_adopter = function(req, res) {
     params.push(req.body.applicantLastName);
 
     db.query(q, params, (err, results) => {
-       if(err) throw err;
-      //console.log("1 record inserted"); 
-       res.send('Success');
+        if (err==null){
+         //console.log("1 record inserted"); 
+            res.send('Success');
+        } else {
+            res.status(500);
+            console.log(err);
+            res.end(JSON.stringify(err, null, 2));
+        }
     });
 };
 
@@ -168,9 +179,14 @@ exports.put_application_status_approve = function(req, res) {
     params.push(req.params.applicationNumber);
 
     db.query(q, params, (err, results) => {
-       if(err) throw err;
+        if (err==null){
       //console.log("1 record inserted"); 
-       res.send('Approved');
+            res.send('Approved');
+        } else {
+            res.status(500);
+            console.log(err);
+            res.end(JSON.stringify(err, null, 2));
+        }
     });
 };
 
@@ -183,8 +199,13 @@ exports.put_application_status_reject = function(req, res) {
     params.push(req.params.applicationNumber);
 
     db.query(q, params, (err, results) => {
-       if(err) throw err;
+        if (err==null){
       //console.log("1 record inserted"); 
-       res.send('Rejected');
+            res.send('Rejected');
+        } else {
+            res.status(500);
+            console.log(err);
+            res.end(JSON.stringify(err, null, 2));
+        }
     });
 };

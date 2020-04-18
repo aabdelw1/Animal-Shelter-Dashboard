@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Pane, Text, Icon, Spinner } from 'evergreen-ui'
+import { Pane, Text, Icon, Spinner, Table, Popover, Menu, Position } from 'evergreen-ui'
 import { Context } from './Context'
-
-const _ = require('lodash')
+import AnimalCard from './AnimalCard'
+import AdoptionCard from './AdoptionCard'
 
 const ColumnContainer = styled.div`
   flex: 1;
@@ -24,47 +24,50 @@ const ColumnContainer = styled.div`
 `
 
 const AnimalDashboardColumn = (props) => {
-  const { stage, data, error, loading, columnIndex } = props
-  let data2 = ''
-
-  const Species = 'Dog'
-  let targetUrl = ''
-
-  const [adActiveIndex, setAdActiveIndex] = useState(null)
-  const [, setAD,,,,,,, specialty] = useContext(Context)
-
-  if (stage === 'Animals') {
-    targetUrl = 'http://localhost:4000/animals'
-  } else if (stage === 'Breed') {
-    targetUrl = `http://localhost:4000/breeds/${Species}`
-  } else if (stage === 'Vaccines') {
-    targetUrl = ''
-  }
-
-  data2 = fetch(targetUrl, { method: 'get' }).then(res => res.json()).then(json => console.log(json))
-
-  console.log("this is data2,", data2)
-
-
+  const { label, loading, data } = props
+  const [userType,, species,, adoptionStatus] = useContext(Context)
 
   return (
     <ColumnContainer>
       <Pane display="flex" flexDirection="row" marginTop="1rem">
-        <Text marginLeft="1rem" size={500} color="muted">{stage}</Text>
-        <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.length}</Text>
+        <Text marginLeft="1rem" size={400} color="muted">{label}</Text>
+        <Text marginLeft=".5rem" fontWeight="bold" size={400}></Text>
+        {/* { label == 'Animals' &&
+        <Pane marginLeft="auto">
+          <Text marginLeft="1rem" size={400} color="muted">Cats</Text>
+          <Text marginLeft=".5rem" fontWeight="bold" size={400}>{data && data.filter(c => c.species === 'Cat' ).length}</Text>
+          <Text marginLeft="1rem" marginRight=".5rem" size={400} color="muted">Dogs</Text>
+          <Text marginRight=".5rem" fontWeight="bold" size={400}>{data && data.filter(c => c.species === 'Dog' ).length}</Text>
+        </Pane>
+        } */}
       </Pane>
       { loading &&
         <Pane>
           <Spinner margin="auto" marginTop="2rem"/>
         </Pane>
       }
-      { error &&
+      { !loading && !data &&
         <Pane display="flex" flexDirection="column" alignItems="center" justifyContent="center">
           <Pane><Icon size="20" marginX="auto" marginTop="2rem" icon="warning-sign" color="muted"/></Pane>
           <Pane><Text color="muted">Error</Text></Pane>
         </Pane>
       }
+      {
+        label == 'Animals' &&
+        data.map((animal, index) => {
+          if ((species === 'All' || animal.species === species) && (adoptionStatus === 'All' || animal.adoptability === adoptionStatus)) {
+            return <AnimalCard index={index} data={animal}/>
+          }
+        })
+      }
+      { label == 'Adoptions' &&
+        data.map((pendingAdoptions, index) => {
+          if (userType == 'Admin') return <AdoptionCard index={index} data={pendingAdoptions}/>
+        })
+      }
+
     </ColumnContainer>
+
   )
 }
 
@@ -77,7 +80,6 @@ AnimalDashboardColumn.propTypes = {
   count: PropTypes.number,
   data: PropTypes.array,
   error: PropTypes.object,
-  loading: PropTypes.bool,
   columnIndex: PropTypes.number,
   smes: PropTypes.array,
   clickedSME: PropTypes.any,

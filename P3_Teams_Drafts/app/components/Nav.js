@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import { Text, Avatar, Tooltip, Pane, Heading } from 'evergreen-ui'
+import { Text, Avatar, Tooltip, Pane, Heading, Button, toaster } from 'evergreen-ui'
+import { Context } from './Context'
 
 const StyledNav = styled.nav`
   display: flex;
@@ -38,7 +39,7 @@ const Logo = styled.div`
   border: 3px dashed rgba(35, 67, 97, 0.5);
 `
 
-const RouteList = [
+let RouteList = [
   {
     title: 'Ingie\'s Animal Shelter',
     href: '/',
@@ -46,15 +47,65 @@ const RouteList = [
   }, {
     title: 'Animal Dashboard',
     href: '/animalDashboard'
+  }
+]
+
+const RouteListSignedOut = [
+  {
+    title: 'Ingie\'s Animal Shelter',
+    href: '/',
+    default: true
   }, {
-    title: 'Adoptions'
-  }, {
-    title: 'Users'
+    title: 'Animal Dashboard'
   }
 ]
 
 const Nav = () => {
+  const [loggedin, setLoggedin] = useState(null)
   const router = useRouter()
+  const [userType] = useContext(Context)
+
+  if (userType == 'Admin') {
+    RouteList = [
+      {
+        title: 'Ingie\'s Animal Shelter',
+        href: '/',
+        default: true
+      }, {
+        title: 'Animal Dashboard',
+        href: '/animalDashboard'
+      }, {
+        title: 'Reports',
+        href: '/reports'
+      }
+    ]
+  } else {
+    RouteList = [
+      {
+        title: 'Ingie\'s Animal Shelter',
+        href: '/',
+        default: true
+      }, {
+        title: 'Animal Dashboard',
+        href: '/animalDashboard'
+      }
+    ]
+  }
+
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedin')) {
+      setLoggedin(true)
+    } else {
+      setLoggedin(false)
+    }
+  })
+
+  function logout () {
+    toaster.success('Successfully signed out')
+    localStorage.clear()
+    router.push('/')
+  }
+
   return (
     <StyledNav>
       <StyledUl>
@@ -64,32 +115,55 @@ const Nav = () => {
           </Pane>
         </StyledLi>
         {
-          RouteList.map((r, index) => {
-            return (
-              <StyledLi key={index}>
-                <Link href={r.href}>
-                  <Pane marginY="auto" cursor="pointer">
-                    {r.default ? <Heading size={600} color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' }>{r.title}</Heading> : <Heading color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' } size={500}>{r.title}</Heading>}
-                  </Pane>
-                </Link>
-              </StyledLi>
-            )
-          })
+          loggedin
+            ? RouteList.map((r, index) => {
+              return (
+                <StyledLi key={index}>
+                  <Link href={r.href}>
+                    <Pane marginY="auto" cursor="pointer">
+                      {r.default ? <Heading size={600} color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' }>{r.title}</Heading> : <Heading color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' } size={500}>{r.title}</Heading>}
+                    </Pane>
+                  </Link>
+                </StyledLi>
+              )
+            })
+            : RouteListSignedOut.map((r, index) => {
+              return (
+                <StyledLi key={index}>
+                  <Link href={r.href}>
+                    <Pane marginY="auto" cursor="pointer">
+                      {r.default ? <Heading size={600} color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' }>{r.title}</Heading> : <Heading color={r.href === router.pathname ? '#234361' : 'rgba(35, 67, 97, 0.65)' } size={500}>{r.title}</Heading>}
+                    </Pane>
+                  </Link>
+                </StyledLi>
+              )
+            })
         }
       </StyledUl>
-      <Pane display="flex" flexDirection="row">
-        <Pane marginY="auto" marginRight="1rem">
-          <Text>John Smith</Text>
+
+      { loggedin
+        ? <Pane display="flex" flexDirection="row">
+          <Pane marginY="auto" marginRight="1rem">
+            <Text>{localStorage.getItem('UserName')}</Text>
+          </Pane>
+          <Tooltip content={'Signed in as ' + localStorage.getItem('UserName')}>
+            <Avatar
+              src=""
+              name={localStorage.getItem('UserName')}
+              size={35}
+              marginY="auto"
+              marginRight="2rem"/>
+          </Tooltip>
+          <Pane marginY="auto" marginRight="1rem">
+            <Button appearance="primary" onClick={logout} type="submit">Log out</Button>
+          </Pane>
         </Pane>
-        <Tooltip content="Signed in as John Smith">
-          <Avatar
-            src=""
-            name="John Smith"
-            size={35}
-            marginY="auto"
-            marginRight="4rem"/>
-        </Tooltip>
-      </Pane>
+        : <Pane display="flex" flexDirection="row">
+          <Pane marginY="auto" marginRight="1rem">
+            <Text></Text>
+          </Pane>
+        </Pane>
+      }
     </StyledNav>)
 }
 

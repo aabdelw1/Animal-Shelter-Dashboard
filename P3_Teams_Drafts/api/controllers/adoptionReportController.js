@@ -73,8 +73,9 @@ FROM (
                     adoptionCount: r.Adoption_Count, 
                     surrenderCount: r.Surrender_Count
                 })
-            });
+			});
+			return res.json(rows);
         }
     });
-    return res.json(rows);
+    
 };

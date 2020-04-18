@@ -4,13 +4,17 @@
 /node_modules
 /.pnp
 .pnp.js
+.next
+package-lock.json
+.next/build-manifest.json
+.next/server/pages-manifest.json
 
 # testing
 /coverage
 
 # next.js
 /.next/
-/out/
+/out
 
 # production
 /build
