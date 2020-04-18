@@ -310,7 +310,7 @@ exports.put_update_animal_information = function(req, res) {
    var q = ` `; 
  
    if (req.body.sex != null) {
-     q = q +`UPDATE Animal
+     q = q +`UPDATE IGNORE Animal
      SET   Sex = ?
      WHERE Pet_ID = ? ; `;
      params.push(req.body.sex);
@@ -318,7 +318,7 @@ exports.put_update_animal_information = function(req, res) {
    }
  
    if (req.body.alterationStatus != null) {
-     q = q +`UPDATE Animal
+     q = q +`UPDATE  IGNORE  Animal
      SET   Alteration_Status = ?
      WHERE Pet_ID = ? ; `;
      params.push(req.body.alterationStatus);
@@ -326,7 +326,7 @@ exports.put_update_animal_information = function(req, res) {
    }
   
    if (req.body.microchipID != null) {
-     q = q +`UPDATE Animal
+     q = q +`UPDATE IGNORE  Animal
      SET   Microchip_ID = ?
      WHERE Pet_ID = ? ; `;
      params.push(req.body.microchipID);
@@ -349,7 +349,7 @@ exports.put_update_animal_information = function(req, res) {
 
      if(mixedUnknown==false)
       {
-        q = q +`  UPDATE AnimalBreeds
+        q = q +`  UPDATE IGNORE AnimalBreeds
         SET Breed_Name = ?
         WHERE Pet_ID = ? ; `;
         params.push(breed);
@@ -398,7 +398,7 @@ async function updateBreeds(petId,breeds)
       var params=[];
       params.push(petId);
       params.push(breed);
-      await db.query("INSERT INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
+      await db.query("INSERT IGNORE INTO AnimalBreeds (Pet_ID, Breed_Name) VALUES (?,?);", params);
     }
   }
 }
