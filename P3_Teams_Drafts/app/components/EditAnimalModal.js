@@ -11,7 +11,7 @@ const EditAnimalModal = (props) => {
   const [newBreeds, setNewBreeds] = useState(breeds.split('/'))
   const [breedsList, setBreedsList] = useState([])
   let [newSex, setNewSex] = useState('Male')
-  let [newMicrochipId, setNewMicrochipId] = useState('')
+  let [newMicrochipId, setNewMicrochipId] = useState(null)
   const [loading, setLoading] = useState(true)
   let [newAlterationStatus, setNewAlterationStatus] = useState('')
   let [showSex, setShowSex] = useState(false)
@@ -43,12 +43,13 @@ const EditAnimalModal = (props) => {
         var tempAlterationStatus = (newAlterationStatus == 'Yes') ? !alterationStatus : alterationStatus
         tempAlterationStatus = (tempAlterationStatus == true) ? 1 : 0
         var newBreedArr = (newBreeds.length == 1) ? newBreeds[0] : newBreeds.selected.join(',')
+        var numID =  (newMicrochipId == null) ? null : newMicrochipId
         const requestOptions = {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sex: `${(newSex == '') ? sex: newSex}`,
-            microchipID: `${(newMicrochipId == '') ? microchipId: newMicrochipId}`,
+            microchipID: numID,
             alterationStatus: `${tempAlterationStatus}`,
             breeds: `${newBreedArr}`,
           })
