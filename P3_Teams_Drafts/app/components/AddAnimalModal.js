@@ -195,12 +195,12 @@ const AddAnimalModal = (props) => {
       onCloseComplete={() => setShowModal(false)}
       onConfirm={() => {
         var isEnough = true
-        // for (var x = 0; x < animalCount.length; x++) {
-        //   if (species == animalCount[x].species && animalCount[x].maxPerShelter <= (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)){
-        //     isEnough = false
-        //     toaster.warning('Too many ' + species + ' in shelter. Cannot add animal')
-        //   } 
-        // }
+        for (var x = 0; x < animalCount.length; x++) {
+          if (species == animalCount[x].species && animalCount[x].maxPerShelter <= (animalCount[x].countWaitingAdoption + animalCount[x].countNotReadyForAdoption)){
+            isEnough = false
+            toaster.warning('Too many ' + species + ' in shelter. Cannot add animal')
+          } 
+        }
 
         if(isEnough) {
           var numID = (microchipId == null) ? null : microchipId
