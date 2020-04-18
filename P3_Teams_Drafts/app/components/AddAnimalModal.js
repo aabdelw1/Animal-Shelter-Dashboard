@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert, Text, Table, SelectedPropType, Tablist, Tab } from 'evergreen-ui'
+import { Heading, Combobox, Pane, Dialog, TextInputField, toaster, Select, SelectMenu, Button,SelectField, InlineAlert, Text, Table, SelectedPropType, Tablist, Tab, Textarea } from 'evergreen-ui'
 import Component from '@reactions/component'
 import { useRouter } from 'next/router'
 
@@ -220,7 +220,7 @@ const AddAnimalModal = (props) => {
   return (
     <Dialog
       isShown={showModal}
-      height={1800}
+      onCancel={() => {setShowModal(false); whenClicked(0) }}
       title="🐶 Add New Animal"
       isConfirmDisabled = {!validateForm(errors)}
       onCloseComplete={() => setShowModal(false)}
@@ -297,7 +297,7 @@ const AddAnimalModal = (props) => {
         }}
       >
         {({ state, setState }) => (
-          <Pane height={300}>
+          <Pane height={400}>
             <Pane>
               <Tablist marginBottom={16} flexBasis={240} marginRight={16}>
                 {state.tabs.map((tab, index) => (
@@ -378,7 +378,7 @@ const AddAnimalModal = (props) => {
               {/* {errors.age && <InlineAlert intent="danger">{errors.age}</InlineAlert>} */}
             </Pane>
           </Pane>
-          <Pane display="flex">
+          <Pane display="flex"  marginY="-1.5rem">
             <Pane display="flex" marginBottom="3rem">
               <Pane display="flex" flexDirection="column">
                 <Text size={400} marginY="0.5rem">Breed *</Text>
@@ -478,8 +478,10 @@ const AddAnimalModal = (props) => {
                 />
               </Pane>
             </Pane>
-            <Pane display="flex" flexDirection="column" marginY="0.5rem">
-              <TextInputField
+          </Pane>
+          <Pane display="flex" flexDirection="column" marginY="-2.5rem">
+           <Text size={400} marginY="1rem">Description</Text>
+              <Textarea
                 autoFocus
                 label="Description"
                 marginRight="2rem"
@@ -488,46 +490,48 @@ const AddAnimalModal = (props) => {
                 onChange={e => setDescription(e.target.value)}
               />
             </Pane>
-          </Pane>
         </Pane>
   
         }
         { surrenderInfoTab &&
-          <Pane display="flex">
-            <Pane display="flex" flexDirection="column">
-              <TextInputField
-                label="Surrender Date"
-                required
-                name="surrenderDate"
-                marginRight="2rem"
-                value={surrenderDate}
-                placeholder="YYYY-DD-MM"
-                onChange={e => {HandleChange(e);  setSurrenderDate(e.target.value)}}
-                validationMessage={errors.surrenderDate ? errors.surrenderDate : false}
-              />
+          <Pane>
+            <Pane display="flex">
+              <Pane display="flex" flexDirection="column">
+                <TextInputField
+                  label="Surrender Date"
+                  required
+                  name="surrenderDate"
+                  marginRight="2rem"
+                  value={surrenderDate}
+                  placeholder="YYYY-DD-MM"
+                  onChange={e => {HandleChange(e);  setSurrenderDate(e.target.value)}}
+                  validationMessage={errors.surrenderDate ? errors.surrenderDate : false}
+                />
+              </Pane>
+              
+              <Pane display="flex" flexDirection="column">
+                <SelectField label="Animal Control Surrender *" width={170} marginRight="2rem"  value={surrenderByAnimalControl} onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}>
+                      <option value="Male">True</option>
+                      <option value="Female">False</option>
+                </SelectField>
+              </Pane>
             </Pane>
-            <Pane display="flex" flexDirection="column">
-              <TextInputField
-                width={170}
-                required
-                autoFocus
-                name="surrenderReason"
-                label="Surrender Reason"
-                marginRight="2rem"
-                value={surrenderReason}
-                placeholder="Surrender Reason"
-                onChange={e =>  {HandleChange(e);  setSurrenderReason(e.target.value)}}
-                validationMessage={errors.surrenderReason ? errors.surrenderReason : false}
-              />
-              {/* {errors.surrenderReason && <InlineAlert intent="danger">{errors.surrenderReason}</InlineAlert>} */}
-            </Pane>
-            <Pane marginRight="-12rem">
-              <Text size={400} marginY=".5rem">Animal Control Surrender</Text>
-              <Select width={170} marginY="0.6rem" value={surrenderByAnimalControl} onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}>
-                    <option value="Male">True</option>
-                    <option value="Female">False</option>
-              </Select>
-            </Pane>
+              <Pane display="flex" flexDirection="column">
+                <Text size={400} marginY="1rem">Surrender Reason</Text>
+                <Pane display="flex" height={30}>
+                <Textarea
+                  required
+                  autoFocus
+                  name="surrenderReason"
+                  label="Surrender Reason"
+                  marginRight="2rem"
+                  value={surrenderReason}
+                  placeholder="Because reaons"
+                  onChange={e =>  {HandleChange(e);  setSurrenderReason(e.target.value)}}
+                  validationMessage={errors.surrenderReason ? errors.surrenderReason : false}
+                />
+                  </Pane>
+              </Pane>
           </Pane>
           }
           { vaccineInfoTab && 
