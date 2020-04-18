@@ -369,7 +369,7 @@ const AddAnimalModal = (props) => {
                 autoFocus
                 name="age"
                 placeholder={1}
-                label="Age"
+                label="Age (months)"
                 marginRight="2rem"
                 value={age}
                 onChange={e => {HandleChange(e); Number(setAge(e.target.value)); }}
@@ -445,7 +445,7 @@ const AddAnimalModal = (props) => {
             </Pane>
               <Pane>
                 {/* <Text size={400} marginY="0.5rem">Alteration Status *</Text> */}
-                <SelectField label="Alteration *" width={70} marginRight="2rem" marginY="0.6rem" value={alterationStatus} onChange={selected =>  setAlterationStatus(selected == 'true' ? 1 : 0)} validationMessage={errors.alterationStatus ? errors.alterationStatus : false}>
+                <SelectField label="Alteration" width={70} marginRight="2rem" marginY="0.6rem" value={alterationStatus} onChange={selected =>  setAlterationStatus(selected == 'true' ? 1 : 0)} validationMessage={errors.alterationStatus ? errors.alterationStatus : false}>
                   <option value="Male">True</option>
                   <option value="Female">False</option>
                 </SelectField>
@@ -510,7 +510,7 @@ const AddAnimalModal = (props) => {
               </Pane>
               
               <Pane display="flex" flexDirection="column">
-                <SelectField label="Animal Control Surrender *" width={170} marginRight="2rem"  value={surrenderByAnimalControl} onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}>
+                <SelectField label="Animal Control Surrender" width={170} marginRight="2rem"  value={surrenderByAnimalControl} onChange={selected => setSurrenderByAnimalControl(selected == 'true' ? 1 : 0)}>
                       <option value="Male">True</option>
                       <option value="Female">False</option>
                 </SelectField>
